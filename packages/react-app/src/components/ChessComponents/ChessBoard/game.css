@@ -1,0 +1,47 @@
+button {
+    background-color: #000000;
+    border: none;
+    height: 80px;
+    width: 80px;
+    margin-top: -4px;
+    padding: 0;
+}
+
+.center {
+    text-align: center;
+}
+
+.check {
+    display: inline;
+    font-size: 40px;
+    font-family: Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;
+}
+
+.turn {
+    display: inline;
+    font-size: 32px;
+    font-family: Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.fen {
+    display: inline;
+    font-size: 28px;
+    font-family: Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;
+}
+
+.pgn {
+    display: inline;
+    font-size: 28px;
+    font-family: Trebuchet MS,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Tahoma,sans-serif;
+}
+
+.fullBoard {
+    display: flex;
+    flex-direction: column;
+}
+
+.gameTime {
+    font-size: 25px;
+}

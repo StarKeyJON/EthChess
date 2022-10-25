@@ -1,0 +1,19 @@
+.jackpot{
+    margin: 40px;
+    margin-top: 200px;
+    color: "white;"
+}
+
+.mint{
+    margin-top: 40px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.tournaments{
+}
+
+.leaderboard {
+    margin-top: 100px;
+}

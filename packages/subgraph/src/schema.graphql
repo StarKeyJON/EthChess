@@ -1,0 +1,84 @@
+type Player @entity {
+  id: ID!
+  address: String!
+  matches: [Match!]
+  wins: BigInt
+  losses: BigInt
+  ratio: BigInt
+}
+
+type Match @entity {
+  id: ID!
+  matchId: BigInt!
+  player1: Player!
+  player2: Player!
+  startTime: BigInt!
+  startHash: String!
+  endHash: String
+  p1Amount: BigInt
+  p2Amount: BigInt
+  refunded: Boolean
+  winner: Player
+}
+
+type DeathMatch @entity {
+  id: ID!
+  matchId: BigInt!
+  entranceFee: BigInt!
+  pot: BigInt
+  reign: String!
+  winner: Player
+  winnings: BigInt
+  endHash: String
+  matches: [Match!]
+}
+
+type Claim @entity {
+  id: ID!
+  matchId: BigInt!
+  claimBlock: BigInt!
+  security: BigInt!
+  claimant: String!
+  startHash: String!
+  endHash: String!
+  contested: Boolean
+  p1Refunded: Boolean
+  p2Refunded: Boolean
+}
+
+type Dispute @entity {
+  id: ID!
+  matchId: BigInt!
+  claimStart: BigInt!
+  security: BigInt!
+  disputer: String!
+  startHash: String!
+  endHash: String!
+  contestedHash: String!
+  tally: Boolean
+  votedFor: [String!]
+  votedAgainst: [String!]
+}
+
+type Refund @entity {
+  id: ID!
+  matchId: BigInt!
+  player1: Boolean
+  player2: Boolean
+  refunded: Boolean
+}  
+
+type RewardsChest @entity {
+  id: ID!
+  holdings: BigInt!
+  classC: BigInt!
+  classB: BigInt!
+  classA: BigInt!
+}
+
+type RewardsStats @entity {
+  id: ID!
+  24Hrs: BigInt!
+  7Days: BigInt!
+  allTimeHoldings: BigInt!
+}

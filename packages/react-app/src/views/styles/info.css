@@ -1,0 +1,28 @@
+.container {
+    margin-top: 200px;
+    margin-bottom: 300px;
+}
+
+.startcontainer {
+    margin-top: 50px;
+    margin-bottom: 200px;
+}
+
+.hiddenInfo {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateX(-100%);
+    transition: all 1s;
+}
+
+.showInfo {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+}
+
+@media(prefers-reduced-motion) {
+    .hiddenInfo {
+        transition: none;
+    }
+}

@@ -1,0 +1,83 @@
+{
+  "name": "@best-of-chess/monorepo",
+  "version": "1.0.0",
+  "keywords": [
+    "ethereum",
+    "react",
+    "uniswap",
+    "workspaces",
+    "yarn"
+  ],
+  "private": true,
+  "scripts": {
+    "react-app:build": "yarn workspace @best-of-chess/react-app build --max-old-space-size=12288",
+    "react-app:eject": "yarn workspace @best-of-chess/react-app eject",
+    "react-app:start": "yarn workspace @best-of-chess/react-app start",
+    "react-app:server": "yarn workspace @best-of-chess/react-app server",
+    "react-app:test": "yarn workspace @best-of-chess/react-app test",
+    "react-app:lint": "yarn workspace @best-of-chess/react-app lint",
+    "build": "yarn workspace @best-of-chess/react-app build --max-old-space-size=12288",
+    "prettier": "yarn workspace @best-of-chess/react-app prettier",
+    "chain": "yarn workspace @best-of-chess/hardhat chain",
+    "fork": "yarn workspace @best-of-chess/hardhat fork",
+    "node": "yarn workspace @best-of-chess/hardhat chain",
+    "test": "yarn workspace @best-of-chess/hardhat test",
+    "start": "yarn workspace @best-of-chess/react-app start",
+    "server": "yarn workspace @best-of-chess/react-app server",
+    "compile": "yarn workspace @best-of-chess/hardhat compile",
+    "deploy": "yarn workspace @best-of-chess/hardhat deploy",
+    "verify": "yarn workspace @best-of-chess/hardhat verify",
+    "watch": "yarn workspace @best-of-chess/hardhat watch",
+    "accounts": "yarn workspace @best-of-chess/hardhat accounts",
+    "balance": "yarn workspace @best-of-chess/hardhat balance",
+    "send": "yarn workspace @best-of-chess/hardhat send",
+    "ipfs": "yarn workspace @best-of-chess/react-app ipfs",
+    "surge": "yarn workspace @best-of-chess/react-app surge",
+    "s3": "yarn workspace @best-of-chess/react-app s3",
+    "ship": "yarn workspace @best-of-chess/react-app ship",
+    "generate": "yarn workspace @best-of-chess/hardhat generate",
+    "account": "yarn workspace @best-of-chess/hardhat account",
+    "mineContractAddress": "cd packages/hardhat && npx hardhat mineContractAddress",
+    "wallet": "cd packages/hardhat && npx hardhat wallet",
+    "fundedwallet": "cd packages/hardhat && npx hardhat fundedwallet",
+    "flatten": "cd packages/hardhat && npx hardhat flatten",
+    "clean": "cd packages/hardhat && npx hardhat clean",
+    "run-graph-node": "yarn workspace @best-of-chess/services run-graph-node",
+    "remove-graph-node": "yarn workspace @best-of-chess/services remove-graph-node",
+    "clean-graph-node": "yarn workspace @best-of-chess/services clean-graph-node",
+    "graph-codegen": "yarn workspace @best-of-chess/subgraph graph codegen",
+    "graph-build": "yarn workspace @best-of-chess/subgraph graph build",
+    "graph-create-local": "yarn workspace @best-of-chess/subgraph graph create --node http://localhost:8020/ best-of-chess/your-contract",
+    "graph-remove-local": "yarn workspace @best-of-chess/subgraph graph remove --node http://localhost:8020/ best-of-chess/your-contract",
+    "graph-deploy-local": "yarn workspace @best-of-chess/subgraph graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 best-of-chess/your-contract",
+    "graph-ship-local": "yarn graph-codegen && yarn graph-build --network localhost && yarn graph-deploy-local",
+    "deploy-and-graph": "yarn deploy && yarn graph-ship-local",
+    "theme": "yarn workspace @best-of-chess/react-app theme",
+    "watch-theme": "yarn workspace @best-of-chess/react-app watch",
+    "postinstall": "husky install",
+    "prepare": "husky install"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/@graphprotocol/graph-ts",
+      "**/@graphprotocol/graph-ts/**",
+      "**/hardhat",
+      "**/hardhat/**",
+      "**/hardhat-ts",
+      "**/hardhat-ts/**"
+    ]
+  },
+  "devDependencies": {
+    "husky": "^7.0.2",
+    "lint-staged": "^13.0.3"
+  },
+  "lint-staged": {
+    "packages/react-app/src/**/*.{js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ]
+  }
+}
