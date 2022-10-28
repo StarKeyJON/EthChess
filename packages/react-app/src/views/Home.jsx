@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import "./styles/home.css";
 import "./styles/animated.css";
 import { Jackpot } from "../components";
-import { Tournaments } from "../components/TournamentComponents";
 import ethlogo from "../assets/ethereumLogo.png";
 import bitcoin from "../assets/bitcoin.jpg";
 import security from "../assets/cyber-security.jpg";

@@ -2,8 +2,6 @@ import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
 import { Card, Table, Button, Input, Space, Row, Col, Image, Popover, notification } from "antd";
-import { Tournament } from "../TournamentComponents";
-import AvailableTournaments from "../TournamentComponents/AvailableTournaments";
 import { FaInfoCircle, FaVoteYea } from "react-icons/fa";
 
 const WageredTables = ({ players, address }) => {

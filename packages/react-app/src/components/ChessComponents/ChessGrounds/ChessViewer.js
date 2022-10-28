@@ -7,31 +7,30 @@ import "./styles/chessGround.css";
 import "./styles/chessGround-theme.css";
 import { GUNKEY } from "../../../constants";
 import { useParams } from "react-router-dom";
+import MoveTable from "./MoveTable";
 
 const ChessViewer = ({ gun }) => {
   const { gameId } = useParams();
-  const [gameState, setGameState] = useState();
-  const [chess, setChess] = useState(new Chess());
+  const [gameState, setGameState] = useState({});
+  const [chess] = useState(new Chess());
   const [fen, setFen] = useState("");
   const [lastMove, setLastMove] = useState();
-  const [nonce, setNonce] = useState(0);
 
   useEffect(() => {
-    gun &&
-      gun
-        .get(GUNKEY)
-        .get("skirmishes")
-        .get(gameId)
-        .get("move")
-        .on(ack => {
-          if (ack && ack.fen !== fen && ack.nonce === nonce + 1) {
-            console.log(ack)
-            setFen(ack.fen);
-            setGameState(ack);
-            setNonce(ack.nonce);
-          }
-        });
-  }, [gun]);
+    gun
+      .get(GUNKEY)
+      .get("skirmishes")
+      .get(gameId)
+      .get("move")
+      .on(ack => {
+        console.log(ack)
+        if (ack && ack.fen !== fen) {
+          setFen(ack.fen);
+          setGameState(ack);
+          setLastMove(ack.lastMove);
+        }
+      });
+  }, []);
 
   const turnColor = () => {
     return chess.turn() === "w" ? "white" : "black";
@@ -49,6 +48,9 @@ const ChessViewer = ({ gun }) => {
           viewOnly={true}
           style={{ margin: "auto" }}
         />
+      </div>
+      <div style={{ marginTop: 50 }}>
+        {gameState && gameState?.history && <MoveTable moves={JSON.parse(gameState?.history)} />}
       </div>
     </>
   );

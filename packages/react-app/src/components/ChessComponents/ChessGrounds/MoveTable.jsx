@@ -8,6 +8,13 @@ const MoveTable = ({ moves }) => {
       dataIndex: "color",
       key: "color",
       //   width: "40%",
+      render: (color) => {
+        if (color === "w") {
+          return <>White</>;
+        } else {
+          return <>Black</>;
+        }
+      }
     },
     {
       title: "Piece",

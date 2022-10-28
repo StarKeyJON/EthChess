@@ -123,7 +123,7 @@ const ChessSkirmishOpponent = ({ gun }) => {
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const [gpState, setGPState] = useState(gameplayState);
 
-  const {
+  let {
     chess,
     nonce,
     gameState,
@@ -653,8 +653,8 @@ const ChessSkirmishOpponent = ({ gun }) => {
 
   return (
     <>
+        {inCheck[0] ? <h1> Player "{inCheck[1]}" is in Check! </h1> : <></>}
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
-        {inCheck[0] ?? <h1> {inCheck[1]} in Check! </h1>}
         {gameState && gameInProgress ? (
           <Chessground
             width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
