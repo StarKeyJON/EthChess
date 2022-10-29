@@ -1,244 +1,353 @@
 // credits https://github.com/lichess-org/chessground, https://github.com/ruilisi/react-chessground
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useState } from "react";
+import { useParams } from "react-router-dom";
 import Chessground from "react-chessground";
-import { Chess } from "chess.js";
 import "./styles/chessGround.css";
-// import "chessground/assets/chessground.cburnett.css";
-import { Input, Modal, notification, Spin } from "antd";
+import { Button, Card, message, Modal, notification, Space, Spin } from "antd";
 import queen from "../../../assets/images/WhiteQueen.png";
 import rook from "../../../assets/images/WhiteRook.png";
 import bishop from "../../../assets/images/WhiteBishop.png";
 import knight from "../../../assets/images/WhiteKnight.png";
-import { GUNKEY } from "../../../constants";
-import { useParams } from "react-router-dom";
+import { beginningFEN, GUNKEY } from "../../../constants";
 
-const ChessSkirmishes = ({
-  gun,
-  address,
-  player,
-  setPlayer,
-  writeContracts,
-  timeStamp,
-  updateMove,
-  findSkirmishForPlayer,
-  setOpponent,
-  endSkirmish,
-}) => {
-  const chess = new Chess();
-  const gameId = useParams();
+import { OpponentLeft, PlayerLeft } from "../modals";
+import { Chess } from "chess.js";
+import { SocketContext } from "../../../socketContext/socketContext";
+import MoveTable from "../MoveTable";
+import Text from "antd/lib/typography/Text";
+import { ipfs } from "../../../helpers";
 
-  const [pendingGame, setPendingGame] = useState(false);
-  const [settingMatch, setSettingMatch] = useState(false);
-  const [profileModal, setProfileModal] = useState(false);
-  const [creatingProfile, setCreatingProfile] = useState(false);
-  const [gameInProgress, setGameInProgress] = useState(false);
-  const [newOpponent, setNewOpponent] = useState(false);
+const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
+  const socket = useContext(SocketContext);
+  const socketId = socket.id;
 
-  const [gameSoul, setGameSoul] = useState();
-  const [pendingMove, setPendingMove] = useState([]);
-  const [selectVisible, setSelectVisible] = useState(false);
-  const [fen, setFen] = useState("");
-  const [lastFen, setLastFen] = useState("");
-  const [lastMove, setLastMove] = useState([]);
-  const [inCheck, setInCheck] = useState(false);
-  const [gunMoved, setGunMoved] = useState(false);
-  const [ipfsHistory, setIpsfsHistory] = useState([]);
-  const [lastHash, setLastHash] = useState("");
-  const [gunState, setGunState] = useState({
-    gameId: gameId,
+  const { gameId } = useParams();
+
+  const initialState = {
+    chess: new Chess(),
     nonce: 0,
+    gameState: {},
+    gameId: gameId,
     turn: "",
-    fen: "",
+    fen: beginningFEN,
     lastFen: "",
-    move: [],
     lastMove: [],
+    pendingMove: [],
     history: [],
     ipfsHistory: [],
+    lastHash: "",
+    inCheck: [false, ""],
+    moving: false,
+    gunMoved: false,
+    selectVisible: false,
+    gunState: {},
+    joined: false,
     player1: "",
     player2: "",
-  });
-  const [nonce, setNonce] = useState(0);
-  const [turn, setTurn] = useState("player");
-  const [gameOver, setGameOver] = useState(false);
-  const [winner, setWinner] = useState(false);
-  const [winningModalVisible, setWinningModalVisible] = useState(false);
-  const [losingModalVisible, setLosingModalVisible] = useState(false);
-  const [viewLogin, setViewLogin] = useState(false);
-  const [joinedLobby, setJoinedLobby] = useState(false);
-  const [profileState, setProfileState] = useState({
-    age: Math.ceil(Math.random() * 100),
-    name: `Player_${timeStamp}`,
-    location: "web3",
-  });
-
-  const handleChange = e => {
-    setProfileState({
-      ...profileState,
-      [e.target.name]: e.target.value,
-    });
+    settingMatch: false,
+    gameInProgress: false,
+    playerLeftModal: false,
+    opponentLeftModal: false,
+    winningModalVisible: false,
+    losingModalVisible: false,
+    shakingHands: false,
+    player1Shake: false,
+    player2Shake: false,
   };
 
-  const lastId = () => {
-    let id;
+  function chessReducer(state, action) {
+    switch (action.type) {
+      case "STARTMATCH": {
+        return { ...state, turn: action.player1, shakingHands: false, gameInProgress: true };
+      }
+      case "PENDINGMOVEON": {
+        return { ...state, pendingMove: [action.from, action.to], selectVisible: true };
+      }
+      case "ILLEGALMOVE": {
+        return { ...state, fen: state.chess.fen() };
+      }
+      case "CHECKCHECK": {
+        return { ...state, inCheck: [action.inCheck, action.player] };
+      }
+      case "UPDATEBOARD": {
+        let a = action.data;
+        return {
+          ...state,
+          lastFen: a.lastFen,
+          fen: a.fen,
+          history: a.history,
+          nonce: a.nonce,
+          lastMove: a.lastMove,
+          gunMoved: a.gunMoved,
+          gameState: a.gameState,
+          turn: a.turn,
+          selectVisible: false,
+          moving: false,
+        };
+      }
+      case "JOINED": {
+        // console.log("JOINED", action);
+        if (action.socketId !== state.gameId) {
+          return { ...state, joined: true, player1: state.gameId, player2: action.socketId };
+        } else {
+          return { ...state, joined: true, player1: action.socketId };
+        }
+      }
+      case "HANDLEOPPONENT": {
+        if (action.opp !== state.gameId) {
+          return { ...state, player2: action.opp };
+        } else {
+          return { ...state };
+        }
+      }
+      case "GUN": {
+        let data = action.ack;
+        if (data.player2) {
+          return { ...state, player1: data.player1, player2: data.player2, gunState: data };
+        } else {
+          return { ...state, player1: data.player1, gunState: data };
+        }
+      }
+      case "IPFSHISTORY":
+        let data = action.load;
+        return { ...state, ipfsHistory: [...state.ipfsHistory, data], lastHash: data };
+      case "SHAKING": {
+        return { ...state, shakingHands: true };
+      }
+      case "SHOOK": {
+        if (action.p === 1) {
+          return { ...state, player1Shake: true };
+        } else {
+          return { ...state, player2Shake: true };
+        }
+      }
+      case "RESET":
+        return initialState;
+
+      default:
+        return state;
+    }
+  }
+
+  const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
+  const [gpState, setGPState] = useState(gameplayState);
+
+  let {
+    chess,
+    nonce,
+    gameState,
+    turn,
+    fen,
+    lastFen,
+    lastMove,
+    pendingMove,
+    history,
+    ipfsHistory,
+    lastHash,
+    inCheck,
+    moving,
+    gunMoved,
+    selectVisible,
+    shakingHands,
+    joined,
+    player1,
+    player2,
+    settingMatch,
+    gameInProgress,
+    playerLeftModal,
+    opponentLeftModal,
+    winningModalVisible,
+    losingModalVisible,
+    player1Shake,
+    player2Shake,
+    gunState,
+    winner,
+  } = gpState;
+
+  let opp = player1 === socketId ? player2 : player1;
+  let color = socketId === player1 ? "white" : "black";
+
+  useEffect(() => {
+    setGPState(gameplayState);
+  }, [gameplayState]);
+
+  const fetchGunState = () => {
+    // console.log("Fetch gunState.");
     gun
       .get(GUNKEY)
-      .get("skirmishIds")
+      .get("skirmishes")
+      .get(gameId)
       .once(ack => {
-        id = ack;
+        if (ack) {
+          // if (ack.gameInProgress) {
+          //   window.location.replace(`/match/view/${gameId}`);
+          //   return;
+          // }
+          dispatch({ type: "GUN", ack: ack });
+          // dispatchBoard({ type: "GUN", ack: ack });
+        }
       });
-    return id;
-  };
-  var profile = {
-    name: profileState.name,
-    age: profileState.age,
-    location: profileState.location,
-    address: address ?? "",
-    active: true,
-    isAvailable: true,
-    joined: timeStamp,
-    set: 0,
   };
 
-  // Check if user has a player profile
-  useEffect(() => {
-    if (gun && (player === null || player === undefined) && !creatingProfile) {
-      setCreatingProfile(true);
-      setProfileModal(true);
+  const prepRoom = () => {
+    fetchGunState();
+    if (socketId !== gameId) {
+      socket.emit("opponentSet", gameId, socketId, "skirmishes");
+      // setOpponent(gameId, "skirmishes", socketId);
     }
-  }, [gun]);
+    dispatch({ type: "SHAKING" });
+  };
 
-  // Check if any skirmishes available
-
-  // Connect to available opponent node, set connect, player details
-
-  // Allow for opponent connection set and accept, player details entered, relay opponent details for confirmation, and gameId
-
-  // //
-  // const findPlayer1 = () => {
-  //   gun
-  //     .get(GUNKEY)
-  //     .get("skirmshes")
-  //     .get("matches")
-  //     .map()
-  //     .on(function (ack, soul) {
-  //       console.log(ack);
-  //       if (ack.isAvailable && ack.set === 0 && pendingGame && !gameInProgress && ack.player.name !== profile.name) {
-  //         setPendingGame(false);
-  //         gun.get(GUNKEY).get("skirmshes").get("matches").get(soul).put({
-  //           set: 1,
-  //           player2: profileState.name,
-  //         });
-  //         gun.get(GUNKEY).get("skirmshes").get("matches").map().off();
-  //       }
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   if (gun && newOpponent) {
-  //     let soul = newMatch();
-  //     gun
-  //       .get(GUNKEY)
-  //       .get("skirmshes")
-  //       .get("matches")
-  //       .get(soul)
-  //       .on("set", function (ack) {
-  //         if (ack.player2 !== undefined) {
-  //           setGameInProgress(true);
-  //           gun.get(GUNKEY).get("skirmshes").get("matches").get(soul).off();
-  //         }
-  //       });
-  //   }
-  // }, [gun]);
-
-  //   useEffect(() => {
-  //     if (opponent === null || undefined) {
-  //       findPlayer();
-  //     }
-  //   }, [opponent]);
-
-  const saveToGun = () => {
-    if (gun && gameId) {
-      let file = {
-        gameId: gameId,
-        nonce: nonce,
-        turn: "Black",
-        fen: fen,
-        lastFen: lastFen,
-        move: JSON.stringify(lastMove),
-        history: JSON.stringify(chess.history({ verbose: true })),
-        ipfsHistory: JSON.stringify(ipfsHistory),
-        player1: gunState.player1,
-        Player2: gunState.player2,
-      };
-      gun.get(GUNKEY).get("skirmshes").get("match").get(gameSoul).put(file);
+  // IPFS file processing and uploading
+  const handleIPFSInput = async e => {
+    try {
+      let added = await ipfs.add(e);
+      dispatch({ type: "IPFSHISTORY", load: added.path });
+    } catch (error) {
+      console.log("Error uploading file: ", error);
     }
   };
 
-  const onMove = (from, to, data) => {
-    const moves = chess.moves({ verbose: true });
-    for (let i = 0, len = moves.length; i < len; i++) {
-      if (moves[i].flags.indexOf("p") !== -1 && moves[i].from === from) {
-        setPendingMove([from, to]);
-        setSelectVisible(true);
-        return;
+  const onMove = (from, to) => {
+    console.log(gpState);
+    if (turn === socketId) {
+      console.log("Player moved!");
+      const moves = chess.moves({ verbose: true });
+      for (let i = 0, len = moves.length; i < len; i++) {
+        if (moves[i].flags.indexOf("p") !== -1 && moves[i].from === from) {
+          dispatch({ type: "PENDINGMOVEON", from: from, to: to });
+          return;
+        }
       }
-    }
-    var themove = chess.move({ from, to });
-    if (themove == null) {
-      notification.open({ message: "Illegal move!" });
-      setFen(lastFen);
-      setFen(chess.fen());
-      return;
-    } else {
-      if (chess.inCheck()) {
-        setInCheck(true);
+      var themove = chess.move({ from, to });
+      if (themove == null) {
+        notification.open({ message: "Illegal move!" });
+        dispatch({ type: "ILLEGALMOVE" });
+        return;
       } else {
-        setInCheck(false);
-      }
-      setLastFen(fen);
-      // setFen(fen);
-      setFen(chess.fen());
-      saveToGun();
-      setNonce(nonce + 1);
-      setLastMove([from, to]);
-      setGunMoved(false);
-      setTurn("opponent");
-    }
-  };
+        if (chess.inCheck()) {
+          dispatch({ type: "CHECKCHECK", inCheck: true, player: opp });
+        } else {
+          dispatch({ type: "CHECKCHECK", inCheck: false });
+        }
 
-  const moveGun = (from, to, gunfen) => {
-    const moves = chess.moves({ verbose: true });
-    for (let i = 0, len = moves.length; i < len; i++) {
-      if (moves[i].flags.indexOf("p") !== -1 && moves[i].from === from) {
-        setPendingMove([from, to]);
-        setSelectVisible(true);
-        return;
+        let file = {
+          gameId: gameId,
+          player: socketId,
+          nonce: nonce + 1,
+          fen: chess.fen(),
+          lastFen: fen,
+          turn: opp,
+          move: JSON.stringify([from, to]),
+          lastMove: JSON.stringify(lastMove),
+          history: JSON.stringify(chess.history({ verbose: true })),
+        };
+        let m = chess.history({ verbose: true });
+        m.reverse();
+        dispatch({
+          type: "UPDATEBOARD",
+          data: {
+            history: m,
+            lastFen: fen,
+            fen: chess.fen(),
+            nonce: nonce + 1,
+            lastMove: [from, to],
+            gunMoved: false,
+            gameState: file,
+            turn: opp,
+          },
+        });
+        handleIPFSInput(file);
+        socket.emit("onMove", gameId, socketId, file);
       }
-    }
-    chess.move({ from, to });
-    if (chess.inCheck()) {
-      setInCheck(true);
     } else {
-      setInCheck(false);
+      notification.open({ message: "Not your move!" });
+      dispatch({ type: "ILLEGALMOVE" });
     }
-    setLastFen(fen);
-    // setFen(fen);
-    setFen(chess.fen());
-    saveToGun();
-    setLastMove([from, to]);
-    setNonce(nonce + 1);
-    setGunMoved(true);
-    setTurn("player");
   };
 
   const promotion = e => {
     const from = pendingMove[0];
     const to = pendingMove[1];
     chess.move({ from, to, promotion: e });
-    setFen(chess.fen());
-    setLastMove([from, to]);
-    setSelectVisible(false);
+    let file = {
+      gameId: gameId,
+      nonce: nonce + 1,
+      fen: chess.fen(),
+      lastFen: fen,
+      turn: opp,
+      move: JSON.stringify([from, to, e]),
+      lastMove: JSON.stringify(lastMove),
+      history: JSON.stringify(chess.history({ verbose: true })),
+    };
+
+    let m = chess.history({ verbose: true });
+    m.reverse();
+    dispatch({
+      type: "UPDATEBOARD",
+      data: {
+        history: m,
+        lastFen: fen,
+        fen: chess.fen(),
+        nonce: nonce + 1,
+        lastMove: [from, to, e],
+        gunMoved: false,
+        gameState: file,
+        turn: opp,
+      },
+    });
+    socket.emit("onMove", gameId, socketId, file);
+  };
+
+  const moveGun = (from, to, prom, ack) => {
+    if (!gunMoved) {
+      if (prom !== undefined) {
+        chess.move({ from, to, promotion: prom });
+        if (chess.inCheck()) {
+          dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+        } else {
+          dispatch({ type: "CHECKCHECK", inCheck: false });
+        }
+        let m = chess.history({ verbose: true });
+        m.reverse();
+        dispatch({
+          type: "UPDATEBOARD",
+          data: {
+            history: m,
+            lastFen: ack.lastFen,
+            fen: ack.fen,
+            nonce: ack.nonce,
+            lastMove: [from, to, prom],
+            gunMoved: true,
+            gameState: ack,
+            turn: ack.turn,
+          },
+        });
+      } else {
+        chess.move({ from, to });
+        if (chess.inCheck()) {
+          dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+        } else {
+          dispatch({ type: "CHECKCHECK", inCheck: false });
+        }
+        let m = chess.history({ verbose: true });
+        m.reverse();
+        dispatch({
+          type: "UPDATEBOARD",
+          data: {
+            history: m,
+            lastFen: ack.lastFen,
+            fen: ack.fen,
+            nonce: ack.nonce,
+            lastMove: [from, to],
+            gunMoved: true,
+            gameState: ack,
+            turn: ack.turn,
+          },
+        });
+      }
+    }
   };
 
   const turnColor = () => {
@@ -296,139 +405,309 @@ const ChessSkirmishes = ({
         }}
       >
         <div>
+          <h1>Both players must shake hands to start the match!</h1>
           <span>
             <Spin />
           </span>
-          <span>Searching for a new opponent...</span>
+          <span>
+            <Button>Shake</Button>
+          </span>
         </div>
       </Modal>
     );
   };
 
-  const updateGunState = useCallback(() => {
-    if (gameInProgress && turn === "opponent") {
-      if (gunState.nonce === nonce + 1 && !gunMoved) {
-        moveGun(gunState.move[0], gunState.move[1], gunState.fen);
-      }
-    }
-  }, [gun, turn, gunState]);
-
-  const ProfileModal = () => {
+  const ShakeHands = () => {
     return (
       <Modal
-        title="Enter an alias below!"
-        visible={profileModal}
+        visible={shakingHands}
+        footer={null}
+        closable={false}
+        onCancel={() => {
+          // roomLeaveEmit();
+          window.location.replace("/lobby");
+        }}
+      >
+        <h1>Both players must shake hands to start the match!</h1>
+        {player1 && player2 ? (
+          <>
+            {socketId === player1 ? (
+              <>
+                <span>
+                  {!player1Shake ? (
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        dispatch({ type: "SHOOK", p: 1 });
+                        // dispatchBoard({ type: "SHOOK", p: 1 });
+                        // setPlayer1Shake(true);
+                        socket.emit("handShake", gameId, "skirmishes", socketId);
+                      }}
+                    >
+                      {" "}
+                      🤝{" "}
+                    </Button>
+                  ) : (
+                    <p>Waiting for Opponent handshake...</p>
+                  )}
+                </span>
+              </>
+            ) : (
+              <>
+                <span>
+                  {!player2Shake ? (
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        dispatch({ type: "SHOOK", p: 2 });
+                        // dispatchBoard({ type: "SHOOK", p: 2 });
+                        // setPlayer2Shake(true);
+                        socket.emit("handShake", gameId, "skirmishes", socketId);
+                      }}
+                    >
+                      {" "}
+                      🤝{" "}
+                    </Button>
+                  ) : (
+                    <p>Waiting for Player handshake...</p>
+                  )}
+                </span>
+              </>
+            )}
+          </>
+        ) : (
+          <>
+            <Spin /> ... Waiting for opponent ...
+          </>
+        )}
+      </Modal>
+    );
+  };
+
+  const OpponentLeftM = () => {
+    return (
+      <Modal
+        title="The opponent has left the room!"
+        visible={opponentLeftModal}
         onCancel={() => {
           window.location.replace("/lobby");
         }}
         onOk={() => {
-          setCreatingProfile(false);
-          setProfileModal(false);
-          setSettingMatch(true);
-          setPlayer(profile);
-          setOpponent(gameId, profile);
+          window.location.replace("/lobby");
         }}
       >
-        <div
-          style={{
-            marginTop: 40,
-            marginBottom: 40,
-            alignContent: "center",
-            justifyContent: "center",
-            display: "flex",
-          }}
-        >
-          <form>
-            <h3 style={{ marginBottom: 10 }}>Enter an Alias</h3>
-            <Input
-              title="Name"
-              name="name"
-              onChange={e => {
-                handleChange(e);
-              }}
-              placeholder="Enter an alias"
-              value={profileState.name}
-            />
-            <h3 style={{ marginBottom: 10, marginTop: 10 }}>Enter an Age</h3>
-            <Input
-              style={{
-                width: 60,
-              }}
-              name="age"
-              value={profileState.age}
-              onChange={e => {
-                handleChange(e);
-              }}
-            />
-            <h3 style={{ marginBottom: 10, marginTop: 10 }}>Enter a General Location</h3>
-            <Input
-              placeholder="General location"
-              onChange={e => {
-                handleChange(e);
-              }}
-              value={profileState.location}
-              name="location"
-            />
-          </form>
-        </div>
-        <div style={{ alignContent: "center", justifyContent: "center", display: "flex" }}>
-          <p>
-            Do not enter any real or sensitive information.
-            <br />
-            Info submitted is for gameplay usage only.
-          </p>
-        </div>
+        <OpponentLeft />
       </Modal>
     );
   };
 
-  useEffect(() => {
-    updateGunState();
-  }, [gun]);
+  const PlayerLeftM = () => {
+    return (
+      <Modal
+        title="The player has left the room!"
+        visible={playerLeftModal}
+        onCancel={() => {
+          window.location.replace("/lobby");
+        }}
+        onOk={() => {
+          window.location.replace("/lobby");
+        }}
+      >
+        <PlayerLeft />
+      </Modal>
+    );
+  };
 
-  // useEffect(() => {
-  //   if (gun) {
-  //     gun
-  //       .get(GUNKEY)
-  //       .get("match")
-  //       .get(gameId)
-  //       .on("move", function (ack) {
-  //         if (ack && ack.nonce === nonce) {
-  //           setGunState({
-  //             gameId: ack.gameId,
-  //             nonce: ack.nonce,
-  //             turn: ack.turn,
-  //             fen: ack.fen,
-  //             move: JSON.parse(ack.move),
-  //             lastMove: JSON.parse(ack.lastMove),
-  //             history: JSON.parse(ack.history),
-  //             ipfsHistory: JSON.parse(ack.ipfsHistory),
-  //             player1: ack.player1,
-  //             player2: ack.player2,
-  //           });
-  //         }
-  //       });
-  //   }
-  //   return () => {};
-  // }, [gun]);
+  const executeWin = () => {
+    tx(writeContracts.ETHChess.startClaim(ipfsHistory), update => {
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        message.info(" 🍾 Transaction " + update.hash + " finished!");
+        message.info(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.open({
+          message: <Text>{"Claim Started! Please wait 7 blocks for the dispute period to end."}</Text>,
+        });
+      }
+    });
+  };
+
+  const executeDispute = () => {
+    tx(writeContracts.ETHChess.startDispute(ipfsHistory), update => {
+      if (update && (update.status === "confirmed" || update.status === 1)) {
+        message.info(" 🍾 Transaction " + update.hash + " finished!");
+        message.info(
+          " ⛽️ " +
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
+        );
+        notification.open({
+          message: <Text>{"Dispute Started! Please allow time for the dispute resolution process."}</Text>,
+        });
+      }
+    });
+  };
+
+  const HandleGameOver = () => {
+    if (winner) {
+      dispatch({ type: "WINNER", action: true });
+      // setWinningModalVisible(true);
+    } else {
+      // setLosingModalVisible(true);
+      dispatch({ type: "LOSER", action: true });
+    }
+  };
+
+  useEffect(() => {
+    if (shakingHands && player1Shake && player2Shake) {
+      dispatch({ type: "STARTMATCH", player1: player1 });
+      gun.get(GUNKEY).get("skirmishes").get(gameId).put({ gameInProgress: true });
+    }
+  }, [gameId, gun, player1, player1Shake, player2Shake, shakingHands]);
+
+  const handleHand = (add, pl) => {
+    if (pl === "p1") {
+      dispatch({ type: "SHOOK", p: 1 });
+    } else if (pl === "p2") {
+      dispatch({ type: "SHOOK", p: 2 });
+    }
+  };
+
+  const handleOpp = opponent => {
+    console.log("Handle opp!", opponent, socketId);
+    dispatch({ type: "HANDLEOPPONENT", opp: opponent, pla: socketId });
+  };
+
+  const handleMove = (prof, ack) => {
+    let m = JSON.parse(ack.move);
+    moveGun(m[0], m[1], m[2], ack);
+  };
+
+  const handleIllMove = () => {
+    dispatch({ type: "ILLEGALMOVE" });
+  };
+
+  const handlePlayerLeftModal = useCallback(ack => {
+    // if (ack === player1) {
+    //   setPlayerLeftModal(true);
+    // } else {
+    //   setOpponentLeftModal(true);
+    // }
+  }, []);
+
+  const handleJoined = useCallback(() => {
+    if (!joined) {
+      console.log("Player joined!");
+      prepRoom();
+      socket.emit("joinedRoom", gameId, "skirmishes");
+      dispatch({ type: "JOINED", socketId: socketId, gameId: gameId });
+    }
+  }, [socketId]);
+
+  const handleOppJoin = () => {
+    // if (opp !== gameId) {
+    //   setPlayer2(opp);
+    // }
+    fetchGunState();
+  };
+
+  useEffect(() => {
+    handleJoined();
+    socket.on("playerJoined", ack => {
+      console.log("Player Joined ", ack);
+      handleJoined(ack);
+    });
+
+    socket.on("opponentJoined", ack => {
+      // handleOppJoin(ack);
+    });
+
+    socket.on("handShaken", (add, pl) => {
+      handleHand(add, pl);
+    });
+
+    socket.on("setOpponent", opponent => {
+      console.log("Opponent ", opponent);
+      handleOpp(opponent);
+    });
+
+    socket.on("playerMoved", ack => {
+      let { profile, move } = ack;
+      if (profile !== socketId) {
+        handleMove(profile, move);
+      }
+    });
+
+    socket.on("leftRoom", () => {
+      handlePlayerLeftModal();
+    });
+
+    socket.on("illegalMove", ack => {
+      handleIllMove(ack);
+    });
+    return () => {
+      socket.emit("leftRoom", gameId, socketId);
+      // roomLeaveEmit(gameId, "skirmishes", socketId);
+    };
+  }, [socket]);
 
   return (
     <>
-      <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 200 }}>
-        <Chessground
-          width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
-          height={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
-          turnColor={turnColor()}
-          movable={calcMovable()}
-          lastMove={lastMove}
-          fen={fen}
-          onMove={onMove}
-          check={JSON.stringify(inCheck)}
-          style={{ margin: "auto" }}
-        />
-        <ProfileModal />
+      {inCheck[0] ? <h1> Player "{inCheck[1]}" is in Check! </h1> : <></>}
+      <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
+        {gameState && gameInProgress ? (
+          <Chessground
+            width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
+            height={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
+            turnColor={turnColor()}
+            movable={calcMovable()}
+            lastMove={lastMove}
+            fen={fen}
+            onMove={onMove}
+            check={JSON.stringify(inCheck[0])}
+            style={{ margin: "auto" }}
+            orientation={color}
+          />
+        ) : (
+          <>
+            <h1>
+              Waiting for opponent to join... <Spin />
+            </h1>
+          </>
+        )}
+        <ShakeHands />
         <NewGameModal />
         <PromotionModal />
+        <PlayerLeftM />
+        <OpponentLeftM />
+      </div>
+      {history.length === 0 && (
+        <Space>
+          <Card>
+            <h1>Cancel the game before the first move is made!</h1>
+            <Button
+              onClick={() => {
+                gun.get(GUNKEY).get("match").get(gameId).put({ player2: null, started: false });
+                window.location.replace("/lobby");
+              }}
+            >
+              Cancel
+            </Button>
+          </Card>
+        </Space>
+      )}
+      <div style={{ marginTop: 50 }}>
+        <MoveTable moves={history} />
       </div>
     </>
   );

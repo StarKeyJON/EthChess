@@ -1,4 +1,4 @@
-import { Button, Card, Image, Input, notification, Space } from "antd";
+import { Button, Card, Divider, Image, Input, notification, Space } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import React, { useState } from "react";
 import ethLogo from "../../assets/ethereumLogo.png";
@@ -57,8 +57,9 @@ const Profile = ({
                   </Space>
                 </div>
               </Space>
+              <Divider />
               <Space>
-                <div style={{ marginBottom: 60 }}>
+                <div style={{ marginTop: 60, marginBottom: 60 }}>
                   <h2>
                     ♙ <br />
                     Sign-Up
@@ -87,6 +88,10 @@ const Profile = ({
                       Submit
                     </Button>
                   </Space>
+                  <div style={{ marginTop: 30 }}>
+                    <h1>Only a secure password is needed!</h1>
+                    <p>Your connected wallet address is used as an alias.</p>
+                  </div>
                 </div>
               </Space>
             </>

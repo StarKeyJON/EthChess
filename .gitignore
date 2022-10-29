@@ -1,4 +1,4 @@
-csr/*
+csr
 packages/subgraph/generated
 packages/subgraph/abis/*
 packages/hardhat/*.txt

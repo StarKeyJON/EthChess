@@ -36,7 +36,6 @@ import { Content } from "antd/lib/layout/layout";
 import ChessSkirmishes from "./components/ChessComponents/ChessGrounds/ChessSkirmishes";
 import useProfile from "./components/StateComponents/useProfile";
 import Voting from "./views/Voting";
-import ChessSkirmishOpponent from "./components/ChessComponents/ChessGrounds/ChessSkirmishOpponent";
 import { useGun } from "./hooks/useGunRelay";
 import { SocketContext } from "./socketContext/socketContext";
 
@@ -232,7 +231,7 @@ function App(props) {
     setGunUser,
   });
 
-  return gun && socketId ? (
+  return gun ? (
     <div className="App">
       <Layout>
         {/* ✏️ Edit the header and change the title to your project name */}
@@ -434,31 +433,8 @@ function App(props) {
                   gun={gun}
                 />
               </Route>
-              <Route exact path="/skirmish">
-                <ChessSkirmishes
-                  // startTime={startTime}
-                  // address={address}
-                  // userSigner={userSigner}
-                  // mainnetProvider={mainnetProvider}
-                  // localProvider={localProvider}
-                  // yourLocalBalance={yourLocalBalance}
-                  // price={price}
-                  // player={player}
-                  // timeStamp={startTime}
-                  // tx={tx}
-                  // setPlayer={setPlayer}
-                  // writeContracts={writeContracts}
-                  // readContracts={readContracts}
-                  gun={gun}
-                  // joinLobby={joinLobby}
-                  // roomLeaveEmit={roomLeaveEmit}
-                  // onMoveEmit={onMoveEmit}
-                  // joinSkirmish={joinSkirmish}
-                  // loggedIn={loggedIn}
-                />
-              </Route>
               <Route exact path="/skirmish/room/:gameId">
-                <ChessSkirmishOpponent gun={gun} />
+                <ChessSkirmishes gun={gun} />
               </Route>
               <Route exact path="/skirmish/view/:gameId">
                 <ChessViewer

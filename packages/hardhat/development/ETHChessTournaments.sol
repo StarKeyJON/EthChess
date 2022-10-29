@@ -119,6 +119,8 @@ contract ETHChessTournaments is ReentrancyGuard {
     uint pot;
     uint tourstart;
     uint tourSize;
+    mapping(uint => League) private leagues;
+    mapping(uint => Round) private rounds;
     uint[] leagues;
     uint[] rounds;
     uint tourRounds;
@@ -134,6 +136,8 @@ contract ETHChessTournaments is ReentrancyGuard {
     bool active;
     bool[] init;
     uint[] matchIds;
+    mapping(uint => uint) private matchIds;
+    mapping(uint => League) private leagues;
     uint[] claimIds;
     uint[] leagues;
     uint[] winners;

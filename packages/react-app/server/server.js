@@ -72,7 +72,6 @@ let lobbyObject = {
 
   // Register profile, find game or create new game if none
   socket.on("lobbyJoined", (playerInfo) => {
-    console.log(socket.id , "Joined lobby ", playerInfo);
     if(playerInfo){
         lobbyObject.players[socket.id] = { 
           active: true, 
@@ -94,9 +93,7 @@ let lobbyObject = {
   });
 
   socket.on("leftLobby", () => {
-    console.log(socket.id , "Left lobby ");
     let k = lobbyObject.players[socket.id];
-    console.log(k)
     if(k){
           gun.get(GUNKEY).get("chessLobby").get(socket.id).put({ active: false });
           gun.get(GUNKEY).get("skirmishes").get(socket.id).put({ active: false });
@@ -142,21 +139,13 @@ let lobbyObject = {
         if(socket.id !== roomId){
           room.player2 = socket.id;
           room.players = room.players + 1;
-          console.log("Opponent joined!", room);
           room.state.player2 = socket.id;
           gun.get(GUNKEY).get("skirmishes").get(roomId).put({player2: socket.id});
-          // emitter(roomId, "playerJoined", socket.id, true);
-            // io.in(roomId).emit("playerJoined", socket.id);
             emitter(roomId, "setOpponent", socket.id, false);
-            // io.in(roomId).emit("setOpponent", socket.id);
-            // emitter(roomId, "opponentJoined", socket.id, false);
-            // io.in(roomId).emit("opponentJoined", socket.id);
         } else {
           emitter(roomId, "playerJoined", socket.id, true);
-          // io.in(roomId).emit("playerJoined", socket.id);
         }
     } else {
-        console.log("Room full!")
         io.in(roomId).emit("roomFull", socket.id);
     };
   });
@@ -178,7 +167,6 @@ let lobbyObject = {
 
   socket.on("handShake", (roomId, type, ack) => {
     let room = lobbyObject.rooms[roomId];
-    console.log("Handshake", room);
     if (room){
       if(room.player1 === ack) {
         io.in(roomId).emit("handShaken", socket.id, "p1");
@@ -192,36 +180,34 @@ let lobbyObject = {
     }
   });
 
+  /**
+   * roomId: Id of the initial room
+   * player: socket.id of the player connecting
+   * type: type of match
+   */
   socket.on("opponentSet", (roomId, player, type) => {
     let room = lobbyObject.rooms[roomId];
     socket.join(roomId);
     if (!room) {
       lobbyObject.rooms[roomId] = { players: 1, player1: roomId, player2: socket.id, state: { player1: roomId, player2: socket.id } };
-      // gun.get(GUNKEY).get("skirmishes").get(roomId).put({active: true, player1: player });
-      // gun.get(GUNKEY).get("chessLobby").get(roomId).put({ active: true, player1: player });
-      // io.in(roomId).emit("playerJoined", socket.id);
       emitter(roomId, "playerJoined", socket.id, false);
     } else {
       if(player !== roomId || player !== room.player1) {
         room.player2 = player;
         room.state.player1 = roomId;
         room.state.player2 = player;
-        console.log(room, "Player 2 set!");
         gun.get(GUNKEY).get("skirmishes").get(roomId).put({ player2: player });
         io.in(roomId).emit("setOpponent", roomId, player);
-        // emitter(roomId, "setOpponent", player, true);
       }
     }
 });
 
-socket.on("gameCanceled", (gameId) => {
-  console.log("game canceled!")
-})
+// socket.on("gameCanceled", (gameId) => {
+//   console.log("game canceled!")
+// })
 
 
   socket.on("onMove", (gameId, profile, move) => {
-    let room = lobbyObject.rooms[gameId];
-    console.log(socket.id , "On move ", move, " from ", profile);
     if (move.lastFen) {
       game.load(move.lastFen);
     } else {
@@ -234,25 +220,19 @@ socket.on("gameCanceled", (gameId) => {
     } else {
         theMove = game.move({from: sMove[0], to: sMove[1]});
     }
-    // console.log(theMove);
     if(theMove === null){
-      console.log("Illegal move! ")
-        socket.to(profile).emit("illegalMove", profile, move);
+      socket.to(profile).emit("illegalMove", profile, move);
     } else {
       gun.get(GUNKEY).get("skirmishes").get(gameId).get("move").put(move);
       gun.get(GUNKEY).get("skirmishHistory").get(gameId).set(move);
-      // emitter(gameId, "playerMoved", { profile: profile, move: move }, true);
-      let p = profile === room.player1 ? room.player2 : room.player1;
-      // socket.to(p).emit("playerMoved", { profile: profile, move: move });
       io.in(gameId).emit("playerMoved", { profile: profile, move: move });
-      console.log("Move sent! ")
     }
   });
 
-  socket.on('message', messageObj => {
-    messageObj.timestamp = new Date().toLocaleTimeString();
+  // socket.on('message', messageObj => {
+  //   messageObj.timestamp = new Date().toLocaleTimeString();
     // emitter(roomId, 'message', messageObj);
-  });
+  // });
 
   socket.on('disconnect', () => {
     gun.get(GUNKEY).get("skirmishes").get(socket.id).get("active").put( false );
@@ -266,46 +246,11 @@ socket.on("gameCanceled", (gameId) => {
   });
 
   socket.on("JoinGame", joinObject => {
-    console.log("JoinGame request received from " + joinObject.senderId);
-    console.log("password of room: " + joinObject.pw);
     socket.broadcast.emit("gameSend", joinObject);
   });
   socket.on("PositionSend", FENinfo => {
-    console.log("Position send worked");
     socket.broadcast.emit("NewFenFromServer", FENinfo);
   });
-
-  socket.on('board-update', (fen, isAi, isStart, orientation) => {
-    //     emitter(roomId, 'board-update', fen, true);
-        // if (isAi) {
-        //   if (isStart) {
-        //     game.reset();
-        //     numRounds = 0;
-        //   }
-        //   game.load(fen);
-        //   const depth = numRounds > 9 ? 3 : 2;
-        //   if (numRounds > 9 ) {
-        //     console.log('round 10 started');
-        //   }
-        //   const color = orientation === 'w' ? 'b' : 'w';
-        //   console.log('what is color', color)
-        //   if (game.turn() === color) {
-        //     const bestMove = YellowSubsAction(2, game, true, numRounds, color);
-        //     game.move(bestMove);
-        //     const aiBoard = game.fen();
-        //     if (aiBoard) {
-        //       numRounds += 1;
-        //     }
-        //     let status = 'normal';
-        //     if (game.in_check()) {
-        //       status = 'check';
-        //     } else if (game.in_checkmate() || game.move() === []) {
-        //       status = 'check_mate';
-        //     }
-        //     emitter(roomId, 'board-update', aiBoard);
-        //   }
-        // }
-      });
 
 });
 const PORT = 8080;

@@ -10,12 +10,13 @@ import rook from "../../../assets/images/WhiteRook.png";
 import bishop from "../../../assets/images/WhiteBishop.png";
 import knight from "../../../assets/images/WhiteKnight.png";
 import { beginningFEN, GUNKEY } from "../../../constants";
-import MoveTable from "./MoveTable";
+
 import { OpponentLeft, PlayerLeft } from "../modals";
 import { Chess } from "chess.js";
 import { SocketContext } from "../../../socketContext/socketContext";
+import MoveTable from "../MoveTable";
 
-const ChessSkirmishOpponent = ({ gun }) => {
+const ChessSkirmish = ({ gun }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 
@@ -703,4 +704,4 @@ const ChessSkirmishOpponent = ({ gun }) => {
   );
 };
 
-export default ChessSkirmishOpponent;
+export default ChessSkirmish;

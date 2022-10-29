@@ -260,7 +260,7 @@ const ChessGunPlayer1 = ({ gun, address, player, gameId, writeContracts, tx }) =
             " gwei",
         );
         notification.open({
-          message: <Text>{"Dispute Started! Please allow time for dispute."}</Text>,
+          message: <Text>{"Dispute Started! Please allow time for the dispute resolution process."}</Text>,
         });
       }
     });
@@ -269,32 +269,8 @@ const ChessGunPlayer1 = ({ gun, address, player, gameId, writeContracts, tx }) =
   const HandleGameOver = () => {
     if (winner) {
       setWinningModalVisible(true);
-      return (
-        <>
-          <Modal footer="" visible={winningModalVisible} onOk={executeWin}>
-            <Space>
-              <Card>
-                <h1>Start the claim process by entering a security amount equal to the starting wager.</h1>
-                <Button onClick={executeWin}>Claim</Button>
-              </Card>
-            </Space>
-          </Modal>
-        </>
-      );
     } else {
       setLosingModalVisible(true);
-      return (
-        <>
-          <Modal onCancel={() => setWinningModalVisible(false)} visible={losingModalVisible}>
-            <Space>
-              <Card>
-                <h1>You can dipute the results by executing a transaction within 7 blocks!</h1>
-                <Button onClick={executeDispute}>Execute</Button>
-              </Card>
-            </Space>
-          </Modal>
-        </>
-      );
     }
   };
 
@@ -315,6 +291,26 @@ const ChessGunPlayer1 = ({ gun, address, player, gameId, writeContracts, tx }) =
         />
         {gameOver && <HandleGameOver />}
         <PromotionModal />
+        <>
+          <Modal footer="" visible={winningModalVisible} onOk={executeWin}>
+            <Space>
+              <Card>
+                <h1>Start the claim process by entering a security amount equal to the starting wager.</h1>
+                <Button onClick={executeWin}>Claim</Button>
+              </Card>
+            </Space>
+          </Modal>
+        </>
+        <>
+          <Modal onCancel={() => setWinningModalVisible(false)} visible={losingModalVisible}>
+            <Space>
+              <Card>
+                <h1>You can dipute the results by executing a transaction within 7 blocks!</h1>
+                <Button onClick={executeDispute}>Execute</Button>
+              </Card>
+            </Space>
+          </Modal>
+        </>
       </div>
     </>
   );

@@ -180,9 +180,8 @@ function Home({ gun, address, timeStamp }) {
               <p>
                 Gameplay state across players is secured using advanced offchain cryptographic protocols.
                 <br />
-                Each move is saved immutably to each users space, as well as to IPFS for future review.
+                Each move is saved immutably to each users space in a p2p distributed database, as well as to IPFS for future reviews and dispute resolution.
               </p>
-              <p>Be assured of the security by the time tested use of cryptographic protocols.</p>
             </Card>
           </div>
         </Space>

@@ -190,31 +190,28 @@ const ChessGunPlayer1 = ({ gun, address, player, gameId, writeContracts, startFe
   }, [updateGunState]);
 
   useEffect(() => {
-    if (gun) {
-      gun
-        .get(GUNKEY)
-        .get("match")
-        .get(gameId)
-        .on("move", function (ack) {
-          if (ack.nonce === nonce) {
-            setGunState({
-              gameId: ack.gameId,
-              nonce: ack.nonce,
-              turn: ack.turn,
-              fen: ack.fen,
-              move: JSON.parse(ack.move),
-              lastMove: JSON.parse(ack.lastMove),
-              history: JSON.parse(ack.history),
-              ipfsHistory: JSON.parse(ack.ipfsHistory),
-              player1: ack.player1,
-              player2: ack.player2,
-            });
-          }
-        });
-    }
+    gun
+      .get(GUNKEY)
+      .get("match")
+      .get(gameId)
+      .on("move", function (ack) {
+        if (ack.nonce === nonce) {
+          setGunState({
+            gameId: ack.gameId,
+            nonce: ack.nonce,
+            turn: ack.turn,
+            fen: ack.fen,
+            move: JSON.parse(ack.move),
+            lastMove: JSON.parse(ack.lastMove),
+            history: JSON.parse(ack.history),
+            ipfsHistory: JSON.parse(ack.ipfsHistory),
+            player1: ack.player1,
+            player2: ack.player2,
+          });
+        }
+      });
     return () => {};
-  }, [gun]);
-
+  }, []);
 
   const executeWin = () => {
     tx(writeContracts.ETHChess.startClaim(ipfsHistory), update => {

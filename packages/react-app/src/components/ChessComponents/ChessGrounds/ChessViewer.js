@@ -7,7 +7,7 @@ import "./styles/chessGround.css";
 import "./styles/chessGround-theme.css";
 import { GUNKEY } from "../../../constants";
 import { useParams } from "react-router-dom";
-import MoveTable from "./MoveTable";
+import MoveTable from "../MoveTable";
 
 const ChessViewer = ({ gun }) => {
   const { gameId } = useParams();

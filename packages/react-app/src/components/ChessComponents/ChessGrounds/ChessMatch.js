@@ -10,7 +10,7 @@ import queen from "../../../assets/images/WhiteQueen.png";
 import rook from "../../../assets/images/WhiteRook.png";
 import bishop from "../../../assets/images/WhiteBishop.png";
 import knight from "../../../assets/images/WhiteKnight.png";
-import MoveTable from "./MoveTable";
+import MoveTable from "../MoveTable";
 
 const ChessMatch = () => {
   const [chess] = useState(new Chess());

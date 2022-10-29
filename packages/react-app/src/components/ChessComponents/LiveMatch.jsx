@@ -5,9 +5,7 @@ import { useParams } from "react-router-dom";
 import { GUNKEY } from "../../constants";
 import { ChessGround, ChessViewer } from "./ChessGrounds";
 
-
 const LiveMatch = ({ gun, address }) => {
-
   const [game, setGame] = useState();
   const roomId = useParams();
   useEffect(() => {
