@@ -1,13 +1,18 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-// ETHChess - Trustless chess competitions, tournaments and decentralized payouts.
+/// @title ETHChessMatches
+/// @author Jeremiah O. Nolet
+/// @notice Allows for trustless chess matches, deathmatch campaigns and decentralized payouts.
+/// @custom:experimental This contract is currently under development
 
-// ~~~ 1v1 Matches ~~~
-// ~~~ DeathMatch Competitions ~~~
-// ~~~ League Tournaments ~~~
+/*
 
-/**
+                        ~~~ 1v1 Matches ~~~
+                  ~~~ DeathMatch Competitions ~~~
+                    ~~~ League Tournaments ~~~
+
+
         .=********+:      :+***********-       +********+:                    
         -%@@%%%%%@@+      +%@@%%%%%%%@@#.     .@@@%%%%%@@*.                   
         -%@*....-%@%++++++#@@#......=@@%*+++++*@@+....-@@*.                   
@@ -41,7 +46,6 @@ pragma solidity >=0.8.0 <0.9.0;
     =@@%################################################*#%@@#.               
     :*#######################################################=   
  */
-// import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -51,14 +55,19 @@ contract ETHChessMatches is ReentrancyGuard {
   /*~~~>
     State Address Variables
   <~~~*/
-
+  ///@notice address of ETHChessNFTs contract
   address public ethChessNFTs;
+  ///@notice total rewards held by this contract
   uint public rewardsPot;
-  uint public leagueIds;
+  ///@notice uint256 matchIds incremented with each match created
   uint public matchIds;
+  ///@notice uint256 deathmatchIds incremented with each deathmatch created
   uint public deathmatchIds;
+  ///@notice uint256 amount of blocks needed to allow dispute resolution period to pass; initiated at 7
   uint public delta;
+  ///@notice uint256 platform fee for matches
   uint public fee;
+///@notice uint256 
   uint public rewardsFee;
 
   string private constant errMessage1 = "Insufficient amount";
@@ -153,8 +162,8 @@ contract ETHChessMatches is ReentrancyGuard {
     _;
   }
 
-  constructor(address devAdd){
-    ADMIN = devAdd;
+  constructor(address adminAdd){
+    ADMIN = adminAdd;
     delta = 7;
     fee = 1000; // 10%
     rewardsFee = 5000; // 50%
@@ -170,8 +179,8 @@ contract ETHChessMatches is ReentrancyGuard {
     return true;
   }
 
-  function changeDelta(uint newDelta) public isAdmin returns(bool){
-    delta = newDelta;
+  function newDelta(uint newDel) public isAdmin returns(bool){
+    delta = newDel;
     return true;
   }
 
@@ -229,6 +238,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @return Bool success or failure
   function startMatch(uint matchId, string memory ipfsHash) payable public returns(bool){
     Match memory startmatch = idToMatch[matchId];
+    require(startmatch.startTime == 0, "Match already started!");
     require(msg.value == startmatch.p1amount, errMessage1);
     uint totalValue = startmatch.p1amount + msg.value;
     if (startmatch.player2 != address(0x0)) {
@@ -283,7 +293,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @return Bool success or failure
   function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) public payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
-    Claim memory claim = idToClaim[matchId];
+    Claim storage claim = idToClaim[matchId];
     require(!claim.contested, "Claim already contested!");
     require(claim.claimBlock + delta > block.number, "Dispute period over!");
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
@@ -355,7 +365,6 @@ contract ETHChessMatches is ReentrancyGuard {
     require(block.number > claim.claimBlock + delta, "Dispute period ongoing.");
     uint pfee = calcFee(startmatch.p1amount + startmatch.p2amount, fee);
     if(claim.contested){
-      require(block.timestamp + .5 days <= startmatch.startTime);
       if(msg.sender != dispute.disputer && !dispute.tally){
         uint voters = dispute.votedFor.length;
         for(uint i; i < voters; i++){
@@ -480,17 +489,18 @@ contract ETHChessMatches is ReentrancyGuard {
     if(msg.sender == deathmatch.reigningChamp){
       if(deathmatch.matches.length == 3){
         uint rfee = calcFee(rewardsPot, rewardsFee);
+        rewardsPot -= rfee;
         sendEther(msg.sender, deathmatch.pot + rfee);
         emit DeathMatchEnded(deathmatchId, msg.sender, ipfsHash, deathmatch.pot + rfee);
         return true;
       } else {
-        uint id = newMatch(deathmatch.entranceFee, deathmatch.reigningChamp, ipfsHash);
+        uint id = newRound(deathmatch.entranceFee, deathmatch.reigningChamp, ipfsHash);
         deathmatch.matches.push(id);
       }
     } else {
       deathmatch.reigningChamp = msg.sender;
       deathmatch.matches = matches;
-      uint id = newMatch(deathmatch.entranceFee, msg.sender, ipfsHash);
+      uint id = newRound(deathmatch.entranceFee, msg.sender, ipfsHash);
       deathmatch.matches.push(id);
     }
     emit DeathMatchAdvanced(deathmatchId, msg.sender, ipfsHash, msg.value);
@@ -503,7 +513,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param champ Winning contestant
   /// @param ipfsHash String of the new Match
   /// @return uint matchId
-  function newMatch(uint matchfee, address champ, string memory ipfsHash) internal returns(uint){
+  function newRound(uint matchfee, address champ, string memory ipfsHash) internal returns(uint){
     matchIds++;
     idToMatch[matchIds] = Match(
       matchIds, 
@@ -521,8 +531,8 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @notice 
   /*~~~> 
     Calculating the platform fee, 
-      Base fee set at 5% (i.e. value * 500 / 10,000) 
-      Future fees can be set by the controlling DAO 
+      Base fee set at 10% (i.e. value * 1000 / 10,000) 
+      Future fees can be set by the controlling Admin EOA
     <~~~*/
   /// @return platform fee
   function calcFee(uint256 value, uint256 fe) public pure returns (uint256){
@@ -549,8 +559,6 @@ contract ETHChessMatches is ReentrancyGuard {
   }
 
   // to support receiving ETH by default
-  receive() external payable {
-    rewardsPot+=msg.value;
-  }
+  receive() external payable {}
   fallback() external payable {}
 }

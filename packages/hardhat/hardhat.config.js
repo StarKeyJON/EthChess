@@ -7,6 +7,7 @@ require("@nomicfoundation/hardhat-chai-matchers");
 require("@tenderly/hardhat-tenderly");
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-deploy");
+require("solidity-coverage");
 
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
@@ -278,7 +279,7 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.4",
+        version: "0.8.7",
         settings: {
           optimizer: {
             enabled: true,
@@ -298,7 +299,7 @@ module.exports = {
     ],
   },
   ovm: {
-    solcVersion: "0.7.6",
+    solcVersion: "0.8.7",
   },
   namedAccounts: {
     deployer: {

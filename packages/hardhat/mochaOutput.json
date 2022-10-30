@@ -1,0 +1,280 @@
+{
+ "stats": {
+  "suites": 13,
+  "tests": 19,
+  "passes": 19,
+  "pending": 0,
+  "failures": 0
+ },
+ "tests": [
+  {
+   "title": "Should deploy ETHCHess",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches Should deploy ETHCHess",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should deploy ETHCHessNFTs",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches Should deploy ETHCHessNFTs",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to set the NFT Address in the Matches contract",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches newNFTAddress Should be able to set the NFT Address in the Matches contract",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "The ethChessNFTs address should be the same as the deployed NFT contract",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches testAddress The ethChessNFTs address should be the same as the deployed NFT contract",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to mint ETH Chess NFTs",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches safeMint Should be able to mint ETH Chess NFTs",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to initialize a new match",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches initMatch(bool specific, address comp) Should be able to initialize a new match",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to start an initialized match",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches startMatch(uint matchId, string ipfsHash) Should be able to start an initialized match",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim, returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches startClaim(uint matchId, string startIpfsHash, string endIpfsHash, uint security) Should start a winning claim, returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim dispute process, returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches disputeClaim(uint matchId, string startIpfsHash, string endIpfsHash, uint dSecurity) Should start a winning claim dispute process, returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow for voting on a disputed claim",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches resolveDispute Should allow for voting on a disputed claim",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow the second account that disputed the match to end with the initial claim being false",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches endMatch Should allow the second account that disputed the match to end with the initial claim being false",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a new DeathMatch competition, returns(success)",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches initDeathMatch(uint entranceFee) Should start a new DeathMatch competition, returns(success)",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim for DeathMatch, returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches initDeathMatch(uint entranceFee) Should start a winning claim for DeathMatch, returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should end the first DeathMatch matchround , returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should end the first DeathMatch matchround , returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim for DeathMatch second round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should start a winning claim for DeathMatch second round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should end the second DeathMatch match round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should end the second DeathMatch match round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim for the final DeathMatch round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should start a winning claim for the final DeathMatch round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should end the final DeathMatch match round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should end the final DeathMatch match round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should display the final holdings of the contracts",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should display the final holdings of the contracts",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  }
+ ],
+ "failures": [],
+ "passes": [
+  {
+   "title": "Should deploy ETHCHess",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches Should deploy ETHCHess",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should deploy ETHCHessNFTs",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches Should deploy ETHCHessNFTs",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to set the NFT Address in the Matches contract",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches newNFTAddress Should be able to set the NFT Address in the Matches contract",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "The ethChessNFTs address should be the same as the deployed NFT contract",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches testAddress The ethChessNFTs address should be the same as the deployed NFT contract",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to mint ETH Chess NFTs",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches safeMint Should be able to mint ETH Chess NFTs",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to initialize a new match",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches initMatch(bool specific, address comp) Should be able to initialize a new match",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should be able to start an initialized match",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches startMatch(uint matchId, string ipfsHash) Should be able to start an initialized match",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim, returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches startClaim(uint matchId, string startIpfsHash, string endIpfsHash, uint security) Should start a winning claim, returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim dispute process, returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches disputeClaim(uint matchId, string startIpfsHash, string endIpfsHash, uint dSecurity) Should start a winning claim dispute process, returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow for voting on a disputed claim",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches resolveDispute Should allow for voting on a disputed claim",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should allow the second account that disputed the match to end with the initial claim being false",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches endMatch Should allow the second account that disputed the match to end with the initial claim being false",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a new DeathMatch competition, returns(success)",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches initDeathMatch(uint entranceFee) Should start a new DeathMatch competition, returns(success)",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim for DeathMatch, returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches initDeathMatch(uint entranceFee) Should start a winning claim for DeathMatch, returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should end the first DeathMatch matchround , returns success",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should end the first DeathMatch matchround , returns success",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim for DeathMatch second round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should start a winning claim for DeathMatch second round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should end the second DeathMatch match round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should end the second DeathMatch match round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should start a winning claim for the final DeathMatch round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should start a winning claim for the final DeathMatch round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should end the final DeathMatch match round",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should end the final DeathMatch match round",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  },
+  {
+   "title": "Should display the final holdings of the contracts",
+   "fullTitle": "ETH Chess Matches Test ETHChessMatches advanceDeathMatch(uint matchId, string ipfsHash) Should display the final holdings of the contracts",
+   "file": "test/ethChessMatchesTest.js",
+   "currentRetry": 0,
+   "err": {}
+  }
+ ]
+}

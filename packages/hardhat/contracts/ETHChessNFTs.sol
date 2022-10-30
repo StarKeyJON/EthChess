@@ -43,10 +43,10 @@ contract ETHChessNFTs is ERC721, AccessControl {
 
     bytes32 public constant USER_OWNER_ROLE = keccak256("USER_OWNER");
 
-    uint256 ids;
-    uint256 supply;
-    uint256 mintPrice = 1e16;
-    string baseUri;
+    uint256 public ids;
+    uint256 public supply;
+    uint256 public mintPrice = 1e16;
+    string public baseUri;
 
     constructor(address userOwnerAddress, address controllerAddress, string memory _baseUri) ERC721("ETH-Chess", "ETH-CHESS") {
       _grantRole(DEFAULT_ADMIN_ROLE, controllerAddress);
@@ -58,6 +58,7 @@ contract ETHChessNFTs is ERC721, AccessControl {
     function safeMint(address to, uint amount) public payable {
       require(msg.value == amount * mintPrice, "Insufficient Value");
       require(supply >= ids + amount, "Not enough left");
+      require(amount <= 10, "Amount must be <= 10");
       for(uint i; i < amount; i++){
         ids++;
         _safeMint(to, ids);
