@@ -33,7 +33,7 @@ import FourOFour from "./views/FourOFour";
 import Disputes from "./components/NFTHolders/Disputes";
 import { ChessViewer, ChessMatch } from "./components/ChessComponents/ChessGrounds";
 import { Content } from "antd/lib/layout/layout";
-import ChessSkirmishes from "./components/ChessComponents/ChessGrounds/ChessSkirmishes";
+import ChessSkirmishes from "./components/ChessComponents/ChessGrounds/ChessMatches";
 import useProfile from "./components/StateComponents/useProfile";
 import Voting from "./views/Voting";
 import { useGun } from "./hooks/useGunRelay";
