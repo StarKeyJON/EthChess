@@ -141,10 +141,10 @@ contract ETHChessMatches is ReentrancyGuard {
   event DeathMatchAdvanced(uint id, address winner, string ipfsHash, uint entranceFee);
   event DeathMatchEnded(uint id, address winner, string ipfsHash, uint winnings);
 
-  address private DEV;
+  address private ADMIN;
 
-  modifier isDev(){
-    require(msg.sender == DEV, "DOES NOT HAVE DEV ROLE");
+  modifier isAdmin(){
+    require(msg.sender == ADMIN, "DOES NOT HAVE ADMIN ROLE");
     _;
   }
   modifier hasChessNFT(){
@@ -154,39 +154,39 @@ contract ETHChessMatches is ReentrancyGuard {
   }
 
   constructor(address devAdd){
-    DEV = devAdd;
+    ADMIN = devAdd;
     delta = 7;
     fee = 1000; // 10%
     rewardsFee = 5000; // 50%
   }
 
-  function newFee(uint newFe) public isDev returns(bool){
+  function newFee(uint newFe) public isAdmin returns(bool){
     fee = newFe;
     return true;
   }
   
-  function newRFee(uint newRFe) public isDev returns(bool){
+  function newRFee(uint newRFe) public isAdmin returns(bool){
     rewardsFee = newRFe;
     return true;
   }
 
-  function changeDelta(uint newDelta) public isDev returns(bool){
+  function changeDelta(uint newDelta) public isAdmin returns(bool){
     delta = newDelta;
     return true;
   }
 
-  function newNFTAddress(address newAddress) public isDev returns(bool){
+  function newNFTAddress(address newAddress) public isAdmin returns(bool){
     ethChessNFTs = newAddress;
     return true;
   }
 
   //~~~> initMatch => startMatch, ?claimRefunds => startClaim, ?disputeClaim, ?resolveDispute => endMatch
 
-  /// @notice Initiates a new match with a set wager value.
+  /// @notice Initiates a new 1v1 match with a set wager value.
   /// @dev Player initiates a new match that anybody can start by matching the wager
   /// @return matchId Id of the initiated match
   function initMatch() payable public returns(uint matchId){
-      require(msg.value >= 1e13, errMessage1);
+      require(msg.value > 1e13, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
         matchIds,
@@ -206,7 +206,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @dev Player initiates a new match that only the challenger can start by matching the wager
   /// @return matchId Id of the initiated match
   function initChallengeMatch(address comp) payable public returns(uint matchId){
-      require(msg.value >= 1e13, errMessage1);
+      require(msg.value > 1e13, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
         matchIds,
