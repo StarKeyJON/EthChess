@@ -542,12 +542,16 @@ describe("ETH Chess Matches Test", function () {
           );
       });
       it("Should allow for voting on a disputed claim", async function () {
-        const [test3, test4, test5] = await ethers.getSigners();
-        await ethChessMatches.connect(test3).resolveDispute(7, false);
-        await ethChessMatches.connect(test4).resolveDispute(7, false);
-        await ethChessMatches.connect(test5).resolveDispute(7, true);
+        const [test, test2, test3] = await ethers.getSigners();
+        await ethChessMatches.connect(test).resolveDispute(7, true);
+        await ethChessMatches.connect(test2).resolveDispute(7, false);
+        await ethChessMatches.connect(test3).resolveDispute(7, true);
         await helpers.mine(7);
-        await ethChessMatches.connect(test4).advanceDeathMatch(2, "IPFSHASH", {
+        await ethChessMatches.connect(test2).endMatch(7, "EndIPFSHash", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await helpers.mine(7);
+        await ethChessMatches.connect(test2).advanceDeathMatch(2, "IPFSHASH", {
           value: ethers.utils.parseUnits("1", "ether"),
         });
       });
@@ -565,6 +569,32 @@ describe("ETH Chess Matches Test", function () {
         await ethChessMatches.connect(test2).claimRefund(9);
         await ethChessMatches.connect(test).claimRefund(9);
         await ethChessMatches.connect(test2).claimRefund(9);
+      });
+    });
+    describe("Uncontested match branch test", function () {
+      it("Should be able to start and end an uncontested match", async function () {
+        const [test, test2] = await ethers.getSigners();
+        await ethChessMatches
+          .connect(test)
+          .initMatch({ value: ethers.utils.parseUnits("1", "ether") });
+        await ethChessMatches.connect(test2).startMatch(10, "StartHash", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches
+          .connect(test)
+          .startClaim(
+            10,
+            "StartIPFSHash",
+            "EndhHash",
+            ethers.utils.parseUnits("1", "ether"),
+            {
+              value: ethers.utils.parseUnits("1", "ether"),
+            }
+          );
+        await helpers.mine(7);
+        await ethChessMatches.connect(test).endMatch(10, "EndIPFSHash", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
       });
     });
   });
