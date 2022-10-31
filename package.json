@@ -22,6 +22,7 @@
     "fork": "yarn workspace @best-of-chess/hardhat fork",
     "node": "yarn workspace @best-of-chess/hardhat chain",
     "test": "yarn workspace @best-of-chess/hardhat test",
+    "coverage": "yarn workspace @best-of-chess/hardhat coverage",
     "start": "yarn workspace @best-of-chess/react-app start",
     "server": "yarn workspace @best-of-chess/react-app server",
     "compile": "yarn workspace @best-of-chess/hardhat compile",

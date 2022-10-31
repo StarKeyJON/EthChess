@@ -133,7 +133,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const [gpState, setGPState] = useState(gameplayState);
 
-  let {
+  const {
     chess,
     nonce,
     gameState,
@@ -168,24 +168,14 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   let opp = player1 === socketId ? player2 : player1;
   let color = socketId === player1 ? "white" : "black";
 
-  useEffect(() => {
-    setGPState(gameplayState);
-  }, [gameplayState]);
-
   const fetchGunState = () => {
-    // console.log("Fetch gunState.");
     gun
       .get(GUNKEY)
       .get("skirmishes")
       .get(gameId)
       .once(ack => {
         if (ack) {
-          // if (ack.gameInProgress) {
-          //   window.location.replace(`/match/view/${gameId}`);
-          //   return;
-          // }
           dispatch({ type: "GUN", ack: ack });
-          // dispatchBoard({ type: "GUN", ack: ack });
         }
       });
   };
@@ -194,7 +184,6 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     fetchGunState();
     if (socketId !== gameId) {
       socket.emit("opponentSet", gameId, socketId, "skirmishes");
-      // setOpponent(gameId, "skirmishes", socketId);
     }
     dispatch({ type: "SHAKING" });
   };
@@ -210,9 +199,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   };
 
   const onMove = (from, to) => {
-    console.log(gpState);
     if (turn === socketId) {
-      console.log("Player moved!");
       const moves = chess.moves({ verbose: true });
       for (let i = 0, len = moves.length; i < len; i++) {
         if (moves[i].flags.indexOf("p") !== -1 && moves[i].from === from) {
@@ -300,8 +287,10 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     socket.emit("onMove", gameId, socketId, file);
   };
 
-  const moveGun = (from, to, prom, ack) => {
+  const moveGun = (from, to, prom, ack, state) => {
+    console.log("State: ", state);
     if (!gunMoved) {
+      console.log("Moving Gun!");
       if (prom !== undefined) {
         chess.move({ from, to, promotion: prom });
         if (chess.inCheck()) {
@@ -568,13 +557,6 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     }
   };
 
-  useEffect(() => {
-    if (shakingHands && player1Shake && player2Shake) {
-      dispatch({ type: "STARTMATCH", player1: player1 });
-      gun.get(GUNKEY).get("skirmishes").get(gameId).put({ gameInProgress: true });
-    }
-  }, [gameId, gun, player1, player1Shake, player2Shake, shakingHands]);
-
   const handleHand = (add, pl) => {
     if (pl === "p1") {
       dispatch({ type: "SHOOK", p: 1 });
@@ -589,8 +571,9 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   };
 
   const handleMove = (prof, ack) => {
+    console.log("Handle Move: ", gameplayState);
     let m = JSON.parse(ack.move);
-    moveGun(m[0], m[1], m[2], ack);
+    moveGun(m[0], m[1], m[2], ack, gameplayState);
   };
 
   const handleIllMove = () => {
@@ -614,12 +597,13 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     }
   }, [socketId]);
 
-  const handleOppJoin = () => {
-    // if (opp !== gameId) {
-    //   setPlayer2(opp);
-    // }
-    fetchGunState();
-  };
+  useEffect(() => {
+    if (shakingHands && player1Shake && player2Shake) {
+      dispatch({ type: "STARTMATCH", player1: player1 });
+      gun.get(GUNKEY).get("skirmishes").get(gameId).put({ gameInProgress: true });
+
+    }
+  }, [gameId, gun, player1, player1Shake, player2Shake, shakingHands]);
 
   useEffect(() => {
     handleJoined();
@@ -637,7 +621,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     });
 
     socket.on("setOpponent", opponent => {
-      console.log("Opponent ", opponent);
+      // console.log("Opponent ", opponent);
       handleOpp(opponent);
     });
 
@@ -659,7 +643,11 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
       socket.emit("leftRoom", gameId, socketId);
       // roomLeaveEmit(gameId, "skirmishes", socketId);
     };
-  }, [socket]);
+  }, []);
+
+  useEffect(() => {
+    setGPState(gameplayState);
+  }, [gameplayState]);
 
   return (
     <>
