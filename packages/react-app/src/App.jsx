@@ -33,7 +33,7 @@ import FourOFour from "./views/FourOFour";
 import Disputes from "./components/NFTHolders/Disputes";
 import { ChessViewer, ChessMatch } from "./components/ChessComponents/ChessGrounds";
 import { Content } from "antd/lib/layout/layout";
-import ChessSkirmishes from "./components/ChessComponents/ChessGrounds/ChessMatches";
+import ChessMatches from "./components/ChessComponents/ChessGrounds/ChessMatches";
 import useProfile from "./components/StateComponents/useProfile";
 import Voting from "./views/Voting";
 import { useGun } from "./hooks/useGunRelay";
@@ -434,7 +434,7 @@ function App(props) {
                 />
               </Route>
               <Route exact path="/skirmish/room/:gameId">
-                <ChessSkirmishes gun={gun} />
+                <ChessMatches gun={gun} />
               </Route>
               <Route exact path="/skirmish/view/:gameId">
                 <ChessViewer

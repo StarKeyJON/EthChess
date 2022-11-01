@@ -1,8 +1,11 @@
 import { create } from "ipfs-http-client";
 import { BufferList } from "bl";
-export const ipfs = create({ host: "ipfs.infura.io", port: "5001", protocol: "https" });
+export const ipfs = create({ host: "localhost", port: "5001", protocol: "http" });
 
 export async function addToIPFS(file) {
+  if (file != typeof String) {
+    file = JSON.stringify(file);
+  }
   const fileAdded = await ipfs.add(file);
 
   return fileAdded;

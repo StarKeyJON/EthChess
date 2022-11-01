@@ -1,6 +1,6 @@
 // credits https://github.com/lichess-org/chessground, https://github.com/ruilisi/react-chessground
 
-import React, { useCallback, useContext, useEffect, useReducer, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import Chessground from "react-chessground";
 import "./styles/chessGround.css";
@@ -16,7 +16,113 @@ import { Chess } from "chess.js";
 import { SocketContext } from "../../../socketContext/socketContext";
 import MoveTable from "../MoveTable";
 import Text from "antd/lib/typography/Text";
-import { ipfs } from "../../../helpers";
+import { addToIPFS } from "../../../helpers/ipfs";
+
+const initialState = {
+  chess: new Chess(),
+  nonce: 0,
+  gameState: {},
+  gameId: 0,
+  turn: "",
+  fen: beginningFEN,
+  lastFen: "",
+  lastMove: [],
+  pendingMove: [],
+  history: [],
+  ipfsHistory: [],
+  lastHash: "",
+  inCheck: [false, ""],
+  moving: false,
+  gunMoved: false,
+  selectVisible: false,
+  gunState: {},
+  joined: false,
+  player1: "",
+  player2: "",
+  settingMatch: false,
+  gameInProgress: false,
+  playerLeftModal: false,
+  opponentLeftModal: false,
+  winningModalVisible: false,
+  losingModalVisible: false,
+  shakingHands: false,
+  player1Shake: false,
+  player2Shake: false,
+};
+
+function chessReducer(state, action) {
+  switch (action.type) {
+    case "STARTMATCH": {
+      return { ...state, turn: action.player1, shakingHands: false, gameInProgress: true };
+    }
+    case "PENDINGMOVEON": {
+      return { ...state, pendingMove: [action.from, action.to], selectVisible: true };
+    }
+    case "ILLEGALMOVE": {
+      return { ...state, fen: state.chess.fen() };
+    }
+    case "CHECKCHECK": {
+      return { ...state, inCheck: [action.inCheck, action.player] };
+    }
+    case "UPDATEBOARD": {
+      let a = action.data;
+      return {
+        ...state,
+        lastFen: a.lastFen,
+        fen: a.fen,
+        history: a.history,
+        nonce: a.nonce,
+        lastMove: a.lastMove,
+        gunMoved: a.gunMoved,
+        gameState: a.gameState,
+        turn: a.turn,
+        selectVisible: false,
+        moving: false,
+      };
+    }
+    case "JOINED": {
+      // console.log("JOINED", action);
+      if (action.socketId !== action.gameId) {
+        return { ...state, joined: true, player1: state.gameId, player2: action.socketId, gameId: action.gameId };
+      } else {
+        return { ...state, joined: true, player1: action.socketId, gameId: action.gameId };
+      }
+    }
+    case "HANDLEOPPONENT": {
+      if (action.opp !== state.gameId) {
+        return { ...state, player2: action.opp };
+      } else {
+        return { ...state };
+      }
+    }
+    case "GUN": {
+      let data = action.ack;
+      if (data.player2) {
+        return { ...state, player1: data.player1, player2: data.player2, gunState: data };
+      } else {
+        return { ...state, player1: data.player1, gunState: data };
+      }
+    }
+    case "IPFSHISTORY":
+      let data = action.load;
+      return { ...state, ipfsHistory: [...state.ipfsHistory, data], lastHash: data };
+    case "SHAKING": {
+      return { ...state, shakingHands: true };
+    }
+    case "SHOOK": {
+      if (action.p === 1) {
+        return { ...state, player1Shake: true };
+      } else {
+        return { ...state, player2Shake: true };
+      }
+    }
+    case "RESET":
+      return initialState;
+
+    default:
+      break;
+  }
+}
 
 const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   const socket = useContext(SocketContext);
@@ -24,114 +130,8 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
 
   const { gameId } = useParams();
 
-  const initialState = {
-    chess: new Chess(),
-    nonce: 0,
-    gameState: {},
-    gameId: gameId,
-    turn: "",
-    fen: beginningFEN,
-    lastFen: "",
-    lastMove: [],
-    pendingMove: [],
-    history: [],
-    ipfsHistory: [],
-    lastHash: "",
-    inCheck: [false, ""],
-    moving: false,
-    gunMoved: false,
-    selectVisible: false,
-    gunState: {},
-    joined: false,
-    player1: "",
-    player2: "",
-    settingMatch: false,
-    gameInProgress: false,
-    playerLeftModal: false,
-    opponentLeftModal: false,
-    winningModalVisible: false,
-    losingModalVisible: false,
-    shakingHands: false,
-    player1Shake: false,
-    player2Shake: false,
-  };
-
-  function chessReducer(state, action) {
-    switch (action.type) {
-      case "STARTMATCH": {
-        return { ...state, turn: action.player1, shakingHands: false, gameInProgress: true };
-      }
-      case "PENDINGMOVEON": {
-        return { ...state, pendingMove: [action.from, action.to], selectVisible: true };
-      }
-      case "ILLEGALMOVE": {
-        return { ...state, fen: state.chess.fen() };
-      }
-      case "CHECKCHECK": {
-        return { ...state, inCheck: [action.inCheck, action.player] };
-      }
-      case "UPDATEBOARD": {
-        let a = action.data;
-        return {
-          ...state,
-          lastFen: a.lastFen,
-          fen: a.fen,
-          history: a.history,
-          nonce: a.nonce,
-          lastMove: a.lastMove,
-          gunMoved: a.gunMoved,
-          gameState: a.gameState,
-          turn: a.turn,
-          selectVisible: false,
-          moving: false,
-        };
-      }
-      case "JOINED": {
-        // console.log("JOINED", action);
-        if (action.socketId !== state.gameId) {
-          return { ...state, joined: true, player1: state.gameId, player2: action.socketId };
-        } else {
-          return { ...state, joined: true, player1: action.socketId };
-        }
-      }
-      case "HANDLEOPPONENT": {
-        if (action.opp !== state.gameId) {
-          return { ...state, player2: action.opp };
-        } else {
-          return { ...state };
-        }
-      }
-      case "GUN": {
-        let data = action.ack;
-        if (data.player2) {
-          return { ...state, player1: data.player1, player2: data.player2, gunState: data };
-        } else {
-          return { ...state, player1: data.player1, gunState: data };
-        }
-      }
-      case "IPFSHISTORY":
-        let data = action.load;
-        return { ...state, ipfsHistory: [...state.ipfsHistory, data], lastHash: data };
-      case "SHAKING": {
-        return { ...state, shakingHands: true };
-      }
-      case "SHOOK": {
-        if (action.p === 1) {
-          return { ...state, player1Shake: true };
-        } else {
-          return { ...state, player2Shake: true };
-        }
-      }
-      case "RESET":
-        return initialState;
-
-      default:
-        return state;
-    }
-  }
-
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
-  const [gpState, setGPState] = useState(gameplayState);
+  const gpState = useRef();
 
   const {
     chess,
@@ -163,7 +163,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     player2Shake,
     gunState,
     winner,
-  } = gpState;
+  } = gameplayState;
 
   let opp = player1 === socketId ? player2 : player1;
   let color = socketId === player1 ? "white" : "black";
@@ -191,7 +191,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   // IPFS file processing and uploading
   const handleIPFSInput = async e => {
     try {
-      let added = await ipfs.add(e);
+      let added = await addToIPFS(e);
       dispatch({ type: "IPFSHISTORY", load: added.path });
     } catch (error) {
       console.log("Error uploading file: ", error);
@@ -199,6 +199,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   };
 
   const onMove = (from, to) => {
+    console.log("GamePlayState: ", gameplayState);
     if (turn === socketId) {
       const moves = chess.moves({ verbose: true });
       for (let i = 0, len = moves.length; i < len; i++) {
@@ -245,7 +246,8 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
             turn: opp,
           },
         });
-        handleIPFSInput(file);
+        // handleIPFSInput(file);
+        console.log("Move to save to IPFS: ", file);
         socket.emit("onMove", gameId, socketId, file);
       }
     } else {
@@ -287,9 +289,9 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     socket.emit("onMove", gameId, socketId, file);
   };
 
-  const moveGun = (from, to, prom, ack, state) => {
-    console.log("State: ", state);
-    if (!gunMoved) {
+  const moveGun = (from, to, prom, ack) => {
+    let { gunMoved, chess } = gpState.current;
+    if (!gunMoved && socketId !== ack.player) {
       console.log("Moving Gun!");
       if (prom !== undefined) {
         chess.move({ from, to, promotion: prom });
@@ -570,11 +572,16 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     dispatch({ type: "HANDLEOPPONENT", opp: opponent, pla: socketId });
   };
 
-  const handleMove = (prof, ack) => {
-    console.log("Handle Move: ", gameplayState);
-    let m = JSON.parse(ack.move);
-    moveGun(m[0], m[1], m[2], ack, gameplayState);
-  };
+  const handleMove = useCallback(
+    (prof, ack) => {
+      console.log("GamePlayState: ", gpState.current, ack, prof);
+      let m = JSON.parse(ack.move);
+      if (ack.nonce === gpState.current.nonce + 1) {
+        moveGun(m[0], m[1], m[2], ack);
+      }
+    },
+    [gameplayState],
+  );
 
   const handleIllMove = () => {
     dispatch({ type: "ILLEGALMOVE" });
@@ -612,16 +619,11 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
       handleJoined(ack);
     });
 
-    socket.on("opponentJoined", ack => {
-      // handleOppJoin(ack);
-    });
-
     socket.on("handShaken", (add, pl) => {
       handleHand(add, pl);
     });
 
     socket.on("setOpponent", opponent => {
-      // console.log("Opponent ", opponent);
       handleOpp(opponent);
     });
 
@@ -646,12 +648,12 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   }, []);
 
   useEffect(() => {
-    setGPState(gameplayState);
+    gpState.current = gameplayState;
   }, [gameplayState]);
 
   return (
     <>
-      {inCheck[0] ? <h1> Player "{inCheck[1]}" is in Check! </h1> : <></>}
+      {inCheck[0] && inCheck[1] === socketId ? <h1>You are in Check! </h1> : <h1>Opponent in check!</h1>}
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
         {gameState && gameInProgress ? (
           <Chessground

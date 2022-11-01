@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { GUNKEY } from "../../constants";
-import { ChessGround, ChessViewer } from "./ChessGrounds";
+import { ChessMatches, ChessViewer } from "./ChessGrounds";
 
 const LiveMatch = ({ gun, address }) => {
   const [game, setGame] = useState();
@@ -17,14 +17,14 @@ const LiveMatch = ({ gun, address }) => {
           setGame(ack.board);
         }
       });
-  }, [gun]);
+  }, []);
 
   return (
     <>
       {address === roomId ? (
-        <ChessGround />
+        <ChessMatches gun={gun} />
       ) : address === game?.player2 ? (
-        <ChessGround />
+        <ChessMatches gun={gun} />
       ) : (
         <ChessViewer board={game} />
       )}
