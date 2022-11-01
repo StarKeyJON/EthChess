@@ -214,12 +214,6 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
         dispatch({ type: "ILLEGALMOVE" });
         return;
       } else {
-        if (chess.inCheck()) {
-          dispatch({ type: "CHECKCHECK", inCheck: true, player: opp });
-        } else {
-          dispatch({ type: "CHECKCHECK", inCheck: false });
-        }
-
         let file = {
           gameId: gameId,
           player: socketId,
@@ -246,9 +240,21 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
             turn: opp,
           },
         });
-        // handleIPFSInput(file);
-        console.log("Move to save to IPFS: ", file);
+        handleIPFSInput(file);
         socket.emit("onMove", gameId, socketId, file);
+
+        if (chess.inCheck()) {
+          const movesleft = chess.moves({ verbose: true });
+          if (movesleft.length === 0) {
+            notification.open({ message: `Checkmate! Game Over! You are the winner!` });
+            dispatch({ type: "GAMEOVER", winner: socketId });
+          } else {
+            notification.open({ message: "Check!" });
+            dispatch({ type: "CHECKCHECK", inCheck: true, player: opp });
+          }
+        } else {
+          dispatch({ type: "CHECKCHECK", inCheck: false });
+        }
       }
     } else {
       notification.open({ message: "Not your move!" });
@@ -296,7 +302,14 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
       if (prom !== undefined) {
         chess.move({ from, to, promotion: prom });
         if (chess.inCheck()) {
-          dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+          const moves = chess.moves({ verbose: true });
+          if (moves.length === 0) {
+            notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
+            dispatch({ type: "GAMEOVER", winner: ack.player });
+          } else {
+            notification.open({ message: "Check!" });
+            dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+          }
         } else {
           dispatch({ type: "CHECKCHECK", inCheck: false });
         }
@@ -318,8 +331,14 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
       } else {
         chess.move({ from, to });
         if (chess.inCheck()) {
-          notification.open({ message: "Check!" });
-          dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+          const moves = chess.moves({ verbose: true });
+          if (moves.length === 0) {
+            notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
+            dispatch({ type: "GAMEOVER", winner: ack.player });
+          } else {
+            notification.open({ message: "Check!" });
+            dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+          }
         } else {
           dispatch({ type: "CHECKCHECK", inCheck: false });
         }
