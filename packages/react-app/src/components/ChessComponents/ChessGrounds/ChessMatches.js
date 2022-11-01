@@ -615,7 +615,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   useEffect(() => {
     handleJoined();
     socket.on("playerJoined", ack => {
-      console.log("Player Joined ", ack);
+      notification.open({ message: `Player ${ack} joined the match!` });
       handleJoined(ack);
     });
 
