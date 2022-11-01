@@ -1,10 +1,10 @@
 // credits https://github.com/lichess-org/chessground, https://github.com/ruilisi/react-chessground
 
-import React, { useCallback, useContext, useEffect, useReducer, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Chessground from "react-chessground";
 import "./styles/chessGround.css";
-import { Button, Card, message, Modal, notification, Space, Spin } from "antd";
+import { Button, Card, Modal, notification, Space, Spin } from "antd";
 import queen from "../../../assets/images/WhiteQueen.png";
 import rook from "../../../assets/images/WhiteRook.png";
 import bishop from "../../../assets/images/WhiteBishop.png";
@@ -15,8 +15,9 @@ import { OpponentLeft, PlayerLeft } from "../modals";
 import { Chess } from "chess.js";
 import { SocketContext } from "../../../socketContext/socketContext";
 import MoveTable from "../MoveTable";
-import Text from "antd/lib/typography/Text";
 import { addToIPFS } from "../../../helpers/ipfs";
+import { CheckWindow } from "../BoardComponents";
+import { executeDispute, executeWin } from "../BoardComponents/WinLose";
 
 const initialState = {
   chess: new Chess(),
@@ -45,6 +46,7 @@ const initialState = {
   opponentLeftModal: false,
   winningModalVisible: false,
   losingModalVisible: false,
+  gameOverModal: false,
   shakingHands: false,
   player1Shake: false,
   player2Shake: false,
@@ -139,15 +141,11 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     gameState,
     turn,
     fen,
-    lastFen,
     lastMove,
     pendingMove,
     history,
     ipfsHistory,
-    lastHash,
     inCheck,
-    moving,
-    gunMoved,
     selectVisible,
     shakingHands,
     joined,
@@ -159,9 +157,9 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     opponentLeftModal,
     winningModalVisible,
     losingModalVisible,
+    gameOverModal,
     player1Shake,
     player2Shake,
-    gunState,
     winner,
   } = gameplayState;
 
@@ -528,54 +526,37 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     );
   };
 
-  const executeWin = () => {
-    tx(writeContracts.ETHChess.startClaim(ipfsHistory), update => {
-      if (update && (update.status === "confirmed" || update.status === 1)) {
-        message.info(" 🍾 Transaction " + update.hash + " finished!");
-        message.info(
-          " ⛽️ " +
-            update.gasUsed +
-            "/" +
-            (update.gasLimit || update.gas) +
-            " @ " +
-            parseFloat(update.gasPrice) / 1000000000 +
-            " gwei",
-        );
-        notification.open({
-          message: <Text>{"Claim Started! Please wait 7 blocks for the dispute period to end."}</Text>,
-        });
-      }
-    });
-  };
-
-  const executeDispute = () => {
-    tx(writeContracts.ETHChess.startDispute(ipfsHistory), update => {
-      if (update && (update.status === "confirmed" || update.status === 1)) {
-        message.info(" 🍾 Transaction " + update.hash + " finished!");
-        message.info(
-          " ⛽️ " +
-            update.gasUsed +
-            "/" +
-            (update.gasLimit || update.gas) +
-            " @ " +
-            parseFloat(update.gasPrice) / 1000000000 +
-            " gwei",
-        );
-        notification.open({
-          message: <Text>{"Dispute Started! Please allow time for the dispute resolution process."}</Text>,
-        });
-      }
-    });
-  };
-
-  const HandleGameOver = () => {
-    if (winner) {
-      dispatch({ type: "WINNER", action: true });
-      // setWinningModalVisible(true);
-    } else {
-      // setLosingModalVisible(true);
-      dispatch({ type: "LOSER", action: true });
-    }
+  const GameOver = () => {
+    return (
+      <Modal
+        title="GAME OVER!"
+        visible={gameOverModal}
+        onCancel={() => {
+          dispatch({ type: "RESETGO" });
+        }}
+      >
+        <Card>
+          {winner === socketId ? (
+            <>
+              <h1>Congratulations!</h1>
+              <br />
+              <h3>Execute the claim below!</h3>
+              <br />
+              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory, socketId })}></Button>
+              <p>Please allow a minimum of 7 blocks for the dispute resolution period!</p>
+            </>
+          ) : (
+            <>
+              <h1>Better luck next time!</h1>
+              <br />
+              <h3>You can dispute the results below!</h3>
+              <br />
+              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
+            </>
+          )}
+        </Card>
+      </Modal>
+    );
   };
 
   const handleHand = (add, pl) => {
@@ -672,7 +653,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
 
   return (
     <>
-      {inCheck[0] ? inCheck[1] === socketId ? <h1>You are in Check! </h1> : <h1>Opponent in check!</h1> : <></>}
+      {inCheck[0] ? <CheckWindow inCheck={inCheck} socketId={socketId} /> : <></>}
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
         {gameState && gameInProgress ? (
           <Chessground
@@ -699,6 +680,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
         <PromotionModal />
         <PlayerLeftM />
         <OpponentLeftM />
+        <GameOver />
       </div>
       {history.length === 0 && (
         <Space>
