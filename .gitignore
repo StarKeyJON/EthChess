@@ -7,6 +7,8 @@ packages/hardhat/*.txt
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 **/node_modules
 
+packages/react-app/public/light-theme.css
+packages/react-app/public/dark-theme.css
 packages/hardhat/artifacts*
 packages/hardhat/deployments
 packages/react-app/src/contracts/*
