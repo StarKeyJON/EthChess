@@ -1,14 +1,14 @@
 {
-  "name": "@best-of-chess/subgraph",
+  "name": "@ETHChess/subgraph",
   "license": "UNLICENSED",
   "version": "1.0.0",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ GITHUB_USERNAME/your-contract",
-    "create-local": "graph create --node http://localhost:8020/ best-of-chess/your-contract",
-    "remove-local": "graph remove --node http://localhost:8020/ best-of-chess/your-contract",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 best-of-chess/your-contract"
+    "create-local": "graph create --node http://localhost:8020/ ETHChess/your-contract",
+    "remove-local": "graph remove --node http://localhost:8020/ ETHChess/your-contract",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 ETHChess/your-contract"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "^0.29.1",

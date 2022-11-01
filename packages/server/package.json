@@ -1,18 +1,21 @@
 {
-  "name": "server",
+  "name": "@ETHChess/server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon ./index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jeremiah Nolet",
   "license": "ISC",
   "dependencies": {
     "chess.js": "^1.0.0-alpha.0",
     "express": "^4.18.2",
     "gun": "^0.2020.1238",
     "socket.io": "^4.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }
