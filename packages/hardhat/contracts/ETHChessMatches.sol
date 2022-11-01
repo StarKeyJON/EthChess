@@ -328,11 +328,9 @@ contract ETHChessMatches is ReentrancyGuard {
     if(vote && votedFor.length < 10){
       votedFor.push(msg.sender);
       emit DisputeVoted(msg.sender, matchId, vote);
-      return true;
     } else if(!vote && votedAgainst.length < 10){
       votedAgainst.push(msg.sender);
       emit DisputeVoted(msg.sender, matchId, vote);
-      return true;
     }
     /// If tally is true, the claim is true, else the claim is false.
     bool tally = votedFor.length > votedAgainst.length;
@@ -357,29 +355,29 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param matchId The ID of the match
   /// @param ipfsHash The start Ipfs hash of the final game state
   /// @return Bool success or failure
-  function endMatch(uint matchId, string memory ipfsHash) payable public returns(bool){
+  function endMatch(uint matchId, string memory ipfsHash) public returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim memory claim = idToClaim[matchId];
     Dispute memory dispute = idToDispute[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
     require(block.number > claim.claimBlock + delta, "Dispute period ongoing.");
     uint pfee = calcFee(startmatch.p1amount + startmatch.p2amount, fee);
-    if(claim.contested){
-      if(msg.sender != dispute.disputer && !dispute.tally){
+    if(claim.contested){ /// If tally is true, the claim is true, else the claim is false.
+      if(msg.sender == claim.claimant && dispute.tally){
         uint voters = dispute.votedFor.length;
+        rewardsPot += (dispute.dSecurity / 2) + pfee;
         for(uint i; i < voters; i++){
           uint voteReward = (dispute.dSecurity / 2) / voters;
           sendEther(dispute.votedFor[i], voteReward);
         }
-        rewardsPot += (dispute.dSecurity / 2) + pfee;
         sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee);
-      } else if(msg.sender == dispute.disputer && dispute.tally){
+      } else if(msg.sender == dispute.disputer && !dispute.tally){
         uint voters = dispute.votedAgainst.length;
+        rewardsPot += pfee;
         for(uint i; i < voters; i++){
           uint voteReward = claim.security / voters;
           sendEther(dispute.votedAgainst[i], voteReward);
         }
-        rewardsPot += pfee;
         sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + dispute.dSecurity) - pfee);
       }
     } else {
@@ -420,13 +418,13 @@ contract ETHChessMatches is ReentrancyGuard {
       return true;
     } 
     if(claim.refunds.length == 2 && msg.sender == startmatch.player1 && !claim.p1Refunded && startmatch.p1amount > 0 ){
-      require(sendEther(startmatch.player1, startmatch.p1amount));
       startmatch.p1amount = 0;
       claim.p1Refunded = true;
+      require(sendEther(startmatch.player1, startmatch.p1amount));
     } else if(claim.refunds.length == 2 && msg.sender == startmatch.player2 && !claim.p2Refunded && startmatch.p1amount > 0){
-      require(sendEther(startmatch.player2, startmatch.p2amount));
       startmatch.p2amount = 0;
       claim.p2Refunded = true;
+      require(sendEther(startmatch.player2, startmatch.p2amount));
     }
     emit MatchRefunded(matchId);
     return true;
@@ -476,28 +474,28 @@ contract ETHChessMatches is ReentrancyGuard {
     require(lastmatch.claimBlock > 0, "Match still ongoing!");
     if(lastmatch.contested){
       Dispute memory lastdispute = idToDispute[deathmatch.matches[len - 1]];
-      if(lastdispute.tally){
-        require(msg.sender == lastdispute.disputer, errMessage2);
+      if(lastdispute.tally){ // lastdipute.tally == votedFor.length > votedAgainst.length
+        require(msg.sender == lastmatch.claimant, errMessage2); // Claim is true
       } else {
-        require(msg.sender == lastmatch.claimant, errMessage2);
+        require(msg.sender == lastdispute.disputer, errMessage2); // Dispute is true
       }
     } else {
-      require(msg.sender == lastmatch.claimant, errMessage2);
+      require(msg.sender == lastmatch.claimant, errMessage2); // Un-disputed
     }
     deathmatch.pot = deathmatch.pot + msg.value;
     uint[] memory matches;
-    if(msg.sender == deathmatch.reigningChamp){
-      if(deathmatch.matches.length == 3){
+    if(msg.sender == deathmatch.reigningChamp){ // Reinging Champ needs 3 consecutive round wins to win the deathmatch
+      if(deathmatch.matches.length == 3){ // Deathmatch winner!
         uint rfee = calcFee(rewardsPot, rewardsFee);
         rewardsPot -= rfee;
         sendEther(msg.sender, deathmatch.pot + rfee);
         emit DeathMatchEnded(deathmatchId, msg.sender, ipfsHash, deathmatch.pot + rfee);
         return true;
-      } else {
+      } else { // New match round
         uint id = newRound(deathmatch.entranceFee, deathmatch.reigningChamp, ipfsHash);
         deathmatch.matches.push(id);
       }
-    } else {
+    } else { // New Reigning Champion, reset rounds!
       deathmatch.reigningChamp = msg.sender;
       deathmatch.matches = matches;
       uint id = newRound(deathmatch.entranceFee, msg.sender, ipfsHash);
