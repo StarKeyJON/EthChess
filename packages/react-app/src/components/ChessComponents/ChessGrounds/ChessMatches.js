@@ -246,10 +246,9 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
         if (chess.inCheck()) {
           const movesleft = chess.moves({ verbose: true });
           if (movesleft.length === 0) {
-            notification.open({ message: `Checkmate! Game Over! You are the winner!` });
+            notification.open({ message: `Game Over! You are the winner!` });
             dispatch({ type: "GAMEOVER", winner: socketId });
           } else {
-            notification.open({ message: "Check!" });
             dispatch({ type: "CHECKCHECK", inCheck: true, player: opp });
           }
         } else {

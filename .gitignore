@@ -18,6 +18,8 @@ packages/hardhat/cache*
 packages/**/data
 !packages/react-app/src/contracts/contracts.js
 
+packages/server/.env
+
 
 # ts
 packages/hardhat-ts/cache
