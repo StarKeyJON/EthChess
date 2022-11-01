@@ -133,7 +133,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const gpState = useRef();
 
-  const {
+  let {
     chess,
     nonce,
     gameState,
@@ -318,6 +318,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
       } else {
         chess.move({ from, to });
         if (chess.inCheck()) {
+          notification.open({ message: "Check!" });
           dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
         } else {
           dispatch({ type: "CHECKCHECK", inCheck: false });
@@ -653,7 +654,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
 
   return (
     <>
-      {inCheck[0] && inCheck[1] === socketId ? <h1>You are in Check! </h1> : <h1>Opponent in check!</h1>}
+      {inCheck[0] ? inCheck[1] === socketId ? <h1>You are in Check! </h1> : <h1>Opponent in check!</h1> : <></>}
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
         {gameState && gameInProgress ? (
           <Chessground
