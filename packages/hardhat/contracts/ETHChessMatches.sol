@@ -299,11 +299,11 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @return Bool success or failure
   function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
-    Claim storage claim = idToClaim[matchId];
-    require(!claim.contested, "Claim already contested!");
-    require(claim.claimBlock + delta > block.number, "Dispute period over!");
-    require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
-    require(dSecurity == startmatch.p1amount + startmatch.p2amount, errMessage1);
+    Claim storage claim = idToClaim[matchId]; // Storage used to save claim.contested
+    require(!claim.contested, "Claim already contested!"); /// Ensure claim is not contested already
+    require(claim.claimBlock + delta > block.number, "Dispute period over!"); /// Ensure the call is within the dispute time window
+    require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2); // Ensure the caller is a contestant
+    require(dSecurity == startmatch.p1amount + startmatch.p2amount, errMessage1); /// Dispute security must be twice the amount of initial wager
     address[] memory voters; /// Empty array used for placeholders
     claim.contested = true;
     idToDispute[matchId] = Dispute(
@@ -369,24 +369,24 @@ contract ETHChessMatches is ReentrancyGuard {
     require(block.number > claim.claimBlock + delta, "Dispute period ongoing.");
     uint pfee = calcFee(startmatch.p1amount + startmatch.p2amount, fee);
     if(claim.contested){ /// If tally is true, the claim is true, else the claim is false.
-      if(msg.sender == claim.claimant && dispute.tally){
+      if(msg.sender == claim.claimant && dispute.tally){ // Claim is true, caller is claimant
         uint voters = dispute.votedFor.length;
         rewardsPot += (dispute.dSecurity / 2) + pfee;
-        for(uint i; i < voters; i++){
+        for(uint i; i < voters; i++){ // Distribute voting rewards to voters
           uint voteReward = (dispute.dSecurity / 2) / voters;
           sendEther(dispute.votedFor[i], voteReward);
         }
         sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee);
-      } else if(msg.sender == dispute.disputer && !dispute.tally){
+      } else if(msg.sender == dispute.disputer && !dispute.tally){ // Dispute is true, caller is disputer
         uint voters = dispute.votedAgainst.length;
         rewardsPot += pfee;
-        for(uint i; i < voters; i++){
+        for(uint i; i < voters; i++){ // Distribute voting rewards to voters
           uint voteReward = claim.security / voters;
           sendEther(dispute.votedAgainst[i], voteReward);
         }
         sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + dispute.dSecurity) - pfee);
       }
-    } else {
+    } else { // Win was uncontested! Send the rewards!
       rewardsPot += pfee;
       sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee);
     }
@@ -412,9 +412,9 @@ contract ETHChessMatches is ReentrancyGuard {
     Match memory startmatch = idToMatch[matchId];
     Claim storage claim = idToClaim[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
-    require(block.timestamp < startmatch.startTime + .1 days, "Too soon to refund.");
-    require(claim.claimBlock == 0, "Claim initiated, refund cannot be made.");
-    if(claim.refunds.length == 0){
+    require(block.timestamp < startmatch.startTime + .1 days, "Too soon to refund."); // Refund must be made .1 days after match start
+    require(claim.claimBlock == 0, "Claim initiated, refund cannot be made."); // No claim can be made before a refund is processed
+    if(claim.refunds.length == 0){ // If a refund wasnt claimed yet,
       claim.refunds.push(msg.sender);
       emit MatchRefundStarted(matchId, msg.sender, address(0x0));
       return true;
@@ -423,11 +423,12 @@ contract ETHChessMatches is ReentrancyGuard {
       emit MatchRefundStarted(matchId, claim.refunds[0], msg.sender);
       return true;
     } 
+    // If both players initiated the refund, send the money back!
     if(claim.refunds.length == 2 && msg.sender == startmatch.player1 && !claim.p1Refunded && startmatch.p1amount > 0 ){
       startmatch.p1amount = 0;
       claim.p1Refunded = true;
       require(sendEther(startmatch.player1, startmatch.p1amount));
-    } else if(claim.refunds.length == 2 && msg.sender == startmatch.player2 && !claim.p2Refunded && startmatch.p1amount > 0){
+    } else if(claim.refunds.length == 2 && msg.sender == startmatch.player2 && !claim.p2Refunded && startmatch.p2amount > 0){
       startmatch.p2amount = 0;
       claim.p2Refunded = true;
       require(sendEther(startmatch.player2, startmatch.p2amount));
@@ -443,11 +444,11 @@ contract ETHChessMatches is ReentrancyGuard {
   function initDeathMatch(uint entranceFee) external payable returns(bool){
     require(msg.value == entranceFee);
     deathmatchIds++;
-    DeathMatch storage dmatch = idToDeathMatch[deathmatchIds];
+    DeathMatch storage dmatch = idToDeathMatch[deathmatchIds]; // Load from storage to avoid writing empty arrays
     dmatch.entranceFee = entranceFee;
     dmatch.pot = entranceFee;
     dmatch.reigningChamp = msg.sender;
-    matchIds++;
+    matchIds++; // Each round in the dathmatch is just a Match struct
     idToMatch[matchIds] = Match(
       matchIds,
       msg.sender,
@@ -490,7 +491,7 @@ contract ETHChessMatches is ReentrancyGuard {
     }
     deathmatch.pot = deathmatch.pot + msg.value;
     uint[] memory matches;
-    if(msg.sender == deathmatch.reigningChamp){ // Reinging Champ needs 3 consecutive round wins to win the deathmatch
+    if(msg.sender == deathmatch.reigningChamp){ // Reinging Champ needs 3 consecutive wins to win the deathmatch
       if(deathmatch.matches.length == 3){ // Deathmatch winner!
         uint rfee = calcFee(rewardsPot, rewardsFee);
         rewardsPot -= rfee;
