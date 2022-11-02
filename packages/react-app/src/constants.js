@@ -13,11 +13,17 @@ export const GUNKEY = "eth-chess-v0.1.15";
 
 export const SOCKET_URL = "http://localhost:8080";
 
+export const IPFS_GATEWAY = "https://ethchess.infura-ipfs.io";
+
+export const IPFS_ENDPOINT = "https://ipfs.infura.io:5001";
+
 export const peers = [
   "https://phunky-gun-db.herokuapp.com/gun",
   "https://gun-ckx8k.ondigitalocean.app/gun",
   // window.location.origin + "/gun",
 ];
+
+export const appStage = "development";
 
 export const beginningFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 

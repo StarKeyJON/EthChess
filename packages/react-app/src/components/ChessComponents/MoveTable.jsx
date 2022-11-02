@@ -1,7 +1,8 @@
 import { Card, Space, Table } from "antd";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const MoveTable = ({ moves }) => {
+  const [theMoves, setTheMoves] = useState();
   const columns = [
     {
       title: "Color",
@@ -43,13 +44,23 @@ const MoveTable = ({ moves }) => {
       ellipsis: true,
     },
   ];
+  useEffect(() => {
+    if (moves) {
+      const newMoves = moves.map((move, i) => {
+        Object.assign(move, { key: i });
+        return move;
+      });
+      setTheMoves(newMoves);
+    }
+  }, [moves]);
+
   return (
     <>
       <Space>
         <Card>
           <h3>Moves History</h3>
           <p>*most recent moves shown first*</p>
-          <Table size="small" key="moves-table" dataSource={moves} columns={columns} />
+          <Table size="small" key="moves-table" dataSource={theMoves} columns={columns} />
         </Card>
       </Space>
     </>

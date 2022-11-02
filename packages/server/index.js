@@ -31,7 +31,7 @@ const gun = new GUN({
 
 let game = new Chess();
 
-let URLfrontEnd = "http://localhost:3000";
+const URLfrontEnd = process.env.URL_FRONTEND;
 const io = require("socket.io")(server, {
   cors: {
     // this is required or else you will receive a CORS error, if you are using v3 of socket.io

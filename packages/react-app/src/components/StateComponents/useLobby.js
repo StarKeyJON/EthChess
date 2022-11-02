@@ -46,8 +46,9 @@ const useLobby = ({ gun, address, startTime, player, setPlayer, newSkirmish, end
       .get(GUNKEY)
       .get("chessLobby")
       .map()
-      .on(ack => {
+      .on((ack, i) => {
         if (ack && ack.active) {
+          Object.assign(ack, { key: i });
           let s = new Set(p);
           if (!s.has(ack)) {
             p.push(ack);

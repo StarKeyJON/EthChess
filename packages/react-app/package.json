@@ -46,6 +46,7 @@
     "graphql": "^15.3.0",
     "gsap": "^3.11.1",
     "gun": "^0.2020.1238",
+    "ipfs-core": "^0.17.0",
     "ipfs-http-client": "^55.0.0",
     "isomorphic-fetch": "^3.0.0",
     "node-watch": "^0.7.1",

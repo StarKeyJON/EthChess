@@ -7,7 +7,7 @@ const Mint = () => {
     <>
       <h1>Mint</h1>
       <div>
-        <Image src={bitcoin} alt=""/>
+        <Image src={bitcoin} alt="" />
       </div>
     </>
   );

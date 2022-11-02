@@ -74,8 +74,9 @@ const useSkirmishes = ({ gun, player }) => {
         .get(GUNKEY)
         .get("skirmishes")
         .map()
-        .on(ack => {
+        .on((ack, i) => {
           if (ack && ack.active && !ack.gameInProgress) {
+            Object.assign(ack, { key: i });
             let s = new Set(p);
             if (!s.has(ack)) {
               p.push(ack);

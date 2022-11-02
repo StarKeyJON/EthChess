@@ -15,8 +15,7 @@ import { OpponentLeft, PlayerLeft } from "../modals";
 import { Chess } from "chess.js";
 import { SocketContext } from "../../../socketContext/socketContext";
 import MoveTable from "../MoveTable";
-import { addToIPFS } from "../../../helpers/ipfs";
-import { CheckWindow } from "../BoardComponents";
+import { AddToIPFS } from "../../../helpers/ipfs";
 import { executeDispute, executeWin } from "../BoardComponents/WinLose";
 
 const initialState = {
@@ -118,6 +117,12 @@ function chessReducer(state, action) {
         return { ...state, player2Shake: true };
       }
     }
+    case "PLAYERLEFT": {
+      return { ...state, playerLeftModal: true };
+    }
+    case "OPPONENTLEFT": {
+      return { ...state, opponentLeftModal: true };
+    }
     case "RESET":
       return initialState;
 
@@ -155,8 +160,8 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     gameInProgress,
     playerLeftModal,
     opponentLeftModal,
-    winningModalVisible,
-    losingModalVisible,
+    // winningModalVisible,
+    // losingModalVisible,
     gameOverModal,
     player1Shake,
     player2Shake,
@@ -189,7 +194,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   // IPFS file processing and uploading
   const handleIPFSInput = async e => {
     try {
-      let added = await addToIPFS(e);
+      let added = await AddToIPFS(e);
       dispatch({ type: "IPFSHISTORY", load: added.path });
     } catch (error) {
       console.log("Error uploading file: ", error);
@@ -239,6 +244,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
           },
         });
         handleIPFSInput(file);
+
         socket.emit("onMove", gameId, socketId, file);
 
         if (chess.inCheck()) {
@@ -568,36 +574,32 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
   };
 
   const handleOpp = opponent => {
-    console.log("Handle opp!", opponent, socketId);
+    // console.log("Handle opp!", opponent, socketId);
     dispatch({ type: "HANDLEOPPONENT", opp: opponent, pla: socketId });
   };
 
-  const handleMove = useCallback(
-    (prof, ack) => {
-      console.log("GamePlayState: ", gpState.current, ack, prof);
-      let m = JSON.parse(ack.move);
-      if (ack.nonce === gpState.current.nonce + 1) {
-        moveGun(m[0], m[1], m[2], ack);
-      }
-    },
-    [gameplayState],
-  );
+  const handleMove = (prof, ack) => {
+    // console.log("GamePlayState: ", gpState.current, ack, prof);
+    let m = JSON.parse(ack.move);
+    if (prof !== socketId && ack.nonce === gpState.current.nonce + 1) {
+      moveGun(m[0], m[1], m[2], ack);
+    }
+  };
 
   const handleIllMove = () => {
     dispatch({ type: "ILLEGALMOVE" });
   };
 
   const handlePlayerLeftModal = useCallback(ack => {
-    // if (ack === player1) {
-    //   setPlayerLeftModal(true);
-    // } else {
-    //   setOpponentLeftModal(true);
-    // }
+    if (ack === player1) {
+      dispatch({ type: "PLAYERLEFT" });
+    } else {
+      dispatch({ type: "OPPONENTLEFT" });
+    }
   }, []);
 
   const handleJoined = useCallback(() => {
     if (!joined) {
-      console.log("Player joined!");
       prepRoom();
       socket.emit("joinedRoom", gameId, "skirmishes");
       dispatch({ type: "JOINED", socketId: socketId, gameId: gameId });
@@ -653,7 +655,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
 
   return (
     <>
-      {inCheck[0] ? <CheckWindow inCheck={inCheck} socketId={socketId} /> : <></>}
+      {inCheck[0] && <h1>Check!</h1>}
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
         {gameState && gameInProgress ? (
           <Chessground
