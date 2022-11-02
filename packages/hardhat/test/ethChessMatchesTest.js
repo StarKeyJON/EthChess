@@ -78,6 +78,17 @@ describe("ETH Chess Matches Test", function () {
         );
       });
     });
+    describe("newAdmin test", function () {
+      it("Should be able to set a new Admin address", async function () {
+        const { deployer } = await getNamedAccounts();
+        const [acct, acct1] = await ethers.getSigners();
+        await expect(
+          ethChessMatches.connect(acct1).newAdmin(acct1.address)
+        ).to.be.rejectedWith("DOES NOT HAVE ADMIN ROLE");
+        await ethChessMatches.connect(acct).newAdmin(acct1.address);
+        await ethChessMatches.connect(acct1).newAdmin(deployer);
+      });
+    });
 
     describe("safeMint function test", function () {
       it("Should be able to mint ETH Chess NFTs", async function () {

@@ -1,7 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-/**
+/*
+
         .=********+:      :+***********-       +********+:                    
         -%@@%%%%%@@+      +%@@%%%%%%%@@#.     .@@@%%%%%@@*.                   
         -%@*....-%@%++++++#@@#......=@@%*+++++*@@+....-@@*.                   
@@ -27,13 +28,14 @@ pragma solidity >=0.8.0 <0.9.0;
             .*@@#:                              .+@@%=                        
           .+%@@@%********************************#@@@@*:                      
           -@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@*                      
-          -@@*:         Jeremiah Nolet             .=#@*                      
+          -@@*:         Jeremiah O. Nolet          .=#@*                      
           -@@+.                                     -#@*                      
     .+****#@@%**************************************#@@%****+-                
     =%@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@*.               
   .=@@*:.................................................=%@#.               
     =@@%################################################*#%@@#.               
-    :*#######################################################=   
+    :*#######################################################=  
+
  */
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -57,8 +59,8 @@ contract ETHChessNFTs is ERC721, AccessControl {
 
     function safeMint(address to, uint amount) public payable {
       require(msg.value == amount * mintPrice, "Insufficient Value");
-      require(supply >= ids + amount, "Not enough left");
-      require(amount <= 10, "Amount must be <= 10");
+      require(supply > ids + amount || supply == ids + amount, "Not enough left");
+      require(amount < 11, "Amount must be <= 10");
       for(uint i; i < amount; i++){
         ids++;
         _safeMint(to, ids);

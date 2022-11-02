@@ -8,11 +8,6 @@ pragma solidity >=0.8.0 <0.9.0;
 
 /*
 
-                        ~~~ 1v1 Matches ~~~
-                  ~~~ DeathMatch Competitions ~~~
-                    ~~~ League Tournaments ~~~
-
-
         .=********+:      :+***********-       +********+:                    
         -%@@%%%%%@@+      +%@@%%%%%%%@@#.     .@@@%%%%%@@*.                   
         -%@*....-%@%++++++#@@#......=@@%*+++++*@@+....-@@*.                   
@@ -38,13 +33,14 @@ pragma solidity >=0.8.0 <0.9.0;
             .*@@#:                              .+@@%=                        
           .+%@@@%********************************#@@@@*:                      
           -@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@*                      
-          -@@*:         Jeremiah Nolet             .=#@*                      
+          -@@*:         Jeremiah O. Nolet          .=#@*                      
           -@@+.                                     -#@*                      
     .+****#@@%**************************************#@@%****+-                
     =%@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@*.               
   .=@@*:.................................................=%@#.               
     =@@%################################################*#%@@#.               
-    :*#######################################################=   
+    :*#######################################################=  
+
  */
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
@@ -67,7 +63,7 @@ contract ETHChessMatches is ReentrancyGuard {
   uint public delta;
   ///@notice uint256 platform fee for matches
   uint public fee;
-///@notice uint256 
+  ///@notice uint256 deathMatch winner get rewardsPot / rewardsFee
   uint public rewardsFee;
 
   string private constant errMessage1 = "Insufficient amount";
@@ -138,7 +134,7 @@ contract ETHChessMatches is ReentrancyGuard {
 
   event MatchInitiated(address player1, uint amount, uint matchId);
   event ChallengeInitiated(address player1, uint amount, uint matchId);
-  event MatchSet(address player1, address player2, uint amount, uint matchId, string ipfsHash, uint startTime);
+  event MatchSet(address player1, address player2, uint amount, uint matchId, string ipfsHash);
   event ClaimStarted(address claimant, uint matchId, string startIpfsHash, string endIpfsHash, uint security);
   event ClaimContested(address disputer, uint matchId, uint claimId, string startIpfsHash, string endIpfsHash, uint security);
   event DisputeVoted(address voter, uint matchId, bool vote);
@@ -169,22 +165,32 @@ contract ETHChessMatches is ReentrancyGuard {
     rewardsFee = 5000; // 50%
   }
 
-  function newFee(uint newFe) public isAdmin returns(bool){
+  /// @notice Allows Admin role to set a new Admin
+  function newAdmin(address newAd) external isAdmin returns(bool) {
+    ADMIN = newAd;
+    return true;
+  }
+
+  /// @notice Allows Admin role to set a new fee
+  function newFee(uint newFe) external isAdmin returns(bool){
     fee = newFe;
     return true;
   }
   
-  function newRFee(uint newRFe) public isAdmin returns(bool){
+  /// @notice Allow Admin role to set a new rewardsFee
+  function newRFee(uint newRFe) external isAdmin returns(bool){
     rewardsFee = newRFe;
     return true;
   }
 
-  function newDelta(uint newDel) public isAdmin returns(bool){
+  /// @notice Allows Admin role to set a new dispute resolution Delta
+  function newDelta(uint newDel) external isAdmin returns(bool){
     delta = newDel;
     return true;
   }
 
-  function newNFTAddress(address newAddress) public isAdmin returns(bool){
+  /// @notice Allows Admin role to set a new ETHChess NFT Address
+  function newNFTAddress(address newAddress) external isAdmin returns(bool){
     ethChessNFTs = newAddress;
     return true;
   }
@@ -192,9 +198,9 @@ contract ETHChessMatches is ReentrancyGuard {
   //~~~> initMatch => startMatch, ?claimRefunds => startClaim, ?disputeClaim, ?resolveDispute => endMatch
 
   /// @notice Initiates a new 1v1 match with a set wager value.
-  /// @dev Player initiates a new match that anybody can start by matching the wager
+  /// @dev Player initiates a new match that anyone can start by matching the wager
   /// @return matchId Id of the initiated match
-  function initMatch() payable public returns(uint matchId){
+  function initMatch() external payable returns(uint matchId){
       require(msg.value > 1e13, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
@@ -214,7 +220,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @notice Initiates a new match with a set wager value between specific challengers.
   /// @dev Player initiates a new match that only the challenger can start by matching the wager
   /// @return matchId Id of the initiated match
-  function initChallengeMatch(address comp) payable public returns(uint matchId){
+  function initChallengeMatch(address comp) external payable returns(uint matchId){
       require(msg.value > 1e13, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
@@ -231,17 +237,17 @@ contract ETHChessMatches is ReentrancyGuard {
       return matchIds;
   }
 
-  /// @notice Starts an initiated match by matching the wagered value and entering the initial gamestate.
+  /// @notice Starts an initiated match by matching the wagered value and entering the initial IPFS gamestate.
   /// @dev ipfsHash will contain the gameplay FEN, board and any metadata 
   /// @param matchId The ID of the match, increments with each match
   /// @param ipfsHash The hash of the game start
   /// @return Bool success or failure
-  function startMatch(uint matchId, string memory ipfsHash) payable public returns(bool){
+  function startMatch(uint matchId, string memory ipfsHash) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
-    require(startmatch.startTime == 0, "Match already started!");
-    require(msg.value == startmatch.p1amount, errMessage1);
+    require(startmatch.startTime == 0, "Match already started!"); // Ensure a match isn't started already
+    require(msg.value == startmatch.p1amount, errMessage1); // Ensure msg.value equals the starting wager
     uint totalValue = startmatch.p1amount + msg.value;
-    if (startmatch.player2 != address(0x0)) {
+    if (startmatch.player2 != address(0x0)) { /// Ensure the caller is the challenger, if a challenged match
       require(msg.sender == startmatch.player2, "Not the Challenger!");
     }
     idToMatch[matchId] = Match(
@@ -254,7 +260,7 @@ contract ETHChessMatches is ReentrancyGuard {
       startmatch.p1amount,
       msg.value
     );
-    emit MatchSet(startmatch.player1, msg.sender, totalValue, matchId, ipfsHash, block.timestamp);
+    emit MatchSet(startmatch.player1, msg.sender, totalValue, matchId, ipfsHash);
     return true;
   }
 
@@ -264,11 +270,11 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param startIpfsHash The start IPFSHash of the match
   /// @param endIpfsHash The end IPFSHash of the match
   /// @return Bool success or failure
-  function startClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint security) payable public returns(bool){
+  function startClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint security) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
     require(security == startmatch.p1amount, "Must enter security deposit = to wager");
-    address[] memory refunds;
+    address[] memory refunds; /// Empty array used for placeholder
     idToClaim[matchId] = Claim(
       matchIds,
       block.number,
@@ -291,14 +297,14 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param startIpfsHash The start Ipfs hash of the final game state
   /// @param endIpfsHash The contested Ipfs hash of the final game state
   /// @return Bool success or failure
-  function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) public payable returns(bool){
+  function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim storage claim = idToClaim[matchId];
     require(!claim.contested, "Claim already contested!");
     require(claim.claimBlock + delta > block.number, "Dispute period over!");
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
     require(dSecurity == startmatch.p1amount + startmatch.p2amount, errMessage1);
-    address[] memory voters;
+    address[] memory voters; /// Empty array used for placeholders
     claim.contested = true;
     idToDispute[matchId] = Dispute(
       matchId,
@@ -321,7 +327,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param matchId The ID of the match
   /// @param vote Boolean vote for(true) or against(false)
   /// @return Bool success or failure
-  function resolveDispute(uint matchId, bool vote) public hasChessNFT returns(bool){
+  function resolveDispute(uint matchId, bool vote) external hasChessNFT returns(bool) {
     Dispute storage dispute = idToDispute[matchId];
     address[] storage votedFor = dispute.votedFor;
     address[] storage votedAgainst = dispute.votedAgainst;
@@ -355,7 +361,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param matchId The ID of the match
   /// @param ipfsHash The start Ipfs hash of the final game state
   /// @return Bool success or failure
-  function endMatch(uint matchId, string memory ipfsHash) public returns(bool){
+  function endMatch(uint matchId, string calldata ipfsHash) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim memory claim = idToClaim[matchId];
     Dispute memory dispute = idToDispute[matchId];
@@ -402,7 +408,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @dev Claim must not be made and one tenth of a day must have passed to claim refund.
   /// @param matchId The ID of the match
   /// @return Bool success or failure
-  function claimRefund(uint matchId) public returns(bool){
+  function claimRefund(uint matchId) external returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim storage claim = idToClaim[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
@@ -434,7 +440,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @dev New deathmatch initiated by any player
   /// @param entranceFee The fee for the deathmatch set by the initiator
   /// @return Bool success or failure
-  function initDeathMatch(uint entranceFee) payable public returns(bool){
+  function initDeathMatch(uint entranceFee) external payable returns(bool){
     require(msg.value == entranceFee);
     deathmatchIds++;
     DeathMatch storage dmatch = idToDeathMatch[deathmatchIds];
@@ -466,7 +472,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param deathmatchId Id of the deathmatch to advance
   /// @param ipfsHash String of the new match
   /// @return Success or failure
-  function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) public payable returns(bool){
+  function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) external payable returns(bool){
     DeathMatch storage deathmatch = idToDeathMatch[deathmatchId];
     uint len = deathmatch.matches.length;
     require(msg.value == deathmatch.entranceFee, errMessage1);
@@ -533,7 +539,7 @@ contract ETHChessMatches is ReentrancyGuard {
       Future fees can be set by the controlling Admin EOA
     <~~~*/
   /// @return platform fee
-  function calcFee(uint256 value, uint256 fe) public pure returns (uint256){
+  function calcFee(uint256 value, uint256 fe) internal pure returns (uint256){
       uint256 percent = ((value * fe) / 10000);
       return percent;
     }
