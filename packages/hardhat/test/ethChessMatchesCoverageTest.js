@@ -2,7 +2,7 @@ const { ethers, getNamedAccounts } = require("hardhat");
 const helpers = require("@nomicfoundation/hardhat-network-helpers");
 const { expect } = require("chai");
 
-describe("ETH Chess Matches Test", function () {
+describe("ETH Chess Matches Coverage Test", function () {
   let ethChessMatches;
   let ethChessNFTs;
 
@@ -11,8 +11,31 @@ describe("ETH Chess Matches Test", function () {
     setTimeout(done, 2000);
   });
 
+  async function getEtherBalance(address) {
+    return ethers.utils.formatEther(await address.getBalance());
+  }
+
+  async function getSignersBalance() {
+    const [test, test2, test3, test4, test5, test6] = await ethers.getSigners();
+    console.log(
+      "Test Balance: ",
+      await getEtherBalance(test),
+      "\nTest2 Balance: ",
+      await getEtherBalance(test2),
+      "\nTest3 Balance:  ",
+      await getEtherBalance(test3),
+      "\nTest4 Balance: ",
+      await getEtherBalance(test4),
+      "\nTest5 Balance:  ",
+      await getEtherBalance(test5),
+      "\nTest6 Balance: ",
+      await getEtherBalance(test6)
+    );
+  }
+
   describe("ETHChessMatches", function () {
     it("Should deploy ETHCHess", async function () {
+      await getSignersBalance();
       const { deployer } = await getNamedAccounts();
       const ETHChess = await ethers.getContractFactory("ETHChessMatches");
 
@@ -89,11 +112,30 @@ describe("ETH Chess Matches Test", function () {
         await ethChessMatches.connect(acct1).newAdmin(deployer);
       });
     });
+    it("Should be able to set a new minWager amount", async function () {
+      const [acct, acct1] = await ethers.getSigners();
+      await expect(
+        ethChessMatches
+          .connect(acct1)
+          .newMinWager(ethers.utils.parseUnits(".0001", "ether"))
+      ).to.be.rejectedWith("DOES NOT HAVE ADMIN ROLE");
+      await ethChessMatches
+        .connect(acct)
+        .newMinWager(ethers.utils.parseUnits(".00001", "ether"));
+    });
 
     describe("safeMint function test", function () {
       it("Should be able to mint ETH Chess NFTs", async function () {
-        const [test3, test4, test5] = await ethers.getSigners();
+        const { deployer } = await getNamedAccounts();
+        const [test1, test2, test3, test4, test5, test6] =
+          await ethers.getSigners();
         // const ETHChessNFTs = await ethers.getContractFactory("ETHChessNFTs");
+        await ethChessNFTs.connect(test1).safeMint(test1.address, 6, {
+          value: ethers.utils.parseUnits(".06", "ether"),
+        });
+        await ethChessNFTs.connect(test2).safeMint(test2.address, 6, {
+          value: ethers.utils.parseUnits(".06", "ether"),
+        });
         await ethChessNFTs.connect(test3).safeMint(test3.address, 6, {
           value: ethers.utils.parseUnits(".06", "ether"),
         });
@@ -101,6 +143,17 @@ describe("ETH Chess Matches Test", function () {
           value: ethers.utils.parseUnits(".06", "ether"),
         });
         await ethChessNFTs.connect(test5).safeMint(test5.address, 6, {
+          value: ethers.utils.parseUnits(".06", "ether"),
+        });
+        await ethChessNFTs.connect(test6).safeMint(test6.address, 6, {
+          value: ethers.utils.parseUnits(".06", "ether"),
+        });
+        await expect(
+          ethChessNFTs.safeMint(test1.address, 6, {
+            value: ethers.utils.parseUnits(".03", "ether"),
+          })
+        ).to.be.rejectedWith("Insufficient Value");
+        await ethChessNFTs.safeMint(deployer, 6, {
           value: ethers.utils.parseUnits(".06", "ether"),
         });
       });
@@ -165,7 +218,7 @@ describe("ETH Chess Matches Test", function () {
           "Insufficient amount"
         );
         await ethChessMatches.initMatch({
-          value: ethers.utils.parseUnits("1", "ether"),
+          value: ethers.utils.parseUnits("10", "ether"),
         });
       });
     });
@@ -176,11 +229,11 @@ describe("ETH Chess Matches Test", function () {
           ethChessMatches.startMatch(1, "testIPFSString")
         ).to.be.rejectedWith("Insufficient amount");
         await ethChessMatches.startMatch(1, "testStartIPFSString", {
-          value: ethers.utils.parseUnits("1", "ether"),
+          value: ethers.utils.parseUnits("10", "ether"),
         });
         await expect(
           ethChessMatches.startMatch(1, "testStartIPFSString", {
-            value: ethers.utils.parseUnits("1", "ether"),
+            value: ethers.utils.parseUnits("10", "ether"),
           })
         ).to.be.rejectedWith("Match already started!");
       });
@@ -208,9 +261,9 @@ describe("ETH Chess Matches Test", function () {
               1,
               "StartHash",
               "EndHash",
-              ethers.utils.parseUnits("1", "ether"),
+              ethers.utils.parseUnits("10", "ether"),
               {
-                value: ethers.utils.parseUnits("1", "ether"),
+                value: ethers.utils.parseUnits("10", "ether"),
               }
             )
         ).to.be.rejectedWith("Not a participant!");
@@ -219,9 +272,9 @@ describe("ETH Chess Matches Test", function () {
             1,
             "StartHash",
             "EndHash",
-            ethers.utils.parseUnits("1", "ether"),
+            ethers.utils.parseUnits("10", "ether"),
             {
-              value: ethers.utils.parseUnits("1", "ether"),
+              value: ethers.utils.parseUnits("10", "ether"),
             }
           )
         )
@@ -231,7 +284,7 @@ describe("ETH Chess Matches Test", function () {
             1,
             "StartHash",
             "EndHash",
-            ethers.utils.parseUnits("1", "ether")
+            ethers.utils.parseUnits("10", "ether")
           );
       });
     });
@@ -247,9 +300,9 @@ describe("ETH Chess Matches Test", function () {
               1,
               "StartHash",
               "DisputeHash",
-              ethers.utils.parseUnits("2", "ether"),
+              ethers.utils.parseUnits("20", "ether"),
               {
-                value: ethers.utils.parseUnits("1", "ether"),
+                value: ethers.utils.parseUnits("10", "ether"),
               }
             )
         ).to.be.rejectedWith("Not a participant!");
@@ -266,9 +319,9 @@ describe("ETH Chess Matches Test", function () {
             1,
             "StartHash",
             "DisputeHash",
-            ethers.utils.parseUnits("2", "ether"),
+            ethers.utils.parseUnits("20", "ether"),
             {
-              value: ethers.utils.parseUnits("1", "ether"),
+              value: ethers.utils.parseUnits("20", "ether"),
             }
           )
         )
@@ -279,16 +332,16 @@ describe("ETH Chess Matches Test", function () {
             1,
             "StartHash",
             "DisputeHash",
-            ethers.utils.parseUnits("2", "ether")
+            ethers.utils.parseUnits("20", "ether")
           );
         await expect(
           ethChessMatches.disputeClaim(
             1,
             "StartHash",
             "DisputeHash",
-            ethers.utils.parseUnits("2", "ether"),
+            ethers.utils.parseUnits("20", "ether"),
             {
-              value: ethers.utils.parseUnits("1", "ether"),
+              value: ethers.utils.parseUnits("20", "ether"),
             }
           )
         ).to.be.rejectedWith("Claim already contested!");
@@ -299,7 +352,7 @@ describe("ETH Chess Matches Test", function () {
       it("Should allow for voting on a disputed claim", async function () {
         const [test3, test4, test5] = await ethers.getSigners();
         await ethChessMatches.connect(test3).resolveDispute(1, false);
-        await ethChessMatches.connect(test4).resolveDispute(1, false);
+        await ethChessMatches.connect(test4).resolveDispute(1, true);
         await ethChessMatches.connect(test5).resolveDispute(1, true);
       });
     });
@@ -308,9 +361,15 @@ describe("ETH Chess Matches Test", function () {
       it("Should allow the initial account that started the match to end with the initial claim being false", async function () {
         await helpers.mine(13);
         // const [test3] = await ethers.getSigners();
+        const matchesBeforeHoldings = await ethChessMatches.viewHoldings();
+        console.log(
+          "MatchesBefore ",
+          ethers.utils.formatEther(matchesBeforeHoldings)
+        );
         await ethChessMatches.endMatch(1, "TEST_END_IPFS_HASH");
         const matchesHoldings = await ethChessMatches.viewHoldings();
-        console.log("Matches ", ethers.utils.formatEther(matchesHoldings));
+        console.log("MatchesAfter ", ethers.utils.formatEther(matchesHoldings));
+        await getSignersBalance();
       });
     });
 
@@ -359,13 +418,20 @@ describe("ETH Chess Matches Test", function () {
     describe("advanceDeathMatch(uint matchId, string ipfsHash)", function () {
       it("Should end the first DeathMatch matchround , returns success", async function () {
         // const { deployer } = await getNamedAccounts();
-
+        await helpers.mine(7);
+        await ethChessMatches.endMatch(2, "TEST_END_IPFS_HASH");
+        const matchesHoldings = await ethChessMatches.viewHoldings();
+        console.log("DeathMatches ", ethers.utils.formatEther(matchesHoldings));
         await ethChessMatches.advanceDeathMatch(1, "EndHash", {
           value: ethers.utils.parseUnits(".5", "ether"),
         });
       });
       it("Should start a winning claim for DeathMatch second round", async function () {
         const { deployer } = await getNamedAccounts();
+        const [, test2] = await ethers.getSigners();
+        await ethChessMatches.connect(test2).startMatch(3, "IPFSHASH", {
+          value: ethers.utils.parseUnits(".5", "ether"),
+        });
         await expect(
           ethChessMatches.startClaim(
             3,
@@ -388,13 +454,21 @@ describe("ETH Chess Matches Test", function () {
       });
       it("Should end the second DeathMatch match round", async function () {
         // const { deployer } = await getNamedAccounts();
-
+        await helpers.mine(7);
+        await ethChessMatches.endMatch(3, "TEST_END_IPFS_HASH");
+        const matchesHoldings = await ethChessMatches.viewHoldings();
+        console.log("DeathMatches ", ethers.utils.formatEther(matchesHoldings));
         await ethChessMatches.advanceDeathMatch(1, "EndHash", {
           value: ethers.utils.parseUnits(".5", "ether"),
         });
       });
       it("Should start a winning claim for the final DeathMatch round", async function () {
         const { deployer } = await getNamedAccounts();
+        const [, test2] = await ethers.getSigners();
+        console.log(ethers.utils.formatEther(await test2.getBalance()));
+        await ethChessMatches.connect(test2).startMatch(4, "IPFSHASH", {
+          value: ethers.utils.parseUnits(".5", "ether"),
+        });
         await expect(
           ethChessMatches.startClaim(
             4,
@@ -641,6 +715,7 @@ describe("ETH Chess Matches Test", function () {
         await ethChessMatches.connect(test).advanceDeathMatch(2, "IPFSHASH", {
           value: ethers.utils.parseUnits("1", "ether"),
         });
+        await getSignersBalance();
       });
     });
   });

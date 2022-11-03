@@ -65,6 +65,8 @@ contract ETHChessMatches is ReentrancyGuard {
   uint public fee;
   ///@notice uint256 deathMatch winner get rewardsPot / rewardsFee
   uint public rewardsFee;
+  ///@notice uint256 minWager minimum amount to wager
+  uint public minWager;
 
   string private constant errMessage1 = "Insufficient amount";
   string private constant errMessage2 = "Not a participant!";
@@ -127,9 +129,9 @@ contract ETHChessMatches is ReentrancyGuard {
   }
 
   mapping(address => Player) public addressToPlayer;
-  mapping(uint => Match) public idToMatch;
-  mapping(uint => Claim) public idToClaim;
-  mapping(uint => Dispute) public idToDispute;
+  mapping(uint => Match) public idToMatch; // Each match can have a claim and dispute with the same id
+  mapping(uint => Claim) public idToClaim; // Hash the same id as the match associated
+  mapping(uint => Dispute) public idToDispute; // Has the same id as the match associated
   mapping(uint => DeathMatch) public idToDeathMatch;
 
   event MatchInitiated(address player1, uint amount, uint matchId);
@@ -154,7 +156,7 @@ contract ETHChessMatches is ReentrancyGuard {
   }
   modifier hasChessNFT(){
     uint balance = IERC721(ethChessNFTs).balanceOf(msg.sender);
-    require(balance >= 1, "Not an ETH-Chess NFT holder!");
+    require(balance > 0, "Not an ETH-Chess NFT holder!");
     _;
   }
 
@@ -163,6 +165,7 @@ contract ETHChessMatches is ReentrancyGuard {
     delta = 7;
     fee = 1000; // 10%
     rewardsFee = 5000; // 50%
+    minWager = 1e13;
   }
 
   /// @notice Allows Admin role to set a new Admin
@@ -195,13 +198,19 @@ contract ETHChessMatches is ReentrancyGuard {
     return true;
   }
 
+  /// @notice Allow Admin role to set a new minimum wager amount
+  function newMinWager(uint newMinWa) external isAdmin returns(bool){
+    minWager = newMinWa;
+    return true;
+  }
+
   //~~~> initMatch => startMatch, ?claimRefunds => startClaim, ?disputeClaim, ?resolveDispute => endMatch
 
   /// @notice Initiates a new 1v1 match with a set wager value.
   /// @dev Player initiates a new match that anyone can start by matching the wager
   /// @return matchId Id of the initiated match
   function initMatch() external payable returns(uint matchId){
-      require(msg.value > 1e13, errMessage1);
+      require(msg.value > minWager, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
         matchIds,
@@ -221,7 +230,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @dev Player initiates a new match that only the challenger can start by matching the wager
   /// @return matchId Id of the initiated match
   function initChallengeMatch(address comp) external payable returns(uint matchId){
-      require(msg.value > 1e13, errMessage1);
+      require(msg.value > minWager, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
         matchIds,
@@ -265,10 +274,12 @@ contract ETHChessMatches is ReentrancyGuard {
   }
 
   /// @notice Executed when the match ends to claim rewards.
-  /// @dev Winner must enter IPFS hash of final gameplay state to go through claim resolution process.
+  /// @dev Winner must enter IPFS hash of final gameplay state along with security deposit equal to initial wager,
+  /// in order to go through the claim resolution process.
   /// @param matchId The ID of the match
   /// @param startIpfsHash The start IPFSHash of the match
   /// @param endIpfsHash The end IPFSHash of the match
+  /// @param security The security must equal the initial wager amount
   /// @return Bool success or failure
   function startClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint security) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
@@ -296,6 +307,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param matchId The ID of the match
   /// @param startIpfsHash The start Ipfs hash of the final game state
   /// @param endIpfsHash The contested Ipfs hash of the final game state
+  /// @param dSecurity The dispute security must equal twice the initial wager amount
   /// @return Bool success or failure
   function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
@@ -367,7 +379,7 @@ contract ETHChessMatches is ReentrancyGuard {
     Dispute memory dispute = idToDispute[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
     require(block.number > claim.claimBlock + delta, "Dispute period ongoing.");
-    uint pfee = calcFee(startmatch.p1amount + startmatch.p2amount, fee);
+    uint pfee = calcFee((startmatch.p1amount + startmatch.p2amount), fee);
     if(claim.contested){ /// If tally is true, the claim is true, else the claim is false.
       if(msg.sender == claim.claimant && dispute.tally){ // Claim is true, caller is claimant
         uint voters = dispute.votedFor.length;
@@ -473,11 +485,12 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param deathmatchId Id of the deathmatch to advance
   /// @param ipfsHash String of the new match
   /// @return Success or failure
-  function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) external payable nonReentrant returns(bool){
+  function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) external payable returns(bool){
     DeathMatch storage deathmatch = idToDeathMatch[deathmatchId];
     uint len = deathmatch.matches.length;
     Claim memory lastmatch = idToClaim[deathmatch.matches[len - 1]];
     require(lastmatch.claimBlock > 0, "Match still ongoing!");
+    uint[] memory matches;
     if(lastmatch.contested){
       Dispute memory lastdispute = idToDispute[deathmatch.matches[len - 1]];
       if(lastdispute.tally){ // lastdipute.tally == votedFor.length > votedAgainst.length
@@ -494,6 +507,7 @@ contract ETHChessMatches is ReentrancyGuard {
         rewardsPot -= rfee;
         require(sendEther(msg.sender, deathmatch.pot + rfee)); // Ensure funds are sent
         emit DeathMatchEnded(deathmatchId, msg.sender, ipfsHash, deathmatch.pot + rfee);
+        idToDeathMatch[deathmatchId] = DeathMatch(0,0,0,0,0, matches, address(0x0));
         return true;
       } else { // New match round
         require(msg.value == deathmatch.entranceFee, errMessage1);
@@ -502,7 +516,7 @@ contract ETHChessMatches is ReentrancyGuard {
         deathmatch.matches.push(id);
       }
     } else { // New Reigning Champion, reset rounds!
-      uint[] memory matches;
+      
       require(msg.value == deathmatch.entranceFee, errMessage1);
       deathmatch.pot = deathmatch.pot + msg.value;
       deathmatch.reigningChamp = msg.sender;
