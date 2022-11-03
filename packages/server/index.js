@@ -4,34 +4,21 @@ const http = require("http");
 const express = require("express");
 const GUN = require("gun");
 const { Chess } = require('chess.js');
+const { gun_config } = require('./config');
 
 const app = express(); // creating instance of express
 const server = http.createServer(app); // creating http server from express instance & enabling cross access origin resource sharing
 
-const awsKey = process.env.SERVER_ACCESS_KEY_ID;
-const awsSecret = process.env.SERVER_SECRET_ACCESS_KEY;
-const awsBucket = process.env.SERVER_BUCKET;
+// Bring in env variables
+const GUNKEY = process.env.GUN_KEY;
+const URLfrontEnd = process.env.URL_FRONTEND;
 
-const GUNKEY = "eth-chess-v0.1.15";
+// Enable decentralized db
+const gun = new GUN(gun_config);
 
-const gun = new GUN({
-  peers: [
-    "https://phunky-gun-db.herokuapp.com/gun",
-    "https://gun-ckx8k.ondigitalocean.app/gun",
-  ],
-  axe: false,
-  rad: false,
-  localStorage: false,
-  s3: {
-    key: awsKey, // AWS Access Key
-    secret: awsSecret, // AWS Secret Token
-    bucket: awsBucket, // The bucket you want to save into
-  },
-});
-
+// Enable Chess.js game engine
 let game = new Chess();
 
-const URLfrontEnd = process.env.URL_FRONTEND;
 const io = require("socket.io")(server, {
   cors: {
     // this is required or else you will receive a CORS error, if you are using v3 of socket.io
@@ -60,7 +47,6 @@ let lobbyObject = {
           }
         };
     }
-
     
   const emitter = (roomId, channel, payload, othersOnly) => {
     if (othersOnly) {
