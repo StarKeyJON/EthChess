@@ -141,7 +141,7 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 
-  const { gameId } = useParams();
+  const { matchAddress, gameId } = useParams();
 
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const gpState = useRef();
@@ -560,7 +560,7 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
           dispatch({ type: "RESETGO" });
         }}
       >
-        {/* <Card>
+        <Card>
           {winner === socketId ? (
             <>
               <h1>Congratulations!</h1>
@@ -579,7 +579,7 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
               <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
             </>
           )}
-        </Card> */}
+        </Card>
       </Modal>
     );
   };
@@ -592,7 +592,7 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
         onCancel={() => {
           dispatch({ type: "NOQUIT" });
         }}
-        onOk={() => dispatch({ type: "CONFIRMQUIT" })}
+        onOk={() => window.location.replace("/lobby")}
       >
         <h1>Are you sure you want to exit the match?</h1>
       </Modal>

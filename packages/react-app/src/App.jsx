@@ -448,7 +448,7 @@ function App(props) {
                   <ChessMatch />
                 </div>
               </Route>
-              <Route exact path="/match/room/:address/:gameId">
+              <Route exact path="/match/room/:matchAddress/:gameId">
                 <ETHMatch
                   startTime={startTime}
                   address={address}
