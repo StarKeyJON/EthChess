@@ -495,7 +495,7 @@ contract ETHChessMatches is ReentrancyGuard {
       if(deathmatch.matches.length == 3){ // Deathmatch winner!
         uint rfee = calcFee(rewardsPot, rewardsFee);
         rewardsPot -= rfee;
-        sendEther(msg.sender, deathmatch.pot + rfee);
+        require(sendEther(msg.sender, deathmatch.pot + rfee)); // Ensure funds are sent
         emit DeathMatchEnded(deathmatchId, msg.sender, ipfsHash, deathmatch.pot + rfee);
         return true;
       } else { // New match round
