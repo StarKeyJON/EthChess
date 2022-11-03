@@ -123,6 +123,12 @@ function chessReducer(state, action) {
     case "OPPONENTLEFT": {
       return { ...state, opponentLeftModal: true };
     }
+    case "QUIT": {
+      return { ...state, userQuitModal: true };
+    }
+    case "NOQUIT": {
+      return { ...state, userQuitModal: false };
+    }
     case "RESET":
       return initialState;
 
@@ -131,7 +137,7 @@ function chessReducer(state, action) {
   }
 }
 
-const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
+const ChessSkirmishes = ({ gun }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 
@@ -162,6 +168,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     opponentLeftModal,
     // winningModalVisible,
     // losingModalVisible,
+    userQuitModal,
     gameOverModal,
     player1Shake,
     player2Shake,
@@ -189,16 +196,6 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
       socket.emit("opponentSet", gameId, socketId, "skirmishes");
     }
     dispatch({ type: "SHAKING" });
-  };
-
-  // IPFS file processing and uploading
-  const handleIPFSInput = async e => {
-    try {
-      let added = await AddToIPFS(e);
-      dispatch({ type: "IPFSHISTORY", load: added.path });
-    } catch (error) {
-      console.log("Error uploading file: ", error);
-    }
   };
 
   const onMove = (from, to) => {
@@ -243,7 +240,6 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
             turn: opp,
           },
         });
-        handleIPFSInput(file);
 
         socket.emit("onMove", gameId, socketId, file);
 
@@ -296,17 +292,29 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
       },
     });
     socket.emit("onMove", gameId, socketId, file);
+    if (chess.inCheck()) {
+      const movesleft = chess.moves({ verbose: true });
+      if (movesleft.length === 0) {
+        notification.open({ message: `Game Over! You are the winner!` });
+        dispatch({ type: "GAMEOVER", winner: socketId });
+      } else {
+        dispatch({ type: "CHECKCHECK", inCheck: true, player: opp });
+      }
+    } else {
+      dispatch({ type: "CHECKCHECK", inCheck: false });
+    }
   };
 
   const moveGun = (from, to, prom, ack) => {
     let { gunMoved, chess } = gpState.current;
-    if (!gunMoved && socketId !== ack.player) {
+    if (!gunMoved) {
       console.log("Moving Gun!");
       if (prom !== undefined) {
+        console.log("Gun promotion!", prom);
         chess.move({ from, to, promotion: prom });
         if (chess.inCheck()) {
-          const moves = chess.moves({ verbose: true });
-          if (moves.length === 0) {
+          const movesleft = chess.moves({ verbose: true });
+          if (movesleft.length === 0) {
             notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
             dispatch({ type: "GAMEOVER", winner: ack.player });
           } else {
@@ -333,18 +341,6 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
         });
       } else {
         chess.move({ from, to });
-        if (chess.inCheck()) {
-          const moves = chess.moves({ verbose: true });
-          if (moves.length === 0) {
-            notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
-            dispatch({ type: "GAMEOVER", winner: ack.player });
-          } else {
-            notification.open({ message: "Check!" });
-            dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
-          }
-        } else {
-          dispatch({ type: "CHECKCHECK", inCheck: false });
-        }
         let m = chess.history({ verbose: true });
         m.reverse();
         dispatch({
@@ -360,6 +356,18 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
             turn: ack.turn,
           },
         });
+        if (chess.inCheck()) {
+          const movesleft = chess.moves({ verbose: true });
+          if (movesleft.length === 0) {
+            notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
+            dispatch({ type: "GAMEOVER", winner: ack.player });
+          } else {
+            notification.open({ message: "Check!" });
+            dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+          }
+        } else {
+          dispatch({ type: "CHECKCHECK", inCheck: false });
+        }
       }
     }
   };
@@ -541,7 +549,7 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
           dispatch({ type: "RESETGO" });
         }}
       >
-        <Card>
+        {/* <Card>
           {winner === socketId ? (
             <>
               <h1>Congratulations!</h1>
@@ -560,7 +568,22 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
               <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
             </>
           )}
-        </Card>
+        </Card> */}
+      </Modal>
+    );
+  };
+
+  const HandleQuit = () => {
+    return (
+      <Modal
+        title="Confirm exit"
+        visible={userQuitModal}
+        onCancel={() => {
+          dispatch({ type: "NOQUIT" });
+        }}
+        onOk={() => dispatch({ type: "CONFIRMQUIT" })}
+      >
+        <h1>Are you sure you want to exit the match?</h1>
       </Modal>
     );
   };
@@ -610,7 +633,6 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
     if (shakingHands && player1Shake && player2Shake) {
       dispatch({ type: "STARTMATCH", player1: player1 });
       gun.get(GUNKEY).get("skirmishes").get(gameId).put({ gameInProgress: true });
-
     }
   }, [gameId, gun, player1, player1Shake, player2Shake, shakingHands]);
 
@@ -683,8 +705,9 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
         <PlayerLeftM />
         <OpponentLeftM />
         <GameOver />
+        <HandleQuit />
       </div>
-      {history.length === 0 && (
+      {history.length === 0 ? (
         <Space>
           <Card>
             <h1>Cancel the game before the first move is made!</h1>
@@ -695,6 +718,21 @@ const ChessSkirmishes = ({ gun, tx, writeContracts }) => {
               }}
             >
               Cancel
+            </Button>
+          </Card>
+        </Space>
+      ) : (
+        <Space style={{ marginTop: 30 }}>
+          <Card>
+            <p>Quit the match?</p>
+            <br />
+            <Button
+              style={{ backgroundColor: "red" }}
+              onClick={() => {
+                dispatch({ type: "QUIT" });
+              }}
+            >
+              Exit
             </Button>
           </Card>
         </Space>

@@ -17,7 +17,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  await deploy("ETHChess", {
+  await deploy("ETHChessMatches", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
     args: [deployer],
@@ -25,12 +25,12 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     waitConfirmations: 5,
     LibraryName: "./node_modules/@openzeppelin",
   });
-  const ETHChess = await ethers.getContract("ETHChess", deployer);
+  const ETHChess = await ethers.getContract("ETHChessMatches", deployer);
 
   await deploy("ETHChessNFTs", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [deployer, deployer, ""],
+    args: [deployer, deployer, "ipfs.io"],
     log: true,
     waitConfirmations: 5,
     LibraryName: "./node_modules/@openzeppelin",
@@ -113,4 +113,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   //   console.error(error);
   // }
 };
-module.exports.tags = ["ETHChess", "ETHChessNFTs"];
+module.exports.tags = ["ETHChessMatches", "ETHChessNFTs"];

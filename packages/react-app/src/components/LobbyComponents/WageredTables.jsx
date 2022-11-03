@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
-import { Card, Table, Button, Input, Space, Row, Col, Image, Popover, notification } from "antd";
-import { FaInfoCircle, FaVoteYea } from "react-icons/fa";
+import { Card, Table, Button, Input, Space, Row, Col, Popover, notification } from "antd";
+import { FaInfoCircle } from "react-icons/fa";
 
 const WageredTables = ({ players, address }) => {
   const [searchText, setSearchText] = useState("");
@@ -125,6 +125,7 @@ const WageredTables = ({ players, address }) => {
       ...getColumnSearchProps("timeJoined"),
     },
   ];
+
   return (
     <div style={{ marginBottom: 100 }}>
       <Row gutter={[30, 30]}>

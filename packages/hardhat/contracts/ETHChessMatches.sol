@@ -242,7 +242,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param matchId The ID of the match, increments with each match
   /// @param ipfsHash The hash of the game start
   /// @return Bool success or failure
-  function startMatch(uint matchId, string memory ipfsHash) external payable returns(bool){
+  function startMatch(uint matchId, string memory ipfsHash) external payable nonReentrant returns(bool){
     Match memory startmatch = idToMatch[matchId];
     require(startmatch.startTime == 0, "Match already started!"); // Ensure a match isn't started already
     require(msg.value == startmatch.p1amount, errMessage1); // Ensure msg.value equals the starting wager
@@ -270,7 +270,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param startIpfsHash The start IPFSHash of the match
   /// @param endIpfsHash The end IPFSHash of the match
   /// @return Bool success or failure
-  function startClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint security) external payable returns(bool){
+  function startClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint security) external payable nonReentrant returns(bool){
     Match memory startmatch = idToMatch[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
     require(security == startmatch.p1amount, "Must enter security deposit = to wager");
@@ -297,7 +297,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param startIpfsHash The start Ipfs hash of the final game state
   /// @param endIpfsHash The contested Ipfs hash of the final game state
   /// @return Bool success or failure
-  function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) external payable returns(bool){
+  function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) external payable nonReentrant returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim storage claim = idToClaim[matchId]; // Storage used to save claim.contested
     require(!claim.contested, "Claim already contested!"); /// Ensure claim is not contested already
@@ -327,7 +327,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param matchId The ID of the match
   /// @param vote Boolean vote for(true) or against(false)
   /// @return Bool success or failure
-  function resolveDispute(uint matchId, bool vote) external hasChessNFT returns(bool) {
+  function resolveDispute(uint matchId, bool vote) external hasChessNFT nonReentrant returns(bool) {
     Dispute storage dispute = idToDispute[matchId];
     address[] storage votedFor = dispute.votedFor;
     address[] storage votedAgainst = dispute.votedAgainst;
@@ -361,7 +361,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param matchId The ID of the match
   /// @param ipfsHash The start Ipfs hash of the final game state
   /// @return Bool success or failure
-  function endMatch(uint matchId, string calldata ipfsHash) external payable returns(bool){
+  function endMatch(uint matchId, string calldata ipfsHash) external payable nonReentrant returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim memory claim = idToClaim[matchId];
     Dispute memory dispute = idToDispute[matchId];
@@ -408,7 +408,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @dev Claim must not be made and one tenth of a day must have passed to claim refund.
   /// @param matchId The ID of the match
   /// @return Bool success or failure
-  function claimRefund(uint matchId) external returns(bool){
+  function claimRefund(uint matchId) external nonReentrant returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim storage claim = idToClaim[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
@@ -473,7 +473,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param deathmatchId Id of the deathmatch to advance
   /// @param ipfsHash String of the new match
   /// @return Success or failure
-  function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) external payable returns(bool){
+  function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) external payable nonReentrant returns(bool){
     DeathMatch storage deathmatch = idToDeathMatch[deathmatchId];
     uint len = deathmatch.matches.length;
     require(msg.value == deathmatch.entranceFee, errMessage1);

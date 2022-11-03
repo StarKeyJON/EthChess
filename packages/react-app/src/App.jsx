@@ -31,9 +31,15 @@ import { ProfilePage, Profile } from "./components/ProfileComponents";
 
 import FourOFour from "./views/FourOFour";
 import Disputes from "./components/NFTHolders/Disputes";
-import { ChessViewer, ChessMatch } from "./components/ChessComponents/ChessGrounds";
+import {
+  ChessViewer,
+  ChessMatch,
+  ChessSkirmishes,
+  ETHMatch,
+  ETHDeathMatch,
+  ETHChallengeMatch,
+} from "./components/ChessComponents/ChessGrounds";
 import { Content } from "antd/lib/layout/layout";
-import ChessMatches from "./components/ChessComponents/ChessGrounds/ChessMatches";
 import useProfile from "./components/StateComponents/useProfile";
 import Voting from "./views/Voting";
 import { useGun } from "./hooks/useGunRelay";
@@ -434,10 +440,18 @@ function App(props) {
                 />
               </Route>
               <Route exact path="/skirmish/room/:gameId">
-                <ChessMatches gun={gun} />
+                <ChessSkirmishes gun={gun} />
               </Route>
               <Route exact path="/skirmish/view/:gameId">
-                <ChessViewer
+                <ChessViewer gun={gun} />
+              </Route>
+              <Route exact path="/match/ai">
+                <div style={{ marginTop: 40 }}>
+                  <ChessMatch />
+                </div>
+              </Route>
+              <Route exact path="/match/room/:address/:gameId">
+                <ETHMatch
                   startTime={startTime}
                   address={address}
                   userSigner={userSigner}
@@ -445,34 +459,29 @@ function App(props) {
                   localProvider={localProvider}
                   yourLocalBalance={yourLocalBalance}
                   price={price}
-                  player={player}
-                  timeStamp={startTime}
                   tx={tx}
-                  setPlayer={setPlayer}
                   writeContracts={writeContracts}
                   readContracts={readContracts}
                   gun={gun}
                 />
               </Route>
-              <Route exact path="/match/ai">
-                <div style={{ marginTop: 40 }}>
-                  <ChessMatch
-                    startTime={startTime}
-                    address={address}
-                    userSigner={userSigner}
-                    mainnetProvider={mainnetProvider}
-                    localProvider={localProvider}
-                    yourLocalBalance={yourLocalBalance}
-                    price={price}
-                    tx={tx}
-                    writeContracts={writeContracts}
-                    readContracts={readContracts}
-                    gun={gun}
-                  />
-                </div>
+              <Route exact path="/challenge-match/room/:address/:gameId">
+                <ETHChallengeMatch
+                  startTime={startTime}
+                  address={address}
+                  userSigner={userSigner}
+                  mainnetProvider={mainnetProvider}
+                  localProvider={localProvider}
+                  yourLocalBalance={yourLocalBalance}
+                  price={price}
+                  tx={tx}
+                  writeContracts={writeContracts}
+                  readContracts={readContracts}
+                  gun={gun}
+                />
               </Route>
-              <Route exact path="/match/room/:gameId">
-                <ChessMatch
+              <Route exact path="/deathmatch/room/:address/:gameId">
+                <ETHDeathMatch
                   startTime={startTime}
                   address={address}
                   userSigner={userSigner}
@@ -487,19 +496,7 @@ function App(props) {
                 />
               </Route>
               <Route exact path="/match/view/:gameId">
-                <ChessViewer
-                  startTime={startTime}
-                  address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                  gun={gun}
-                />
+                <ChessViewer gun={gun} />
               </Route>
               <Route exact path="/disputes">
                 <Voting
@@ -516,28 +513,11 @@ function App(props) {
                 />
               </Route>
               <Route exact path="/disputes/:disputeId">
-                <Disputes
-                  address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                  gun={gun}
-                />
+                <Disputes />
               </Route>
               <Route exact path="/profile">
                 <Profile
                   address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
                   gunUser={gunUser}
                   setGunUser={setGunUser}
                   loggedIn={loggedIn}
@@ -551,24 +531,12 @@ function App(props) {
                 />
               </Route>
               <Route exact path="/profile/:account">
-                <ProfilePage
-                  address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                  gun={gun}
-                />
+                <ProfilePage address={address} gun={gun} />
               </Route>
               <Route exact path="/mint">
                 <Mint
                   address={address}
                   userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
                   localProvider={localProvider}
                   yourLocalBalance={yourLocalBalance}
                   price={price}

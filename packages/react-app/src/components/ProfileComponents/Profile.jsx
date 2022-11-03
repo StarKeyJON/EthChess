@@ -15,7 +15,12 @@ const Profile = ({
   createProfile,
   logoutProfile,
 }) => {
-  const [passphrase, setPass] = useState("");
+  const [passphrase, setPass] = useState();
+
+  const handlePWChange = e => {
+    // console.log(e.target.value);
+    setPass(e.target.value);
+  };
 
   const LogInCard = () => {
     return (
@@ -35,10 +40,7 @@ const Profile = ({
                     <Input.Group compact>
                       <Input.Password
                         placeholder="input password"
-                        onChange={e => {
-                          e.preventDefault();
-                          setPass({ pass: e.target.value });
-                        }}
+                        onChange={handlePWChange}
                         iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                       />
                     </Input.Group>
@@ -69,10 +71,7 @@ const Profile = ({
                       <Input.Password
                         placeholder="input password"
                         iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                        onChange={e => {
-                          e.preventDefault();
-                          setPass({ pass: e.target.value });
-                        }}
+                        onChange={e => setPass(e.target.value)}
                       />
                     </Input.Group>
                     <Button
