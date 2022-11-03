@@ -66,8 +66,8 @@ describe("ETH Chess Matches Coverage Test", function () {
     describe("newRFee function test", function () {
       it("Should be able to set a new rewardsFee for admin only", async function () {
         const [, acct1] = await ethers.getSigners();
-        await ethChessMatches.newRFee(1000);
-        expect(await ethChessMatches.rewardsFee()).to.equal(1000);
+        await ethChessMatches.newRFee(5000);
+        expect(await ethChessMatches.rewardsFee()).to.equal(5000);
         await expect(
           ethChessMatches.connect(acct1).newRFee(1337)
         ).to.be.rejectedWith("DOES NOT HAVE ADMIN ROLE");
@@ -185,7 +185,6 @@ describe("ETH Chess Matches Coverage Test", function () {
         await expect(ethChessNFTs.connect(test4).withdraw()).to.be.rejectedWith(
           "AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role 0x08c4e2e8a3d28b0812548a4a897f980fb868050b13d7a2400a7351cdca13889e"
         );
-        await ethChessNFTs.withdraw();
         expect(await ethChessNFTs.tokenURI(1)).to.equal(
           "https://authenticated.ipfs/1.json"
         );
@@ -207,12 +206,14 @@ describe("ETH Chess Matches Coverage Test", function () {
             value: ethers.utils.parseUnits("1", "ether"),
           })
         ).to.be.rejectedWith("Amount must be <= 10");
+        await ethChessNFTs.withdraw();
       });
     });
 
     describe("initMatch(bool specific, address comp)", function () {
       it("Should be able to initialize a new match", async function () {
         // const matchId = 1;
+        await getSignersBalance();
 
         await expect(ethChessMatches.initMatch()).to.be.rejectedWith(
           "Insufficient amount"
@@ -225,14 +226,17 @@ describe("ETH Chess Matches Coverage Test", function () {
 
     describe("startMatch(uint matchId, string ipfsHash)", function () {
       it("Should be able to start an initialized match", async function () {
+        const [, test2] = await ethers.getSigners();
         await expect(
-          ethChessMatches.startMatch(1, "testIPFSString")
+          ethChessMatches.connect(test2).startMatch(1, "testIPFSString")
         ).to.be.rejectedWith("Insufficient amount");
-        await ethChessMatches.startMatch(1, "testStartIPFSString", {
-          value: ethers.utils.parseUnits("10", "ether"),
-        });
+        await ethChessMatches
+          .connect(test2)
+          .startMatch(1, "testStartIPFSString", {
+            value: ethers.utils.parseUnits("10", "ether"),
+          });
         await expect(
-          ethChessMatches.startMatch(1, "testStartIPFSString", {
+          ethChessMatches.connect(test2).startMatch(1, "testStartIPFSString", {
             value: ethers.utils.parseUnits("10", "ether"),
           })
         ).to.be.rejectedWith("Match already started!");
@@ -291,8 +295,7 @@ describe("ETH Chess Matches Coverage Test", function () {
 
     describe("disputeClaim(uint matchId, string startIpfsHash, string endIpfsHash, uint dSecurity)", function () {
       it("Should start a winning claim dispute process, returns success", async function () {
-        const { deployer } = await getNamedAccounts();
-        const [, , penTester] = await ethers.getSigners();
+        const [, test2, penTester] = await ethers.getSigners();
         await expect(
           ethChessMatches
             .connect(penTester)
@@ -307,27 +310,31 @@ describe("ETH Chess Matches Coverage Test", function () {
             )
         ).to.be.rejectedWith("Not a participant!");
         await expect(
-          ethChessMatches.disputeClaim(
-            1,
-            "StartHash",
-            "DisputeHash",
-            ethers.utils.parseUnits(".1", "ether")
-          )
+          ethChessMatches
+            .connect(test2)
+            .disputeClaim(
+              1,
+              "StartHash",
+              "DisputeHash",
+              ethers.utils.parseUnits(".1", "ether")
+            )
         ).to.be.rejectedWith("Insufficient amount");
         await expect(
-          ethChessMatches.disputeClaim(
-            1,
-            "StartHash",
-            "DisputeHash",
-            ethers.utils.parseUnits("20", "ether"),
-            {
-              value: ethers.utils.parseUnits("20", "ether"),
-            }
-          )
+          ethChessMatches
+            .connect(test2)
+            .disputeClaim(
+              1,
+              "StartHash",
+              "DisputeHash",
+              ethers.utils.parseUnits("20", "ether"),
+              {
+                value: ethers.utils.parseUnits("20", "ether"),
+              }
+            )
         )
           .to.emit(ethChessMatches, "ClaimContested")
           .withArgs(
-            deployer,
+            test2.address,
             1,
             1,
             "StartHash",
@@ -335,22 +342,24 @@ describe("ETH Chess Matches Coverage Test", function () {
             ethers.utils.parseUnits("20", "ether")
           );
         await expect(
-          ethChessMatches.disputeClaim(
-            1,
-            "StartHash",
-            "DisputeHash",
-            ethers.utils.parseUnits("20", "ether"),
-            {
-              value: ethers.utils.parseUnits("20", "ether"),
-            }
-          )
+          ethChessMatches
+            .connect(test2)
+            .disputeClaim(
+              1,
+              "StartHash",
+              "DisputeHash",
+              ethers.utils.parseUnits("20", "ether"),
+              {
+                value: ethers.utils.parseUnits("20", "ether"),
+              }
+            )
         ).to.be.rejectedWith("Claim already contested!");
       });
     });
 
     describe("resolveDispute", function () {
       it("Should allow for voting on a disputed claim", async function () {
-        const [test3, test4, test5] = await ethers.getSigners();
+        const [, , , test3, test4, test5] = await ethers.getSigners();
         await ethChessMatches.connect(test3).resolveDispute(1, false);
         await ethChessMatches.connect(test4).resolveDispute(1, true);
         await ethChessMatches.connect(test5).resolveDispute(1, true);
@@ -362,6 +371,7 @@ describe("ETH Chess Matches Coverage Test", function () {
         await helpers.mine(13);
         // const [test3] = await ethers.getSigners();
         const matchesBeforeHoldings = await ethChessMatches.viewHoldings();
+        await getSignersBalance();
         console.log(
           "MatchesBefore ",
           ethers.utils.formatEther(matchesBeforeHoldings)

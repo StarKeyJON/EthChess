@@ -163,8 +163,8 @@ contract ETHChessMatches is ReentrancyGuard {
   constructor(address adminAdd){
     ADMIN = adminAdd;
     delta = 7;
-    fee = 1000; // 10%
-    rewardsFee = 5000; // 50%
+    fee = 100; // 10%
+    rewardsFee = 500; // 50%
     minWager = 1e13;
   }
 
@@ -315,7 +315,7 @@ contract ETHChessMatches is ReentrancyGuard {
     require(!claim.contested, "Claim already contested!"); /// Ensure claim is not contested already
     require(claim.claimBlock + delta > block.number, "Dispute period over!"); /// Ensure the call is within the dispute time window
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2); // Ensure the caller is a contestant
-    require(dSecurity == startmatch.p1amount + startmatch.p2amount, errMessage1); /// Dispute security must be twice the amount of initial wager
+    require(dSecurity == (startmatch.p1amount + startmatch.p2amount), errMessage1); /// Dispute security must be twice the amount of initial wager
     address[] memory voters; /// Empty array used for placeholders
     claim.contested = true;
     idToDispute[matchId] = Dispute(
@@ -351,7 +351,7 @@ contract ETHChessMatches is ReentrancyGuard {
       emit DisputeVoted(msg.sender, matchId, vote);
     }
     /// If tally is true, the claim is true, else the claim is false.
-    bool tally = votedFor.length > votedAgainst.length;
+    bool tally = votedFor.length > votedAgainst.length || votedFor.length == votedAgainst.length; // Initial claimaint is given benefit of the doubt
     idToDispute[matchId] = Dispute(
       matchId,
       dispute.claimStart,
@@ -381,7 +381,8 @@ contract ETHChessMatches is ReentrancyGuard {
     require(block.number > claim.claimBlock + delta, "Dispute period ongoing.");
     uint pfee = calcFee((startmatch.p1amount + startmatch.p2amount), fee);
     if(claim.contested){ /// If tally is true, the claim is true, else the claim is false.
-      if(msg.sender == claim.claimant && dispute.tally){ // Claim is true, caller is claimant
+      if(dispute.tally){ // Claim is true, caller is claimant
+        require(msg.sender == claim.claimant, "Not the winner!");
         uint voters = dispute.votedFor.length;
         rewardsPot += (dispute.dSecurity / 2) + pfee; // Adjust state before sending funds to prevent reentrancy attack
         for(uint i; i < voters; i++){ // Distribute voting rewards to voters
@@ -389,7 +390,8 @@ contract ETHChessMatches is ReentrancyGuard {
           require(sendEther(dispute.votedFor[i], voteReward)); // Ensure funds are sent
         }
         require(sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee)); // Ensure funds are sent
-      } else if(msg.sender == dispute.disputer && !dispute.tally){ // Dispute is true, caller is disputer
+      } else { // Dispute is true, caller is disputer
+        require(msg.sender == dispute.disputer, "Not the winner!");
         uint voters = dispute.votedAgainst.length; // Cache voters length
         rewardsPot += pfee; // Adjust state before sending funds to prevent reentrancy attack
         for(uint i; i < voters; i++){ // Distribute voting rewards to voters
