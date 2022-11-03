@@ -18,7 +18,9 @@ packages/hardhat/cache*
 packages/**/data
 !packages/react-app/src/contracts/contracts.js
 
+# server env and config files
 packages/server/.env
+packages/server/config.js
 
 
 # ts
