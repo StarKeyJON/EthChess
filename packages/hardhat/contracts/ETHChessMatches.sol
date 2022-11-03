@@ -476,7 +476,6 @@ contract ETHChessMatches is ReentrancyGuard {
   function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) external payable nonReentrant returns(bool){
     DeathMatch storage deathmatch = idToDeathMatch[deathmatchId];
     uint len = deathmatch.matches.length;
-    require(msg.value == deathmatch.entranceFee, errMessage1);
     Claim memory lastmatch = idToClaim[deathmatch.matches[len - 1]];
     require(lastmatch.claimBlock > 0, "Match still ongoing!");
     if(lastmatch.contested){
@@ -489,8 +488,6 @@ contract ETHChessMatches is ReentrancyGuard {
     } else {
       require(msg.sender == lastmatch.claimant, errMessage2); // Un-disputed
     }
-    deathmatch.pot = deathmatch.pot + msg.value;
-    uint[] memory matches;
     if(msg.sender == deathmatch.reigningChamp){ // Reinging Champ needs 3 consecutive wins to win the deathmatch
       if(deathmatch.matches.length == 3){ // Deathmatch winner!
         uint rfee = calcFee(rewardsPot, rewardsFee);
@@ -499,10 +496,15 @@ contract ETHChessMatches is ReentrancyGuard {
         emit DeathMatchEnded(deathmatchId, msg.sender, ipfsHash, deathmatch.pot + rfee);
         return true;
       } else { // New match round
+        require(msg.value == deathmatch.entranceFee, errMessage1);
+        deathmatch.pot = deathmatch.pot + msg.value;
         uint id = newRound(deathmatch.entranceFee, deathmatch.reigningChamp, ipfsHash);
         deathmatch.matches.push(id);
       }
     } else { // New Reigning Champion, reset rounds!
+      uint[] memory matches;
+      require(msg.value == deathmatch.entranceFee, errMessage1);
+      deathmatch.pot = deathmatch.pot + msg.value;
       deathmatch.reigningChamp = msg.sender;
       deathmatch.matches = matches;
       uint id = newRound(deathmatch.entranceFee, msg.sender, ipfsHash);
