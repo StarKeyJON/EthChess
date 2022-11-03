@@ -6,6 +6,7 @@ const GUN = require("gun");
 const { Chess } = require('chess.js');
 const { gun_config } = require('./config');
 
+
 const app = express(); // creating instance of express
 const server = http.createServer(app); // creating http server from express instance & enabling cross access origin resource sharing
 
@@ -89,7 +90,6 @@ let lobbyObject = {
         connected: true,
       }, };
     k.active = false;
-    
   });
 
   socket.on("newRoom", (roomId, type, state) => {

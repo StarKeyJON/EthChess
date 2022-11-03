@@ -131,7 +131,6 @@ function chessReducer(state, action) {
     }
     case "RESET":
       return initialState;
-
     default:
       break;
   }
@@ -581,7 +580,7 @@ const ChessSkirmishes = ({ gun }) => {
         onCancel={() => {
           dispatch({ type: "NOQUIT" });
         }}
-        onOk={() => dispatch({ type: "CONFIRMQUIT" })}
+        onOk={() => window.location.replace("/lobby")}
       >
         <h1>Are you sure you want to exit the match?</h1>
       </Modal>
@@ -668,6 +667,7 @@ const ChessSkirmishes = ({ gun }) => {
     return () => {
       socket.emit("leftRoom", gameId, socketId);
       // roomLeaveEmit(gameId, "skirmishes", socketId);
+      dispatch({ type: "PLAYERLEFT"})
     };
   }, []);
 

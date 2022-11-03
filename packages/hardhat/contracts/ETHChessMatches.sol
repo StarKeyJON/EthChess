@@ -518,7 +518,6 @@ contract ETHChessMatches is ReentrancyGuard {
         deathmatch.matches.push(id);
       }
     } else { // New Reigning Champion, reset rounds!
-      
       require(msg.value == deathmatch.entranceFee, errMessage1);
       deathmatch.pot = deathmatch.pot + msg.value;
       deathmatch.reigningChamp = msg.sender;

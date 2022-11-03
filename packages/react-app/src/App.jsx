@@ -1,5 +1,6 @@
 import { Button, Card, Divider, Drawer, Layout, Menu, Space } from "antd";
 import "antd/dist/antd.css";
+import "./App.css";
 import {
   useBalance,
   useContractLoader,
@@ -16,20 +17,17 @@ import { TbCurrencyEthereum } from "react-icons/tb";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
-import "./App.css";
 import { Account, Contract, Header, NetworkDisplay, PieceBouncer, ThemeSwitch } from "./components";
 import { NETWORKS, ALCHEMY_KEY, peers } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
 import { Transactor, Web3ModalSetup } from "./helpers";
-import { Home, Subgraph, Info, Mint, Lobby } from "./views";
+import { Home, Subgraph, Info, Mint, Lobby, FourOFour } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 
 import LinkFooter from "./components/LinkFooter";
 import { ProfilePage, Profile } from "./components/ProfileComponents";
-
-import FourOFour from "./views/FourOFour";
 import Disputes from "./components/NFTHolders/Disputes";
 import {
   ChessViewer,

@@ -501,6 +501,8 @@ describe("ETH Chess Matches Coverage Test", function () {
       });
       it("Should end the final DeathMatch match round", async function () {
         // const { deployer } = await getNamedAccounts();
+        await helpers.mine(7);
+        await ethChessMatches.endMatch(4, "TEST_END_IPFS_HASH");
         await ethChessMatches.advanceDeathMatch(1, "EndHash", {
           value: ethers.utils.parseUnits(".5", "ether"),
         });
@@ -599,7 +601,7 @@ describe("ETH Chess Matches Coverage Test", function () {
           value: ethers.utils.parseUnits("1", "ether"),
         });
         await ethChessMatches
-          .connect(test2)
+          .connect(test)
           .startClaim(
             6,
             "StartHash",
@@ -610,10 +612,10 @@ describe("ETH Chess Matches Coverage Test", function () {
             }
           );
         await helpers.mine(7);
-        await ethChessMatches.connect(test2).advanceDeathMatch(2, "IPFSHASH", {
+        await ethChessMatches.connect(test).advanceDeathMatch(2, "IPFSHASH", {
           value: ethers.utils.parseUnits("1", "ether"),
         });
-        await ethChessMatches.connect(test).startMatch(7, "StartHash", {
+        await ethChessMatches.connect(test2).startMatch(7, "StartHash", {
           value: ethers.utils.parseUnits("1", "ether"),
         });
         await ethChessMatches
@@ -726,6 +728,8 @@ describe("ETH Chess Matches Coverage Test", function () {
           value: ethers.utils.parseUnits("1", "ether"),
         });
         await getSignersBalance();
+        const matchesHoldings = await ethChessMatches.viewHoldings();
+        console.log("MatchesAfter ", ethers.utils.formatEther(matchesHoldings));
       });
     });
   });
