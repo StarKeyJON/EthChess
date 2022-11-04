@@ -283,6 +283,8 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @return Bool success or failure
   function startClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint security) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
+    bytes memory hashBytes = bytes(startmatch.endHash);
+    require(hashBytes.length == 0, "Claim already started!");
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
     require(security == startmatch.p1amount, "Must enter security deposit = to wager");
     address[] memory refunds; /// Empty array used for placeholder
