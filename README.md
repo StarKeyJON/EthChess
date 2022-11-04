@@ -37,16 +37,12 @@
 </br>4.) The Reigning Champion that wins 3 Rounds in a row wins the DeathMatch rewards pot + (platform rewards pot / n (where n is an adjustable fee set at 50%))
 </p>
 
+</br>
 > GraphQL subgraph for decentralized indexing
 
 > IPFS used for immutable storage to preserve chess board state
 
 > Gun.js used for decentralized database and cryptographic security/utilities
-
-[![](https://data.jsdelivr.com/v1/package/gh/amark/gun/badge?style=rounded)](https://data.jsdelivr.com/v1/package/gh/amark/gun/stats)
-![Build](https://github.com/amark/gun/actions/workflows/ci.yml/badge.svg)
-[![Gitter](https://img.shields.io/gitter/room/amark/gun.js.svg)](http://chat.gun.eco)
-
 **GUN** is an [ecosystem](https://gun.eco/docs/Ecosystem) of **tools** that let you build [community run](https://www.nbcnews.com/tech/tech-news/these-technologists-think-internet-broken-so-they-re-building-another-n1030136) and [encrypted applications](https://gun.eco/docs/Cartoon-Cryptography) - like an Open Source Firebase or a Decentralized Dropbox.
 
 The [Internet Archive](https://news.ycombinator.com/item?id=17685682) and [100s of other apps](https://github.com/amark/gun/wiki/awesome-gun) run GUN in-production. GUN is also part of [Twitter's Bluesky](https://blueskycommunity.net/) initiative!
@@ -55,7 +51,17 @@ The [Internet Archive](https://news.ycombinator.com/item?id=17685682) and [100s 
  + Graph data lets you use key/value, tables, documents, videos, & more!
  + Local-first, offline, and decentralized with end-to-end encryption.
 
+# About
+First & foremost, GUN is **a community of the nicest and most helpful people** out there. So [I want to invite you](http://chat.gun.eco) to come tell us about what **you** are working on & wanting to build (new or old school alike! Just be nice as well.) and ask us your questions directly. :)
 
+<p align="center"><a href="https://www.youtube.com/watch?v=oTQXzhm8w_8"><img width="250" src="https://img.youtube.com/vi/oTQXzhm8w_8/0.jpg"><br/>Watch the 100 second intro!</a></p>
+
+The GUN ecosystem stack is a collection of independent and modular tools covering everything from [CRDT](https://crdt.tech/) [conflict resolution](https://gun.eco/distributed/matters.html), [cryptographic security](https://gun.eco/docs/Cartoon-Cryptography) & [encryption](https://gun.eco/docs/SEA), [radix storage serialization](https://gun.eco/docs/RAD), [mesh networking](https://gun.eco/docs/DAM) & [routing algorithms](https://gun.eco/docs/Routing), to distributed systems [correctness & load testing](https://github.com/gundb/panic-server), CPU scheduled [JSON parser](https://github.com/amark/gun/blob/master/lib/yson.js) to prevent UI lag, and more!
+
+<div><img width="48%" src="https://gun.eco/see/stack.png"/>
+<img width="48%" align="right" src="https://gun.eco/see/layers.png"/></div>
+
+</br>
 
 # 🏄‍♂️ ETH-Chess Quick Start
 
@@ -97,6 +103,7 @@ yarn deploy
 ```
 
 
+</br>
 > CRA platform scaffolded using Scaffold-ETH(more info found below)
 
 
