@@ -8,8 +8,9 @@ import ethlogo from "../../assets/ethereumLogo.png";
 import { TbCurrencyEthereum } from "react-icons/tb";
 
 const WageredTables = ({ players, address, tx, writeContracts }) => {
-  const [newMatch, setNewMatch] = useState(false);
-  const [newDeathMatch, setNewDeathMatch] = useState(false);
+  const [newMatchModal, setNewMatchModal] = useState(false);
+  const [newDeathMatchModal, setNewDeathMatchModal] = useState(false);
+  const [confirmMatchModal, setConfirmMatchModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -131,68 +132,103 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
     },
   ];
 
-  
-
   const HandleNewMatch = () => {
     const [wageredAmount, setWageredAmount] = useState(0);
-    const setAmount = useCallback(amt => {
-      setWageredAmount(amt);
-    }, [wageredAmount]);
+    const setAmount = useCallback(
+      amt => {
+        setWageredAmount(amt);
+      },
+      [wageredAmount],
+    );
     return (
       <Modal
         title="New Match"
-        visible={newMatch}
-        onOk={() => console.log("Ok")}
+        visible={newMatchModal}
+        onOk={() => () => setConfirmMatchModal(true)}
         onCancel={() => {
-          setNewMatch(false);
+          setNewMatchModal(false);
         }}
       >
         <h3>Initiate a new Match by entering a wagered amount!</h3>
         <br />
-        <div style={{alignItems: "center", justifyContent: "center", display: "flex"}}><InputNumber
-          min={0.00001}
-          defaultValue={0.00001}
-          onChange={val => {
-            setAmount(val);
-          }}
-        /><Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH</div> 
-        <p style={{marginTop: 30}}>*Total funds needed will be <TbCurrencyEthereum />{wageredAmount} + {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />{wageredAmount} + {wageredAmount * 2} to dispute the match outcome.</p>
-          (*security deposit returned after dispute resolution process)
-          <br />
-          (**minimum wager amount is {writeContracts?.EthChessMatches?.fee()} <TbCurrencyEthereum />ETH)
+        <div style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>
+          <InputNumber
+            min={0.00001}
+            defaultValue={0.00001}
+            onChange={val => {
+              setAmount(val);
+            }}
+          />
+          <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH
+        </div>
+        <p style={{ marginTop: 30 }}>
+          *Total funds needed will be <TbCurrencyEthereum />
+          {wageredAmount} + {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />
+          {wageredAmount} + {wageredAmount * 2} to dispute the match outcome.
+        </p>
+        (*security deposit returned after dispute resolution process)
+        <br />
+        (**minimum wager amount is {writeContracts?.EthChessMatches?.fee()} <TbCurrencyEthereum />
+        ETH)
+        <Modal
+          title="Confirm transaction"
+          visible={confirmMatchModal}
+          onCancel={() => setConfirmMatchModal(false)}>
+          <h3>You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} <TbCurrencyEthereum /> ETH.</h3>
+            <br />
+            <p>Press ok to confirm and sign the transaction.</p>
+          </Modal>
       </Modal>
     );
   };
 
   const HandleNewDeathMatch = () => {
     const [wageredAmount, setWageredAmount] = useState(0);
-    const setAmount = useCallback(amt => {
-      setWageredAmount(amt);
-    }, [wageredAmount]);
+    const setAmount = useCallback(
+      amt => {
+        setWageredAmount(amt);
+      },
+      [wageredAmount],
+    );
 
     return (
       <Modal
         title="New DeathMatch"
-        visible={newDeathMatch}
-        onOk={() => console.log("Ok")}
+        visible={newDeathMatchModal}
+        onOk={() => setConfirmMatchModal(true)}
         onCancel={() => {
-          setNewDeathMatch(false);
+          setNewDeathMatchModal(false);
         }}
       >
         <h3>Initiate a new DeathMatch by entering a wagered amount!</h3>
         <br />
-        <div style={{alignItems: "center", justifyContent: "center", display: "flex"}}><InputNumber
-          min={0.00001}
-          defaultValue={0.00001}
-          onChange={val => {
-            setAmount(val);
-          }}
-        /><Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH</div> 
-        <p style={{marginTop: 30}}>*Total funds needed will be <TbCurrencyEthereum />{wageredAmount} + {wageredAmount} security deposit for a winning match claim,
-          or, <TbCurrencyEthereum />{wageredAmount} + {wageredAmount * 2} to dispute the match outcome.</p>
-          (*security deposit returned after dispute resolution process)
-          < br/>
-          (**minimum wager amount is {writeContracts?.EthChessMatches?.fee()} <TbCurrencyEthereum />ETH)
+        <div style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>
+          <InputNumber
+            min={0.00001}
+            defaultValue={0.00001}
+            onChange={val => {
+              setAmount(val);
+            }}
+          />
+          <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH
+        </div>
+        <p style={{ marginTop: 30 }}>
+          *Total funds needed will be <TbCurrencyEthereum />
+          {wageredAmount} + {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />
+          {wageredAmount} + {wageredAmount * 2} to dispute the match outcome.
+        </p>
+        (*security deposit returned after dispute resolution process)
+        <br />
+        (**minimum wager amount is {writeContracts?.EthChessMatches?.fee} <TbCurrencyEthereum />
+        ETH)
+        <Modal
+          title="Confirm transaction"
+          visible={confirmMatchModal}
+          onCancel={() => setConfirmMatchModal(false)}>
+          <h3>You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} <TbCurrencyEthereum /> ETH.</h3>
+            <br />
+            <p>Press ok to confirm and sign the transaction.</p>
+          </Modal>
       </Modal>
     );
   };
@@ -224,7 +260,7 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
                 >
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
-                <Button style={{ margin: 10 }} onClick={() => setNewMatch(true)}>
+                <Button style={{ margin: 10 }} onClick={() => setNewMatchModal(true)}>
                   Start
                 </Button>
                 <HandleNewMatch />
@@ -261,7 +297,7 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
                 >
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
-                <Button style={{ margin: 10 }} onClick={() => setNewDeathMatch(true)}>
+                <Button style={{ margin: 10 }} onClick={() => setNewDeathMatchModal(true)}>
                   Start
                 </Button>
                 <HandleNewDeathMatch />

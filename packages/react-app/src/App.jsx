@@ -224,6 +224,7 @@ function App(props) {
   useEffect(() => {
     updateGunUser();
   }, []);
+  console.log(writeContracts);
 
   // const socket = useContext(SocketContext);
   // let socketId = socket.id;
