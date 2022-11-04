@@ -366,7 +366,6 @@ contract ETHChessMatches is ReentrancyGuard {
       votedFor,
       votedAgainst
     );
-    emit DisputeResolved(matchId, tally);
     return true;
   }
 
@@ -383,6 +382,7 @@ contract ETHChessMatches is ReentrancyGuard {
     require(block.number > claim.claimBlock + delta, "Dispute period ongoing.");
     uint pfee = calcFee((startmatch.p1amount + startmatch.p2amount), fee);
     if(claim.contested){ /// If tally is true, the claim is true, else the claim is false.
+      emit DisputeResolved(matchId, dispute.tally);
       if(dispute.tally){ // Claim is true, caller is claimant
         require(msg.sender == claim.claimant, "Not the winner!");
         uint voters = dispute.votedFor.length;
