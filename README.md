@@ -43,7 +43,7 @@
 
 # IPFS used for immutable storage to preserve chess board state
 <p>
-<a>https://www.npmjs.com/package/ipfs-http-client</a> IPFS-http-client is used for storage and content-addressing services.
+<a href="https://www.npmjs.com/package/ipfs-http-client">IPFS-http-client Github Repo</a> IPFS-http-client is used for storage and content-addressing services.
 </p>
 <p>Each on-chain Match gameplay state is preserved with each move to IPFS, with each previous hash appended to the next IPFS object.</p>
 <p>This allows for an immutable chain of events that contributes to the Dispute resolution process.</p>
@@ -68,6 +68,13 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 
 <div><img width="48%" src="https://gun.eco/see/stack.png"/>
 <img width="48%" align="right" src="https://gun.eco/see/layers.png"/></div>
+
+# Chess.js for chess game logic
+<p>chess.js is a Javascript chess library that is used for chess move generation/validation, piece placement/movement,</br> and check/checkmate/stalemate detection - basically everything but the AI.
+</p>
+
+# ChessGround
+<a href="https://github.com/lichess-org/chessground">ChessGround Github Repo</a>
 
 </br>
 
