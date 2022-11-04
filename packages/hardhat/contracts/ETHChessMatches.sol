@@ -71,16 +71,6 @@ contract ETHChessMatches is ReentrancyGuard {
   string private constant errMessage1 = "Insufficient amount";
   string private constant errMessage2 = "Not a participant!";
   
-  struct Player {
-    uint playerId;
-    bool inLeague;
-    uint matches;
-    uint wins;
-    uint losses;
-    uint leagueId;
-    address playersAddress;
-  }
-
   struct Match {
     address player1;
     address player2;
@@ -124,7 +114,6 @@ contract ETHChessMatches is ReentrancyGuard {
     address reigningChamp;
   }
 
-  mapping(address => Player) public addressToPlayer;
   mapping(uint => Match) public idToMatch; // Each match can have a claim and dispute with the same id
   mapping(uint => Claim) public idToClaim; // Hash the same id as the match associated
   mapping(uint => Dispute) public idToDispute; // Has the same id as the match associated
