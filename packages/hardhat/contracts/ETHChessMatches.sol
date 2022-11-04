@@ -82,7 +82,6 @@ contract ETHChessMatches is ReentrancyGuard {
   }
 
   struct Match {
-    uint matchId;
     address player1;
     address player2;
     uint startTime;
@@ -119,11 +118,8 @@ contract ETHChessMatches is ReentrancyGuard {
   }
 
   struct DeathMatch {
-    uint deathmatchId;
     uint entranceFee;
     uint pot;
-    uint reign;
-    uint comp;
     uint[] matches;
     address reigningChamp;
   }
@@ -213,7 +209,6 @@ contract ETHChessMatches is ReentrancyGuard {
       require(msg.value > minWager, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
-        matchIds,
         msg.sender,
         address(0x0),
         0,
@@ -233,7 +228,6 @@ contract ETHChessMatches is ReentrancyGuard {
       require(msg.value > minWager, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
-        matchIds,
         msg.sender,
         comp,
         0,
@@ -260,7 +254,6 @@ contract ETHChessMatches is ReentrancyGuard {
       require(msg.sender == startmatch.player2, "Not the Challenger!");
     }
     idToMatch[matchId] = Match(
-      matchId,
       startmatch.player1,
       msg.sender,
       block.timestamp,
@@ -471,7 +464,6 @@ contract ETHChessMatches is ReentrancyGuard {
     dmatch.reigningChamp = msg.sender;
     matchIds++; // Each round in the dathmatch is just a Match struct
     idToMatch[matchIds] = Match(
-      matchIds,
       msg.sender,
       address(0x0),
       0,
@@ -516,7 +508,7 @@ contract ETHChessMatches is ReentrancyGuard {
         rewardsPot -= rfee;
         require(sendEther(msg.sender, deathmatch.pot + rfee)); // Ensure funds are sent
         emit DeathMatchEnded(deathmatchId, msg.sender, ipfsHash, deathmatch.pot + rfee);
-        idToDeathMatch[deathmatchId] = DeathMatch(0,0,0,0,0, matches, address(0x0));
+        idToDeathMatch[deathmatchId] = DeathMatch(0,0, matches, address(0x0));
         return true;
       } else { // New match round
         require(msg.value == deathmatch.entranceFee, errMessage1);
@@ -545,7 +537,6 @@ contract ETHChessMatches is ReentrancyGuard {
   function newRound(uint matchfee, address champ, string memory ipfsHash) internal returns(uint){
     matchIds++;
     idToMatch[matchIds] = Match(
-      matchIds, 
       champ,
       address(0x0),
       0,
