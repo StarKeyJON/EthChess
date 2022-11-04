@@ -158,6 +158,8 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
         /><Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH</div> 
         <p style={{marginTop: 30}}>*Total funds needed will be <TbCurrencyEthereum />{wageredAmount} + {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />{wageredAmount} + {wageredAmount * 2} to dispute the match outcome.</p>
           (*security deposit returned after dispute resolution process)
+          <br />
+          (**minimum wager amount is {writeContracts?.EthChessMatches?.fee()} <TbCurrencyEthereum />ETH)
       </Modal>
     );
   };
@@ -189,6 +191,8 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
         <p style={{marginTop: 30}}>*Total funds needed will be <TbCurrencyEthereum />{wageredAmount} + {wageredAmount} security deposit for a winning match claim,
           or, <TbCurrencyEthereum />{wageredAmount} + {wageredAmount * 2} to dispute the match outcome.</p>
           (*security deposit returned after dispute resolution process)
+          < br/>
+          (**minimum wager amount is {writeContracts?.EthChessMatches?.fee()} <TbCurrencyEthereum />ETH)
       </Modal>
     );
   };
