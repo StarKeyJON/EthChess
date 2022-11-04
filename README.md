@@ -1,7 +1,9 @@
 # ♘ ETHChess
 
 > Decentralized Chess app allowing p2p wagered matches and deathmatch competitions
-
+<h1>ETH-Chess enables decentralized 1v1 chess matches between random or specific opponents, 
+</br> as well as competitive DeathMatch tournaments where the best of 3 wins the Rewards Pot!
+</h1>
 
 
 > Custom Solidity contracts for p2p wagered matches
