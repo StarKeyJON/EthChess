@@ -19,8 +19,6 @@ export async function AddToIPFS(file) {
     }
     const fileAdded = await ipfs.add(file);
     return fileAdded;
-  } else {
-    return "Development Stage!";
   }
 }
 
