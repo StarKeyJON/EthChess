@@ -70,6 +70,7 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 <img width="48%" align="right" src="https://gun.eco/see/layers.png"/></div>
 
 # Chess.js for chess game logic
+<a href="https://github.com/jhlywa/chess.js">Chess.js Github Repo</a>
 <p>chess.js is a Javascript chess library that is used for chess move generation/validation, piece placement/movement,</br> and check/checkmate/stalemate detection - basically everything but the AI.
 </p>
 
