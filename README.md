@@ -38,11 +38,10 @@
 </p>
 
 </br>
-> GraphQL subgraph for decentralized indexing
 
-> IPFS used for immutable storage to preserve chess board state
+#IPFS used for immutable storage to preserve chess board state
 
-> Gun.js used for decentralized database and cryptographic security/utilities
+#Gun.js used for decentralized database and cryptographic security/utilities
 **GUN** is an [ecosystem](https://gun.eco/docs/Ecosystem) of **tools** that let you build [community run](https://www.nbcnews.com/tech/tech-news/these-technologists-think-internet-broken-so-they-re-building-another-n1030136) and [encrypted applications](https://gun.eco/docs/Cartoon-Cryptography) - like an Open Source Firebase or a Decentralized Dropbox.
 
 The [Internet Archive](https://news.ycombinator.com/item?id=17685682) and [100s of other apps](https://github.com/amark/gun/wiki/awesome-gun) run GUN in-production. GUN is also part of [Twitter's Bluesky](https://blueskycommunity.net/) initiative!
@@ -51,7 +50,7 @@ The [Internet Archive](https://news.ycombinator.com/item?id=17685682) and [100s 
  + Graph data lets you use key/value, tables, documents, videos, & more!
  + Local-first, offline, and decentralized with end-to-end encryption.
 
-# About
+<h3>About</h3>
 First & foremost, GUN is **a community of the nicest and most helpful people** out there. So [I want to invite you](http://chat.gun.eco) to come tell us about what **you** are working on & wanting to build (new or old school alike! Just be nice as well.) and ask us your questions directly. :)
 
 <p align="center"><a href="https://www.youtube.com/watch?v=oTQXzhm8w_8"><img width="250" src="https://img.youtube.com/vi/oTQXzhm8w_8/0.jpg"><br/>Watch the 100 second intro!</a></p>
@@ -116,8 +115,6 @@ yarn deploy
 ![image](https://user-images.githubusercontent.com/2653167/124158108-c14ca380-da56-11eb-967e-69cde37ca8eb.png)
 
 
-📱 Open http://localhost:3000 to see the app
-
 # 📚 Documentation
 
 Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
@@ -145,10 +142,6 @@ You need to create a .env file for packages/server. Place in your s3 bucket deta
 
 # 🏃💨 Speedrun Ethereum
 Register as a builder [here](https://speedrunethereum.com) and start on some of the challenges and build a portfolio.
-
-# 💬 Support Chat
-
-Join the telegram [support chat 💬](https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA) to ask questions and find others building with 🏗 scaffold-eth!
 
 ---
 
