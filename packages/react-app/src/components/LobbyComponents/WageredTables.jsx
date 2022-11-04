@@ -1,10 +1,15 @@
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
-import { Card, Table, Button, Input, Space, Row, Col, Popover, notification } from "antd";
+import { Card, Table, Button, Input, Space, Row, Col, Popover, Modal, InputNumber, Image, Avatar } from "antd";
 import { FaInfoCircle } from "react-icons/fa";
+import { useCallback } from "react";
+import ethlogo from "../../assets/ethereumLogo.png";
+import { TbCurrencyEthereum } from "react-icons/tb";
 
 const WageredTables = ({ players, address, tx, writeContracts }) => {
+  const [newMatch, setNewMatch] = useState(false);
+  const [newDeathMatch, setNewDeathMatch] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -126,13 +131,68 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
     },
   ];
 
-  const HandleNewMatch = () => {
+  
 
-  }
+  const HandleNewMatch = () => {
+    const [wageredAmount, setWageredAmount] = useState(0);
+    const setAmount = useCallback(amt => {
+      setWageredAmount(amt);
+    }, [wageredAmount]);
+    return (
+      <Modal
+        title="New Match"
+        visible={newMatch}
+        onOk={() => console.log("Ok")}
+        onCancel={() => {
+          setNewMatch(false);
+        }}
+      >
+        <h3>Initiate a new Match by entering a wagered amount!</h3>
+        <br />
+        <div style={{alignItems: "center", justifyContent: "center", display: "flex"}}><InputNumber
+          min={0.00001}
+          defaultValue={0.00001}
+          onChange={val => {
+            setAmount(val);
+          }}
+        /><Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH</div> 
+        <p style={{marginTop: 30}}>*Total funds needed will be <TbCurrencyEthereum />{wageredAmount} + {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />{wageredAmount} + {wageredAmount * 2} to dispute the match outcome.</p>
+          (*security deposit returned after dispute resolution process)
+      </Modal>
+    );
+  };
 
   const HandleNewDeathMatch = () => {
-    
-  }
+    const [wageredAmount, setWageredAmount] = useState(0);
+    const setAmount = useCallback(amt => {
+      setWageredAmount(amt);
+    }, [wageredAmount]);
+
+    return (
+      <Modal
+        title="New DeathMatch"
+        visible={newDeathMatch}
+        onOk={() => console.log("Ok")}
+        onCancel={() => {
+          setNewDeathMatch(false);
+        }}
+      >
+        <h3>Initiate a new DeathMatch by entering a wagered amount!</h3>
+        <br />
+        <div style={{alignItems: "center", justifyContent: "center", display: "flex"}}><InputNumber
+          min={0.00001}
+          defaultValue={0.00001}
+          onChange={val => {
+            setAmount(val);
+          }}
+        /><Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH</div> 
+        <p style={{marginTop: 30}}>*Total funds needed will be <TbCurrencyEthereum />{wageredAmount} + {wageredAmount} security deposit for a winning match claim,
+          or, <TbCurrencyEthereum />{wageredAmount} + {wageredAmount * 2} to dispute the match outcome.</p>
+          (*security deposit returned after dispute resolution process)
+      </Modal>
+    );
+  };
+
   return (
     <div style={{ marginBottom: 100 }}>
       <Row gutter={[30, 30]}>
@@ -160,16 +220,10 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
                 >
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
-                <Button
-                  style={{ margin: 10 }}
-                  onClick={() => {
-                    address
-                      ? notification.open({ message: "Almost there! " })
-                      : notification.open({ message: "Illegal move!" });
-                  }}
-                >
+                <Button style={{ margin: 10 }} onClick={() => setNewMatch(true)}>
                   Start
                 </Button>
+                <HandleNewMatch />
               </h2>
             </Card>
           </div>
@@ -203,16 +257,10 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
                 >
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
-                <Button
-                  style={{ margin: 10 }}
-                  onClick={() => {
-                    address
-                      ? notification.open({ message: "Almost there! " })
-                      : notification.open({ message: "Illegal move!" });
-                  }}
-                >
+                <Button style={{ margin: 10 }} onClick={() => setNewDeathMatch(true)}>
                   Start
                 </Button>
+                <HandleNewDeathMatch />
               </h2>
             </Card>
           </div>
