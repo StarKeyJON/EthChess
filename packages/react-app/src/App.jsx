@@ -416,8 +416,8 @@ function App(props) {
                   address={address}
                   player={player}
                   setPlayer={setPlayer}
-                  yourLocalBalance={yourLocalBalance}
-                  readContracts={readContracts}
+                  tx={tx}
+                  writeContracts={writeContracts}
                   startTime={startTime}
                   loggedIn={loggedIn}
                 />

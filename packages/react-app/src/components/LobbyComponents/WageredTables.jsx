@@ -4,7 +4,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Card, Table, Button, Input, Space, Row, Col, Popover, notification } from "antd";
 import { FaInfoCircle } from "react-icons/fa";
 
-const WageredTables = ({ players, address }) => {
+const WageredTables = ({ players, address, tx, writeContracts }) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -126,6 +126,13 @@ const WageredTables = ({ players, address }) => {
     },
   ];
 
+  const HandleNewMatch = () => {
+
+  }
+
+  const HandleNewDeathMatch = () => {
+    
+  }
   return (
     <div style={{ marginBottom: 100 }}>
       <Row gutter={[30, 30]}>
