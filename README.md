@@ -1,7 +1,7 @@
 # ♘ ETHChess
 
 > Decentralized Chess app allowing p2p wagered matches and deathmatch competitions
-<p>ETH-Chess enables decentralized 1v1 chess matches between random or specific opponents, 
+<p>ETH-Chess enables decentralized 1v1 chess matches between random or specific opponents,
 </br> as well as competitive DeathMatch tournaments where the best of 3 wins the Rewards Pot!
 </p>
 
@@ -13,14 +13,14 @@
 <p>1.) Matches are initiated with a wager amount specified by the player.</p>
 <p>2.) Competitors start the Match by entering the equivalent wager amount, </br>plus the hash of the IPFS object containing Match details and first move.</p>
 <p>3.) The winner of the Match enters a winning claim with the final game state IPFS hash and a security deposit equal to the initial wager.</p>
-<p>4a.) The opponent has a dispute claim period of n blocks(where n is an adjustable amount initially set at 7) 
-    </br>   to enter their IPFS hash and and a security deposit equal to twice the amount of the initial wager.
+<p>4a.) The opponent has a dispute claim period of n blocks(where n is an adjustable amount initially set at 7)
+    </br>   to enter their IPFS hash and a security deposit equal to twice the amount of the initial wager.
     </br>4b.) If disputed, up to 20 EthChess NFT holders can vote on the dispute, 10 for initial Claim is True, 10 for initial Claim is False(Dispute is true).
-    </br>4c) If the amount of True votes is >= False votes(benefit of the doubt is favored to the claimant), 
-    </br>   then the claimant wins the Match total + their initial Claim security deposit back - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot). 
+    </br>4c) If the amount of True votes is >= False votes(benefit of the doubt is favored to the claimant),
+    </br>   then the claimant wins the Match total + their initial Claim security deposit back - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot).
     </br>       Each voter that voted True receives (1/2 of the Dispute security deposit / amount of True voters).
     </br>       The other 1/2 of the Dispute security deposit goes to the DeathMatch rewards pot.
-    </br>   If the Dispute is True, the disputer wins the Match total + their initial Dispute security deposit - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot). 
+    </br>   If the Dispute is True, the disputer wins the Match total + their initial Dispute security deposit - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot).
     </br>       Each voter that voted False receives ( Claim security deposit / amount of False voters).
 </p>
 <h4>*The voters in the dispute resolution process receives the same amount of rewards whicever way they vote.
@@ -42,6 +42,7 @@
 # Technologies Used
 
 # IPFS used for immutable storage to preserve chess board state
+
 <p>
 <a href="https://www.npmjs.com/package/ipfs-http-client">IPFS-http-client Github Repo</a> IPFS-http-client is used for storage and content-addressing services.
 </p>
@@ -49,15 +50,16 @@
 <p>This allows for an immutable chain of events that contributes to the Dispute resolution process.</p>
 
 # Gun.js used for decentralized database and cryptographic security/utilities
+
 <p>Gun.js is used in both the frontend and the backend applications for decentralized storage and cryptographic verification processes for user profiles.</p>
 </br>
 **GUN** is an [ecosystem](https://gun.eco/docs/Ecosystem) of **tools** that let you build [community run](https://www.nbcnews.com/tech/tech-news/these-technologists-think-internet-broken-so-they-re-building-another-n1030136) and [encrypted applications](https://gun.eco/docs/Cartoon-Cryptography) - like an Open Source Firebase or a Decentralized Dropbox.
 
 The [Internet Archive](https://news.ycombinator.com/item?id=17685682) and [100s of other apps](https://github.com/amark/gun/wiki/awesome-gun) run GUN in-production. GUN is also part of [Twitter's Bluesky](https://blueskycommunity.net/) initiative!
 
- + Multiplayer by default with realtime p2p state synchronization!
- + Graph data lets you use key/value, tables, documents, videos, & more!
- + Local-first, offline, and decentralized with end-to-end encryption.
++ Multiplayer by default with realtime p2p state synchronization!
++ Graph data lets you use key/value, tables, documents, videos, & more!
++ Local-first, offline, and decentralized with end-to-end encryption.
 
 <h3>About</h3>
 First & foremost, GUN is **a community of the nicest and most helpful people** out there. So [I want to invite you](http://chat.gun.eco) to come tell us about what **you** are working on & wanting to build (new or old school alike! Just be nice as well.) and ask us your questions directly. :)
@@ -70,11 +72,13 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 <img width="48%" align="right" src="https://gun.eco/see/layers.png"/></div>
 
 # Chess.js for chess game logic
+
 <a href="https://github.com/jhlywa/chess.js">Chess.js Github Repo</a>
 <p>chess.js is a Javascript chess library that is used for chess move generation/validation, piece placement/movement,</br> and check/checkmate/stalemate detection - basically everything but the AI.
 </p>
 
 # ChessGround
+
 <a href="https://github.com/lichess-org/chessground">ChessGround Github Repo</a>
 <p>Chessground is a free/libre open source chess UI developed for lichess.org. It targets modern browsers, as well as mobile development using Cordova.</p>
 
@@ -120,10 +124,8 @@ cd EthChess
 yarn deploy
 ```
 
-
 </br>
 > CRA platform scaffolded using Scaffold-ETH(more info found below)
-
 
 # 🏗 Scaffold-ETH
 
@@ -133,25 +135,24 @@ yarn deploy
 
 ![image](https://user-images.githubusercontent.com/2653167/124158108-c14ca380-da56-11eb-967e-69cde37ca8eb.png)
 
-
 # 📚 Documentation
 
 Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
 
-
 # 🍦 Other Flavors
+
 - [scaffold-eth-typescript](https://github.com/scaffold-eth/scaffold-eth-typescript)
-- [scaffold-eth-tailwind](https://github.com/stevenpslade/scaffold-eth-tailwind)
-- [scaffold-nextjs](https://github.com/scaffold-eth/scaffold-eth/tree/scaffold-nextjs)
-- [scaffold-chakra](https://github.com/scaffold-eth/scaffold-eth/tree/chakra-ui)
-- [eth-hooks](https://github.com/scaffold-eth/eth-hooks)
-- [eth-components](https://github.com/scaffold-eth/eth-components)
-- [scaffold-eth-expo](https://github.com/scaffold-eth/scaffold-eth-expo)
-- [scaffold-eth-truffle](https://github.com/trufflesuite/scaffold-eth)
++ [scaffold-eth-tailwind](https://github.com/stevenpslade/scaffold-eth-tailwind)
++ [scaffold-nextjs](https://github.com/scaffold-eth/scaffold-eth/tree/scaffold-nextjs)
++ [scaffold-chakra](https://github.com/scaffold-eth/scaffold-eth/tree/chakra-ui)
++ [eth-hooks](https://github.com/scaffold-eth/eth-hooks)
++ [eth-components](https://github.com/scaffold-eth/eth-components)
++ [scaffold-eth-expo](https://github.com/scaffold-eth/scaffold-eth-expo)
++ [scaffold-eth-truffle](https://github.com/trufflesuite/scaffold-eth)
 
 ...
 
-# 💌 P.S.
+# 💌 P.S
 
 You need to create a .env file for packages/server. Place in your s3 bucket details to enable gun.js s3, and uncomment the s3 imports in packages/server/config.js .
 
@@ -160,6 +161,7 @@ You need to create a .env file for packages/server. Place in your s3 bucket deta
 📣 Make sure you update the `InfuraID` before you go to production. Huge thanks to [Infura](https://infura.io/) for our special account that fields 7m req/day!
 
 # 🏃💨 Speedrun Ethereum
+
 Register as a builder [here](https://speedrunethereum.com) and start on some of the challenges and build a portfolio.
 
 ---
