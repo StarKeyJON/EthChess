@@ -39,9 +39,18 @@
 
 </br>
 
-#IPFS used for immutable storage to preserve chess board state
+# Technologies Used
 
-#Gun.js used for decentralized database and cryptographic security/utilities
+# IPFS used for immutable storage to preserve chess board state
+<p>
+<a>https://www.npmjs.com/package/ipfs-http-client</a> IPFS-http-client is used for storage and content-addressing services.
+</p>
+<p>Each on-chain Match gameplay state is preserved with each move to IPFS, with each previous hash appended to the next IPFS object.</p>
+<p>This allows for an immutable chain of events that contributes to the Dispute resolution process.</p>
+
+# Gun.js used for decentralized database and cryptographic security/utilities
+<p>Gun.js is used in both the frontend and the backend applications for decentralized storage and cryptographic verification processes for user profiles.</p>
+</br>
 **GUN** is an [ecosystem](https://gun.eco/docs/Ecosystem) of **tools** that let you build [community run](https://www.nbcnews.com/tech/tech-news/these-technologists-think-internet-broken-so-they-re-building-another-n1030136) and [encrypted applications](https://gun.eco/docs/Cartoon-Cryptography) - like an Open Source Firebase or a Decentralized Dropbox.
 
 The [Internet Archive](https://news.ycombinator.com/item?id=17685682) and [100s of other apps](https://github.com/amark/gun/wiki/awesome-gun) run GUN in-production. GUN is also part of [Twitter's Bluesky](https://blueskycommunity.net/) initiative!
