@@ -376,7 +376,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @param ipfsHash The start Ipfs hash of the final game state
   /// @return Bool success or failure
   function endMatch(uint matchId, string calldata ipfsHash) external payable nonReentrant returns(bool){
-    Match memory startmatch = idToMatch[matchId];
+    Match storage startmatch = idToMatch[matchId];
     Claim memory claim = idToClaim[matchId];
     Dispute memory dispute = idToDispute[matchId];
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
@@ -386,36 +386,33 @@ contract ETHChessMatches is ReentrancyGuard {
       if(dispute.tally){ // Claim is true, caller is claimant
         require(msg.sender == claim.claimant, "Not the winner!");
         uint voters = dispute.votedFor.length;
-        rewardsPot += (dispute.dSecurity / 2) + pfee; // Adjust state before sending funds to prevent reentrancy attack
+        rewardsPot += (dispute.dSecurity / 2) + pfee; // Adjusting state before sending funds to prevent reentrancy attack
+        startmatch.p1amount = 0;
+        startmatch.p2amount = 0;
+        uint voteReward = (dispute.dSecurity / 2) / voters; // 1/2 of dSecurity == wager amount
         for(uint i; i < voters; i++){ // Distribute voting rewards to voters
-          uint voteReward = (dispute.dSecurity / 2) / voters; // 1/2 of dSecurity == wager amount
           require(sendEther(dispute.votedFor[i], voteReward)); // Ensure funds are sent
         }
         require(sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee)); // Ensure funds are sent
       } else { // Dispute is true, caller is disputer
         require(msg.sender == dispute.disputer, "Not the winner!");
         uint voters = dispute.votedAgainst.length; // Cache voters length
-        rewardsPot += pfee; // Adjust state before sending funds to prevent reentrancy attack
+        rewardsPot += pfee; // Adjusting state before sending funds to prevent reentrancy attack
+        startmatch.p1amount = 0;
+        startmatch.p2amount = 0;
+        uint voteReward = claim.security / voters; // security == wager amount
         for(uint i; i < voters; i++){ // Distribute voting rewards to voters
-          uint voteReward = claim.security / voters; // security == wager amount
           require(sendEther(dispute.votedAgainst[i], voteReward)); // Ensure funds are sent
         }
         require(sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + dispute.dSecurity) - pfee)); // Ensure funds are sent
       }
     } else { // Win was uncontested! Send the rewards!
       rewardsPot += pfee; // Adjust state before sending funds to prevent reentrancy attack
+      startmatch.p1amount = 0;
+      startmatch.p2amount = 0;
       require(sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee)); // Ensure funds are sent
     }
-    idToMatch[matchId] = Match(
-      matchId,
-      startmatch.player1,
-      startmatch.player2,
-      startmatch.startTime,
-      startmatch.startHash,
-      ipfsHash,
-      startmatch.p1amount,
-      startmatch.p2amount
-    );
+    startmatch.endHash = ipfsHash;
     emit MatchEnd(matchId, msg.sender, ipfsHash);
     return true;
   }
