@@ -438,14 +438,20 @@ contract ETHChessMatches is ReentrancyGuard {
       return true;
     } 
     // If both players initiated the refund, send the money back!
-    if(claim.refunds.length == 2 && msg.sender == startmatch.player1 && !claim.p1Refunded && startmatch.p1amount > 0 ){
-      startmatch.p1amount = 0; // Adjust state before sending funds to prevent reentrancy attack
-      claim.p1Refunded = true; 
-      require(sendEther(startmatch.player1, startmatch.p1amount)); // Ensure funds are sent
-    } else if(claim.refunds.length == 2 && msg.sender == startmatch.player2 && !claim.p2Refunded && startmatch.p2amount > 0){
-      startmatch.p2amount = 0; // Adjust state before sending funds to prevent reentrancy attack
-      claim.p2Refunded = true;
-      require(sendEther(startmatch.player2, startmatch.p2amount)); // Ensure funds are sent
+    if(claim.refunds.length == 2){
+      if(msg.sender == startmatch.player1){
+        require(!claim.p1Refunded && startmatch.p1amount > 0);
+        startmatch.p1amount = 0; // Adjust state before sending funds to prevent reentrancy attack
+        claim.p1Refunded = true; 
+        require(sendEther(startmatch.player1, startmatch.p1amount)); // Ensure funds are sent
+      } else if(msg.sender == startmatch.player2){
+        require(!claim.p2Refunded && startmatch.p2amount > 0);
+        startmatch.p2amount = 0; // Adjust state before sending funds to prevent reentrancy attack
+        claim.p2Refunded = true;
+        require(sendEther(startmatch.player2, startmatch.p2amount)); // Ensure funds are sent
+      } else {
+        revert();
+      }
     }
     emit MatchRefunded(matchId);
     return true;
