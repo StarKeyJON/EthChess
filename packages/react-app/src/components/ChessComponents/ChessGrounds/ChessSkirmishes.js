@@ -41,7 +41,6 @@ const initialState = {
   player2: "",
   settingMatch: false,
   gameInProgress: false,
-  playerLeftModal: false,
   opponentLeftModal: false,
   winningModalVisible: false,
   losingModalVisible: false,
@@ -117,9 +116,6 @@ function chessReducer(state, action) {
         return { ...state, player2Shake: true };
       }
     }
-    case "PLAYERLEFT": {
-      return { ...state, playerLeftModal: true };
-    }
     case "OPPONENTLEFT": {
       return { ...state, opponentLeftModal: true };
     }
@@ -163,7 +159,6 @@ const ChessSkirmishes = ({ gun }) => {
     player2,
     settingMatch,
     gameInProgress,
-    playerLeftModal,
     opponentLeftModal,
     // winningModalVisible,
     // losingModalVisible,
@@ -522,23 +517,6 @@ const ChessSkirmishes = ({ gun }) => {
     );
   };
 
-  const PlayerLeftM = () => {
-    return (
-      <Modal
-        title="The player has left the room!"
-        visible={playerLeftModal}
-        onCancel={() => {
-          window.location.replace("/lobby");
-        }}
-        onOk={() => {
-          window.location.replace("/lobby");
-        }}
-      >
-        <PlayerLeft />
-      </Modal>
-    );
-  };
-
   const GameOver = () => {
     return (
       <Modal
@@ -580,7 +558,10 @@ const ChessSkirmishes = ({ gun }) => {
         onCancel={() => {
           dispatch({ type: "NOQUIT" });
         }}
-        onOk={() => window.location.replace("/lobby")}
+        onOk={() => {
+          socket.emit("leftRoom", gameId, socketId);
+          window.location.replace("/lobby");
+        }}
       >
         <h1>Are you sure you want to exit the match?</h1>
       </Modal>
@@ -612,12 +593,8 @@ const ChessSkirmishes = ({ gun }) => {
     dispatch({ type: "ILLEGALMOVE" });
   };
 
-  const handlePlayerLeftModal = useCallback(ack => {
-    if (ack === player1) {
-      dispatch({ type: "PLAYERLEFT" });
-    } else {
-      dispatch({ type: "OPPONENTLEFT" });
-    }
+  const handlePlayerLeftModal = useCallback(() => {
+    dispatch({ type: "OPPONENTLEFT" });
   }, []);
 
   const handleJoined = useCallback(() => {
@@ -667,7 +644,6 @@ const ChessSkirmishes = ({ gun }) => {
     return () => {
       socket.emit("leftRoom", gameId, socketId);
       // roomLeaveEmit(gameId, "skirmishes", socketId);
-      dispatch({ type: "PLAYERLEFT"})
     };
   }, []);
 
@@ -702,7 +678,6 @@ const ChessSkirmishes = ({ gun }) => {
         <ShakeHands />
         <NewGameModal />
         <PromotionModal />
-        <PlayerLeftM />
         <OpponentLeftM />
         <GameOver />
         <HandleQuit />

@@ -225,8 +225,8 @@ function App(props) {
     updateGunUser();
   }, []);
 
-  const socket = useContext(SocketContext);
-  let socketId = socket.id;
+  // const socket = useContext(SocketContext);
+  // let socketId = socket.id;
 
   const { loggedIn, loginProfile, createProfile, logoutProfile, player, setPlayer } = useProfile({
     gun,
