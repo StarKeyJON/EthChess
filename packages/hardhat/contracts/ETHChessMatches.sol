@@ -444,7 +444,7 @@ contract ETHChessMatches is ReentrancyGuard {
         claim.p2Refunded = true;
         require(sendEther(startmatch.player2, startmatch.p2amount)); // Ensure funds are sent
       } else {
-        revert();
+        revert(); // Unauthorized access control
       }
     }
     emit MatchRefunded(matchId);
