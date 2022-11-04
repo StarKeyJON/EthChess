@@ -20,7 +20,8 @@ packages/**/data
 
 # server env and config files
 packages/server/.env
-packages/server/config.js
+packages/server/radata
+server/config.js
 
 
 # ts

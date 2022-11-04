@@ -5,8 +5,11 @@
 </br> as well as competitive DeathMatch tournaments where the best of 3 wins the Rewards Pot!
 </p>
 
-
 > Custom Solidity contracts for p2p wagered matches
+<p>EthChessMatches.sol allows for 1v1 random or specific chess matches or DeathMatch tournaments.</p>
+<p>EthChessNFTs.sol allows for rewarded dispute resolution processes.</p>
+<p>1.) Matches are initiated with a wager amount specified by the player.</p>
+<p>2.) </p>
 
 > Full unit testing
 
