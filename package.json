@@ -13,7 +13,7 @@
     "react-app:build": "yarn workspace @ETHChess/react-app build --max-old-space-size=12288",
     "react-app:eject": "yarn workspace @ETHChess/react-app eject",
     "react-app:start": "yarn workspace @ETHChess/react-app start",
-    "react-app:server": "yarn workspace @ETHChess/react-app server",
+    "react-app:server": "yarn workspace @ETHChess/server server",
     "react-app:test": "yarn workspace @ETHChess/react-app test",
     "react-app:lint": "yarn workspace @ETHChess/react-app lint",
     "build": "yarn workspace @ETHChess/react-app build --max-old-space-size=12288",
@@ -80,5 +80,6 @@
       "prettier --write",
       "eslint --fix"
     ]
-  }
+  },
+  "dependencies": {}
 }
