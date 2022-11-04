@@ -22,20 +22,20 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     from: deployer,
     args: [deployer],
     log: true,
-    waitConfirmations: 5,
+    waitConfirmations: 1,
     LibraryName: "./node_modules/@openzeppelin",
   });
-  const ETHChess = await ethers.getContract("ETHChessMatches", deployer);
+  // const ETHChess = await ethers.getContract("ETHChessMatches", deployer);
 
   await deploy("ETHChessNFTs", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
     args: [deployer, deployer, "ipfs.io"],
     log: true,
-    waitConfirmations: 5,
+    waitConfirmations: 1,
     LibraryName: "./node_modules/@openzeppelin",
   });
-  const ETHChessNFTs = await ethers.getContract("ETHChessNFTs", deployer);
+  // const ETHChessNFTs = await ethers.getContract("ETHChessNFTs", deployer);
 
   // await deploy("ETHChessTournaments", {
   //   // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy

@@ -1,5 +1,5 @@
 {
-   "solidity.packageDefaultDependenciesDirectory": "node_modules/@ETHChess/hardhat/node_modules/",
+   "solidity.packageDefaultDependenciesDirectory": "node_modules/BOC-dApp copy/hardhat/node_modules/",
    "solidity-va.test.defaultUnittestTemplate": "hardhat",
    "files.exclude": {
       "**/.git": true,
@@ -33,5 +33,5 @@
       "**/yarn.lock": true
    },
    "git.detectSubmodules": false,
-   "task.allowAutomaticTasks": "on"
+   "task.allowAutomaticTasks": "on",
 }
