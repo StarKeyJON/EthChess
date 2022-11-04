@@ -446,6 +446,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @return Bool success or failure
   function initDeathMatch(uint entranceFee) external payable returns(bool){
     require(msg.value == entranceFee);
+    require(idToDeathMatch[deathmatchIds].matches.length == 3, "DeathMatch still ongoing!"); // Ensuring 1 DeathMatch at a time
     deathmatchIds++;
     DeathMatch storage dmatch = idToDeathMatch[deathmatchIds]; // Load from storage to avoid writing empty arrays
     dmatch.entranceFee = entranceFee;
