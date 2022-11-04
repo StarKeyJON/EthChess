@@ -302,8 +302,8 @@ contract ETHChessMatches is ReentrancyGuard {
     return true;
   }
 
-  /// @notice Executed when the match ends to claim rewards.
-  /// @dev Winner must enter IPFS hash of final gameplay state to go through claim resolution process.
+  /// @notice Executed to dispute the winning claim. Must be before *delta nummber of blocks!
+  /// @dev Disputer must enter IPFS hash of final gameplay state to go through dispute resolution process.
   /// @param matchId The ID of the match
   /// @param startIpfsHash The start Ipfs hash of the final game state
   /// @param endIpfsHash The contested Ipfs hash of the final game state
@@ -334,12 +334,14 @@ contract ETHChessMatches is ReentrancyGuard {
     return true;
   }
 
-  /// @notice Executed when the match ends to claim rewards.
+  /// @notice Only EthChessNFT holders can Execute to vote in a disputed match
   /// @dev Winner must enter IPFS hash of final gameplay state to go through claim resolution process.
   /// @param matchId The ID of the match
   /// @param vote Boolean vote for(true) or against(false)
   /// @return Bool success or failure
   function resolveDispute(uint matchId, bool vote) external hasChessNFT nonReentrant returns(bool) {
+    Match memory disputedmatch = idToMatch[matchId];
+    require(msg.sender != disputedmatch.player1 || msg.sender != disputedmatch.player2, "Illegal vote!"); // Ensuring match participants cannot vote
     Dispute storage dispute = idToDispute[matchId];
     address[] storage votedFor = dispute.votedFor;
     address[] storage votedAgainst = dispute.votedAgainst;
