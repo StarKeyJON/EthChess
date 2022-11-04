@@ -1,9 +1,13 @@
 tasks:
-  - name: App
+  - name: EthChess_dApp
     init: >
       yarn &&
       gp sync-done install
     command: REACT_APP_PROVIDER=$(gp url 8545) yarn start
+  - name: Server
+    init: gp sync-await install
+    command: yarn server
+    openMode: split-right
   - name: Chain
     init: gp sync-await install
     command: yarn chain --hostname 0.0.0.0
@@ -16,6 +20,9 @@ ports:
   - port: 3000
     onOpen: open-preview
   - port: 8545
+    onOpen: ignore
+    visibility: public
+  - port: 8080
     onOpen: ignore
     visibility: public
 github:
