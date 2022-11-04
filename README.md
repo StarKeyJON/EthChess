@@ -23,7 +23,7 @@
     </br>   If the Dispute is True, the disputer wins the Match total + their initial Dispute security deposit - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot). 
     </br>       Each voter that voted False receives ( Claim security deposit / amount of False voters).
 </p>
-<h4>*The voters in the dispute resolution process receies the same amount of rewards whicever way they vote.
+<h4>*The voters in the dispute resolution process receives the same amount of rewards whicever way they vote.
 </br>   1/2 of Dispute security deposit == Claim security deposit
 </br>   The only difference is if the Dispute is false, half of the security contributes to the DeathMatch rewards pot.*</h4>
 </br>
