@@ -75,7 +75,9 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 
 # ChessGround
 <a href="https://github.com/lichess-org/chessground">ChessGround Github Repo</a>
+<p>Chessground is a free/libre open source chess UI developed for lichess.org. It targets modern browsers, as well as mobile development using Cordova.</p>
 
+<p>This project code has been made public in condition with this repo GPL-3.0 license.</p>
 </br>
 
 # 🏄‍♂️ ETH-Chess Quick Start
