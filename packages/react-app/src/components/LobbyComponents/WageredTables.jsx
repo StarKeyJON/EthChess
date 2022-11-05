@@ -170,14 +170,14 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
         <br />
         (**minimum wager amount is {writeContracts?.EthChessMatches?.fee()} <TbCurrencyEthereum />
         ETH)
-        <Modal
-          title="Confirm transaction"
-          visible={confirmMatchModal}
-          onCancel={() => setConfirmMatchModal(false)}>
-          <h3>You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} <TbCurrencyEthereum /> ETH.</h3>
-            <br />
-            <p>Press ok to confirm and sign the transaction.</p>
-          </Modal>
+        <Modal title="Confirm transaction" visible={confirmMatchModal} onCancel={() => setConfirmMatchModal(false)}>
+          <h3>
+            You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} 
+            <TbCurrencyEthereum /> ETH.
+          </h3>
+          <br />
+          <p>Press ok to confirm and sign the transaction.</p>
+        </Modal>
       </Modal>
     );
   };
@@ -221,14 +221,14 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
         <br />
         (**minimum wager amount is {writeContracts?.EthChessMatches?.fee} <TbCurrencyEthereum />
         ETH)
-        <Modal
-          title="Confirm transaction"
-          visible={confirmMatchModal}
-          onCancel={() => setConfirmMatchModal(false)}>
-          <h3>You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} <TbCurrencyEthereum /> ETH.</h3>
-            <br />
-            <p>Press ok to confirm and sign the transaction.</p>
-          </Modal>
+        <Modal title="Confirm transaction" visible={confirmMatchModal} onCancel={() => setConfirmMatchModal(false)}>
+          <h3>
+            You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} 
+            <TbCurrencyEthereum /> ETH.
+          </h3>
+          <br />
+          <p>Press ok to confirm and sign the transaction.</p>
+        </Modal>
       </Modal>
     );
   };

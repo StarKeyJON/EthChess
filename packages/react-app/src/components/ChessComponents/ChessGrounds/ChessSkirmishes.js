@@ -523,29 +523,24 @@ const ChessSkirmishes = ({ gun }) => {
         title="GAME OVER!"
         visible={gameOverModal}
         onCancel={() => {
-          dispatch({ type: "RESETGO" });
+          window.location.replace("/lobby");
+        }}
+        onOk={() => {
+          window.location.replace("/lobby");
         }}
       >
-        {/* <Card>
+        <Card>
           {winner === socketId ? (
             <>
-              <h1>Congratulations!</h1>
+              <h1>Congratulations! You are the winner!</h1>
               <br />
-              <h3>Execute the claim below!</h3>
-              <br />
-              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory, socketId })}></Button>
-              <p>Please allow a minimum of 7 blocks for the dispute resolution period!</p>
             </>
           ) : (
             <>
               <h1>Better luck next time!</h1>
-              <br />
-              <h3>You can dispute the results below!</h3>
-              <br />
-              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
             </>
           )}
-        </Card> */}
+        </Card>
       </Modal>
     );
   };
