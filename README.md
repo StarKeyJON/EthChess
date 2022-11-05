@@ -169,3 +169,25 @@ Register as a builder [here](https://speedrunethereum.com) and start on some of 
 ### Automated with Gitpod
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#github.com/StarKeyJON/EthChess.git)
+
+<!-- ROADMAP -->
+## Roadmap
+
+- [x] Add README
+- [x] Develop Matches & NFT Contracts
+- [x] Unit tests for smart contracts
+- [x] Develop mono subgraph for indexing
+- [ ] Front-End
+    - [x] Home
+    - [ ] Lobby
+        - [x] P vs. Comp Skirmish
+        - [x] PvP Skirmish
+        - [ ] Wagered Match
+        - [ ] Wagered DeathMatch
+    - [ ] Voting
+    - [ ] Profile
+    - [x] Info
+
+See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
