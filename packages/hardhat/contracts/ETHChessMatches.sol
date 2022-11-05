@@ -497,6 +497,7 @@ contract ETHChessMatches is ReentrancyGuard {
   function advanceDeathMatch(uint deathmatchId, string memory ipfsHash) external payable returns(bool){
     DeathMatch storage deathmatch = idToDeathMatch[deathmatchId];
     uint len = deathmatch.matches.length;
+    require(len > 0, "Match not initiated!");
     Claim memory lastmatch = idToClaim[deathmatch.matches[len - 1]];
     require(lastmatch.claimBlock > 0, "Match still ongoing!");
     uint[] memory matches;
