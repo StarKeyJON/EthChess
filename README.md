@@ -197,7 +197,7 @@ yarn deploy
 
 ---
 
-### Automated with Gitpod
+<h3> Automated with Gitpod </h3>
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#github.com/StarKeyJON/EthChess.git)
 
@@ -218,9 +218,12 @@ yarn deploy
     - [ ] Develop secondary contracts
         - [x] EthChess Leagues
         - [ ] EthChess Tournaments
+        - [x] EthChess Treasury
 - [x] The Graph
     - [x] Develop mono subgraph
+    - [ ] refactor subgraph against final contracts
 - [ ] Front-End
+    - [ ] App
     - [x] Home
     - [ ] Lobby
         - [x] P vs. Comp Skirmish
@@ -228,8 +231,12 @@ yarn deploy
         - [ ] Wagered Match
         - [ ] Wagered DeathMatch
     - [ ] Voting
+    - [ ] Mint
     - [ ] Profile
     - [x] Info
+- [x] Back-End
+    - [x] Express server
+    - [x] Gun.js relay node
 
 <a name="contributing"></a>
 
