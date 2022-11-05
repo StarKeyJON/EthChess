@@ -118,6 +118,7 @@ contract ETHChessMatches is ReentrancyGuard {
   mapping(uint => Claim) public idToClaim; // Hash the same id as the match associated
   mapping(uint => Dispute) public idToDispute; // Has the same id as the match associated
   mapping(uint => DeathMatch) public idToDeathMatch;
+  mapping(uint => uint) public matchIdToDeathMatchID; // To track DeathMatches
 
   event MatchInitiated(address player1, uint amount, uint matchId);
   event ChallengeInitiated(address player1, uint amount, uint matchId);
@@ -237,8 +238,14 @@ contract ETHChessMatches is ReentrancyGuard {
   function startMatch(uint matchId, string memory ipfsHash) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
     require(startmatch.startTime == 0, "Match already started!"); // Ensure a match isn't started already
-    require(msg.value == startmatch.p1amount, errMessage1); // Ensure msg.value equals the starting wager
-    uint totalValue = startmatch.p1amount + msg.value;
+    uint dId = matchIdToDeathMatchID[matchId];
+    if(dId > 0) {
+      DeathMatch storage dMatch = idToDeathMatch[dId];
+      require(msg.value == dMatch.entranceFee, errMessage1); // Ensuring DeathMatch entranceFee is met
+      dMatch.pot += msg.value;
+    } else {
+      require(msg.value == startmatch.p1amount, errMessage1); // Ensure msg.value equals the starting wager
+    }
     if (startmatch.player2 != address(0x0)) { /// Ensure the caller is the challenger, if a challenged match
       require(msg.sender == startmatch.player2, "Not the Challenger!");
     }
@@ -251,7 +258,7 @@ contract ETHChessMatches is ReentrancyGuard {
       startmatch.p1amount,
       msg.value
     );
-    emit MatchSet(startmatch.player1, msg.sender, totalValue, matchId, ipfsHash);
+    emit MatchSet(startmatch.player1, msg.sender, (startmatch.p1amount + msg.value), matchId, ipfsHash);
     return true;
   }
 
@@ -432,8 +439,6 @@ contract ETHChessMatches is ReentrancyGuard {
         startmatch.p2amount = 0; // Adjust state before sending funds to prevent reentrancy attack
         claim.p2Refunded = true;
         require(sendEther(startmatch.player2, startmatch.p2amount)); // Ensure funds are sent
-      } else {
-        revert(); // Unauthorized access control
       }
     }
     emit MatchRefunded(matchId);
@@ -504,6 +509,7 @@ contract ETHChessMatches is ReentrancyGuard {
         require(msg.value == deathmatch.entranceFee, errMessage1);
         deathmatch.pot = deathmatch.pot + msg.value;
         uint id = newRound(deathmatch.entranceFee, deathmatch.reigningChamp, ipfsHash);
+        matchIdToDeathMatchID[id] = deathmatchId;
         deathmatch.matches.push(id);
       }
     } else { // New Reigning Champion, reset rounds!
@@ -512,6 +518,7 @@ contract ETHChessMatches is ReentrancyGuard {
       deathmatch.reigningChamp = msg.sender;
       deathmatch.matches = matches;
       uint id = newRound(deathmatch.entranceFee, msg.sender, ipfsHash);
+      matchIdToDeathMatchID[id] = deathmatchId;
       deathmatch.matches.push(id);
     }
     emit DeathMatchAdvanced(deathmatchId, msg.sender, ipfsHash, msg.value);

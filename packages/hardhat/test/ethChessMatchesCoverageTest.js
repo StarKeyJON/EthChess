@@ -616,7 +616,7 @@ describe("ETH Chess Matches Coverage Test", function () {
     });
     describe("ClaimRefund function test", function () {
       it("Should be able to start a match and claim a refund by both participants", async function () {
-        const [test, test2] = await ethers.getSigners();
+        const [test, test2, test3] = await ethers.getSigners();
         await ethChessMatches
           .connect(test)
           .initMatch({ value: ethers.utils.parseUnits("1", "ether") });
@@ -625,6 +625,9 @@ describe("ETH Chess Matches Coverage Test", function () {
         });
         await ethChessMatches.connect(test).claimRefund(9);
         await ethChessMatches.connect(test2).claimRefund(9);
+        await expect(
+          ethChessMatches.connect(test3).claimRefund(9)
+        ).to.be.rejectedWith("Not a participant!");
         await ethChessMatches.connect(test).claimRefund(9);
         await ethChessMatches.connect(test2).claimRefund(9);
       });
@@ -690,6 +693,128 @@ describe("ETH Chess Matches Coverage Test", function () {
         await helpers.mine(7);
         await ethChessMatches.connect(test).endMatch(11, "EndIPFSHash");
         await helpers.mine(7);
+        await getSignersBalance();
+        const matchesHoldings = await ethChessMatches.rewardsPot();
+        console.log("MatchesAfter ", ethers.utils.formatEther(matchesHoldings));
+      });
+    });
+    describe("Testing DeathMatch function branches for new reigning champion", function () {
+      it("Should cycle through all of the DeathMatch function branches", async function () {
+        const [, , test3, test4, test5, test6] = await ethers.getSigners();
+
+        await ethChessMatches.connect(test3).startMatch(8, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches
+          .connect(test3)
+          .startClaim(
+            8,
+            "StartHash",
+            "EndHash",
+            ethers.utils.parseUnits("1", "ether"),
+            {
+              value: ethers.utils.parseUnits("1", "ether"),
+            }
+          );
+        await helpers.mine(7);
+        await ethChessMatches.connect(test3).endMatch(8, "IPFSHASH");
+
+        await expect(
+          ethChessMatches.connect(test3).advanceDeathMatch(2, "IPFSHASH", {
+            value: ethers.utils.parseUnits(".1", "ether"),
+          })
+        ).to.be.rejectedWith("Insufficient amount");
+        await ethChessMatches.connect(test3).advanceDeathMatch(2, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches.connect(test4).startMatch(12, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches
+          .connect(test3)
+          .startClaim(
+            12,
+            "StartHash",
+            "EndHash",
+            ethers.utils.parseUnits("1", "ether"),
+            {
+              value: ethers.utils.parseUnits("1", "ether"),
+            }
+          );
+        await helpers.mine(7);
+        await ethChessMatches.connect(test3).endMatch(12, "IPFSHASH");
+
+        await ethChessMatches.connect(test3).advanceDeathMatch(2, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches.connect(test4).startMatch(13, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches
+          .connect(test3)
+          .startClaim(
+            13,
+            "StartHash",
+            "EndHash",
+            ethers.utils.parseUnits("1", "ether"),
+            {
+              value: ethers.utils.parseUnits("1", "ether"),
+            }
+          );
+        await helpers.mine(7);
+        await ethChessMatches.connect(test3).endMatch(13, "IPFSHASH");
+
+        await ethChessMatches.connect(test3).advanceDeathMatch(2, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches.connect(test4).startMatch(14, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
+        });
+        await ethChessMatches
+          .connect(test3)
+          .startClaim(
+            14,
+            "StartHash",
+            "EndHash",
+            ethers.utils.parseUnits("1", "ether"),
+            {
+              value: ethers.utils.parseUnits("1", "ether"),
+            }
+          );
+        await helpers.mine(7);
+        await ethChessMatches.connect(test3).endMatch(14, "IPFSHASH");
+
+        await ethChessMatches.advanceDeathMatch(1, "IPFSHASH", {
+          value: ethers.utils.parseUnits(".5", "ether"),
+        });
+
+        await ethChessMatches.connect(test3).startMatch(15, "IPFSHASH");
+        await ethChessMatches
+          .connect(test3)
+          .startClaim(
+            15,
+            "StartHash",
+            "EndHash",
+            0
+          );
+
+        // await ethChessMatches.disputeClaim(
+        //   15,
+        //   "StartIPFSHASh",
+        //   "EndIPFSHash",
+        //   0
+        // );
+
+        // await ethChessMatches.connect(test4).resolveDispute(15, false);
+        // await ethChessMatches.connect(test5).resolveDispute(15, true);
+        // await ethChessMatches.connect(test6).resolveDispute(15, false);
+        // await helpers.mine(7);
+        // await ethChessMatches.endMatch(15, "ENDIPFS");
+        // await ethChessMatches.advanceDeathMatch(1, "IPFSHASH", {
+        //   value: ethers.utils.parseUnits(".5", "ether"),
+        // });
+
+        // await ethChessMatches.connect(test3).advanceDeathMatch(2, "IPFSHASH");
         await getSignersBalance();
         const matchesHoldings = await ethChessMatches.rewardsPot();
         console.log("MatchesAfter ", ethers.utils.formatEther(matchesHoldings));
