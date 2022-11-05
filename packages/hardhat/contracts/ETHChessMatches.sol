@@ -550,14 +550,6 @@ contract ETHChessMatches is ReentrancyGuard {
       return percent;
     }
 
-  /// @notice
-  /*~~~> 
-    External function for viewing rewards holdings
-  <~~~*/
-  function viewHoldings() external view returns(uint256){
-      return rewardsPot;
-    }
-
     /// @notice
   /*~~~> 
     Internal function for sending ether

@@ -417,6 +417,7 @@ function App(props) {
                   writeContracts={writeContracts}
                   startTime={startTime}
                   loggedIn={loggedIn}
+                  mainnetProvider={mainnetProvider}
                 />
               </Route>
               <Route exact path="/match">

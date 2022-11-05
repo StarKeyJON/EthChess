@@ -394,6 +394,14 @@ describe("ETH Chess Matches Coverage Test", function () {
               value: ethers.utils.parseUnits(".5", "ether"),
             }
           )
+        ).to.be.rejectedWith("DeathMatch still ongoing!");
+        await expect(
+          ethChessMatches.initDeathMatch(
+            ethers.utils.parseUnits(".5", "ether"),
+            {
+              value: ethers.utils.parseUnits(".5", "ether"),
+            }
+          )
         )
           .to.emit(ethChessMatches, "DeathMatchStarted")
           .withArgs(1, deployer, ethers.utils.parseUnits(".5", "ether"));

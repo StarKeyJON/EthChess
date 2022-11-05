@@ -1,14 +1,18 @@
 import React, { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
-import { Card, Table, Button, Input, Space, Row, Col, Popover, Modal, InputNumber, Image, Avatar } from "antd";
+import { Card, Table, Button, Input, Space, Row, Col, Popover, Modal, InputNumber, Image, Avatar, message, notification } from "antd";
 import { FaInfoCircle } from "react-icons/fa";
 import { useCallback } from "react";
 import ethlogo from "../../assets/ethereumLogo.png";
 import { TbCurrencyEthereum } from "react-icons/tb";
 import { useContractReader } from "eth-hooks";
+import Text from "antd/lib/typography/Text";
+import { utils } from "ethers";
+import AddressInput from "../AddressInput";
+import { appStage } from "../../constants";
 
-const WageredTables = ({ players, address, tx, writeContracts, readContracts }) => {
+const WageredTables = ({ players, address, tx, writeContracts, readContracts, mainnetProvider }) => {
   const [newMatchModal, setNewMatchModal] = useState(false);
   const [newDeathMatchModal, setNewDeathMatchModal] = useState(false);
   const [confirmMatchModal, setConfirmMatchModal] = useState(false);
@@ -134,8 +138,94 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts }) 
     },
   ];
 
+  const executeNewMatch = ({ tx, writeContracts, wageredAmount }) => {
+    tx(
+      writeContracts.ETHChessMatches.initMatch({
+        value: utils.parseEther(wageredAmount.toString()),
+      }),
+      update => {
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          message.info(" 🍾 Transaction " + update.hash + " finished!");
+          message.info(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+          notification.open({
+            message: <Text>{"Match Initiated!"}</Text>,
+          });
+        }
+    });
+  };
+
+  const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger }) => {
+    tx(
+      writeContracts.ETHChessMatches.initChallengeMatch(challenger, {
+        value: utils.parseEther(wageredAmount.toString()),
+      }),
+      update => {
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          message.info(" 🍾 Transaction " + update.hash + " finished!");
+          message.info(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+          notification.open({
+            message: <Text>{"Match Initiated with Challenger " + challenger + "!"}</Text>,
+          });
+        }
+      },
+    );
+  };
+
+  const executeNewDeathMatch = ({ tx, writeContracts, wageredAmount }) => {
+    tx(
+      writeContracts.ETHChessMatches.initDeathMatch({
+        value: utils.parseEther(wageredAmount.toString()),
+      }),
+      update => {
+        if (update && (update.status === "confirmed" || update.status === 1)) {
+          message.info(" 🍾 Transaction " + update.hash + " finished!");
+          message.info(
+            " ⛽️ " +
+              update.gasUsed +
+              "/" +
+              (update.gasLimit || update.gas) +
+              " @ " +
+              parseFloat(update.gasPrice) / 1000000000 +
+              " gwei",
+          );
+          notification.open({
+            message: <Text>{"Match Initiated!"}</Text>,
+          });
+        }
+      },
+    );
+  };
+
+  const handleChallenge = (wageredAmount, challenger) => {
+    if (challenger && challenger.length === 42 && challenger.slice(0, 2) === "0x") {
+      appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger);
+    } else {
+      notification.open({ message: "Please ensure the correct challenger address!" });
+    }
+    if (!challenger) {
+      appStage === "production" && executeNewMatch(tx, writeContracts, wageredAmount);
+    }
+  };
+
   const HandleNewMatch = () => {
     const [wageredAmount, setWageredAmount] = useState(0);
+    const [challenger, setChallenger] = useState("");
     const setAmount = useCallback(
       amt => {
         setWageredAmount(amt);
@@ -146,7 +236,7 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts }) 
       <Modal
         title="New Match"
         visible={newMatchModal}
-        onOk={() => () => setConfirmMatchModal(true)}
+        onOk={() => setConfirmMatchModal(true)}
         onCancel={() => {
           setNewMatchModal(false);
         }}
@@ -154,14 +244,33 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts }) 
         <h3>Initiate a new Match by entering a wagered amount!</h3>
         <br />
         <div style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>
-          <InputNumber
-            min={0.00001}
-            defaultValue={0.00001}
-            onChange={val => {
-              setAmount(val);
-            }}
-          />
-          <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} /> ETH
+          <div>
+            Wagered Amount
+            <br />
+            <InputNumber
+              min={0.00001}
+              defaultValue={0.00001}
+              onChange={val => {
+                setAmount(val);
+              }}
+            />
+            <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} />
+            ETH
+          </div>
+        </div>
+        <div
+          style={{ alignItems: "center", justifyContent: "center", display: "flex", marginTop: 10, marginBottom: 20 }}
+        >
+          <div>
+            Enter an address/ENS name for a Challenge match.
+            <AddressInput
+              value={challenger}
+              ensProvider={mainnetProvider}
+              onChange={e => {
+                setChallenger(e);
+              }}
+            />
+          </div>
         </div>
         <p style={{ marginTop: 30 }}>
           *Total funds needed will be <TbCurrencyEthereum />
@@ -172,11 +281,15 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts }) 
         <br />
         (**minimum wager amount is {minWager} <TbCurrencyEthereum />
         ETH)
-        <Modal title="Confirm transaction" visible={confirmMatchModal} onCancel={() => setConfirmMatchModal(false)}>
-          <h3>
-            You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} 
-            <TbCurrencyEthereum /> ETH.
-          </h3>
+        <Modal
+          title="Confirm transaction"
+          visible={confirmMatchModal}
+          onCancel={() => setConfirmMatchModal(false)}
+          onOk={() => {
+            handleChallenge(wageredAmount, challenger);
+          }}
+        >
+          <h3>You are about to execute a transaction to initiate a new Match.</h3>
           <br />
           <p>Press ok to confirm and sign the transaction.</p>
         </Modal>
@@ -221,13 +334,17 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts }) 
         </p>
         (*security deposit returned after dispute resolution process)
         <br />
-        (**minimum wager amount is {(minWager)} <TbCurrencyEthereum />
+        (**minimum wager amount is {minWager} <TbCurrencyEthereum />
         ETH)
-        <Modal title="Confirm transaction" visible={confirmMatchModal} onCancel={() => setConfirmMatchModal(false)}>
-          <h3>
-            You are about to execute a transaction to initiate a new DeathMatch with {wageredAmount} 
-            <TbCurrencyEthereum /> ETH.
-          </h3>
+        <Modal
+          title="Confirm transaction"
+          visible={confirmMatchModal}
+          onOk={() => {
+            appStage === "production" && executeNewDeathMatch(tx, writeContracts, wageredAmount);
+          }}
+          onCancel={() => setConfirmMatchModal(false)}
+        >
+          <h3>You are about to execute a transaction to initiate a new DeathMatch.</h3>
           <br />
           <p>Press ok to confirm and sign the transaction.</p>
         </Modal>
