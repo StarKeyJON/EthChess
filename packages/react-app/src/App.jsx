@@ -166,7 +166,7 @@ function App(props) {
   // EXTERNAL CONTRACT EXAMPLE:
   //
   // If you want to bring in the mainnet DAI contract it would look like:
-  const mainnetContracts = useContractLoader(mainnetProvider, contractConfig);
+  // const mainnetContracts = useContractLoader(mainnetProvider, contractConfig);
 
   // If you want to call a function on a new block
   // useOnBlock(mainnetProvider, () => {
@@ -446,7 +446,7 @@ function App(props) {
                   <ChessMatch />
                 </div>
               </Route>
-              <Route exact path="/match/room/:matchAddress/:gameId">
+              <Route exact path="/match/room/:gameId">
                 <ETHMatch
                   startTime={startTime}
                   address={address}
@@ -461,22 +461,7 @@ function App(props) {
                   gun={gun}
                 />
               </Route>
-              <Route exact path="/challenge-match/room/:address/:gameId">
-                <ETHChallengeMatch
-                  startTime={startTime}
-                  address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                  gun={gun}
-                />
-              </Route>
-              <Route exact path="/deathmatch/room/:address/:gameId">
+              <Route exact path="/deathmatch/room/:gameId">
                 <ETHDeathMatch
                   startTime={startTime}
                   address={address}
