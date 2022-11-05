@@ -1,5 +1,30 @@
+<a name="readme-top"></a>
 # ♘ ETHChess
 
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+  </ol>
+</details>
+
+<a name="about-the-project"></a>
 > Decentralized Chess app allowing p2p wagered matches and deathmatch competitions
 <p>ETH-Chess enables decentralized 1v1 chess matches between random or specific opponents,
 </br> as well as competitive DeathMatch tournaments where the best of 3 wins the Rewards Pot!
@@ -39,6 +64,7 @@
 
 </br>
 
+<a name="built-with"></a>
 # Technologies Used
 
 # IPFS used for immutable storage to preserve chess board state
@@ -85,8 +111,9 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 <p>This project code has been made public in condition with this repo GPL-3.0 license.</p>
 </br>
 
+<a name="getting-started"></a>
 # 🏄‍♂️ ETH-Chess Quick Start
-
+<a name="prerequisites"></a>
 Prerequisites: [Node (v16 LTS)](https://nodejs.org/en/download/) plus [Yarn](https://classic.yarnpkg.com/en/docs/install/) and [Git](https://git-scm.com/downloads)
 
 > clone/fork ♞ EthChess:
@@ -94,7 +121,7 @@ Prerequisites: [Node (v16 LTS)](https://nodejs.org/en/download/) plus [Yarn](htt
 ```bash
 git clone https://github.com/StarKeyJON/EthChess.git
 ```
-
+<a name="installation"></a>
 > install and start your 👷‍ Hardhat chain:
 
 ```bash
@@ -153,6 +180,7 @@ Documentation, tutorials, challenges, and many more resources, visit: [docs.scaf
 ...
 
 # 💌 P.S
+<a name="usage"></a>
 
 You need to create a .env file for packages/server. Place in your s3 bucket details to enable gun.js s3, and uncomment the s3 imports in packages/server/config.js .
 
@@ -169,6 +197,8 @@ Register as a builder [here](https://speedrunethereum.com) and start on some of 
 ### Automated with Gitpod
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#github.com/StarKeyJON/EthChess.git)
+
+<a name="roadmap"></a>
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -188,6 +218,8 @@ Register as a builder [here](https://speedrunethereum.com) and start on some of 
     - [ ] Profile
     - [x] Info
 
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a full list of proposed features (and known issues).
+<a name="contributing"></a>
+
+See the [ISSUE TEMPLATE](https://github.com/StarKeyJON/EthChess/tree/main/ISSUE_TEMPLATE) for how to propose features and issues.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
