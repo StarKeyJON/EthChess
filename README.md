@@ -115,6 +115,33 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 <p>This project code has been made public in condition with this repo GPL-3.0 license.</p>
 </br>
 
+> CRA platform scaffolded using Scaffold-ETH(more info found below)
+
+# 🏗 Scaffold-ETH
+
+> everything you need to build on Ethereum! 🚀
+
+🧪 Quickly experiment with Solidity using a frontend that adapts to your smart contract:
+
+![image](https://user-images.githubusercontent.com/2653167/124158108-c14ca380-da56-11eb-967e-69cde37ca8eb.png)
+
+# 📚 Documentation
+
+Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
+
+# 🍦 Other Flavors
+
+- [scaffold-eth-typescript](https://github.com/scaffold-eth/scaffold-eth-typescript)
++ [scaffold-eth-tailwind](https://github.com/stevenpslade/scaffold-eth-tailwind)
++ [scaffold-nextjs](https://github.com/scaffold-eth/scaffold-eth/tree/scaffold-nextjs)
++ [scaffold-chakra](https://github.com/scaffold-eth/scaffold-eth/tree/chakra-ui)
++ [eth-hooks](https://github.com/scaffold-eth/eth-hooks)
++ [eth-components](https://github.com/scaffold-eth/eth-components)
++ [scaffold-eth-expo](https://github.com/scaffold-eth/scaffold-eth-expo)
++ [scaffold-eth-truffle](https://github.com/trufflesuite/scaffold-eth)
+
+<br />
+
 <a name="getting-started"></a>
 # 🏄‍♂️ ETH-Chess Quick Start
 <a name="prerequisites"></a>
@@ -156,30 +183,6 @@ yarn deploy
 ```
 
 </br>
-> CRA platform scaffolded using Scaffold-ETH(more info found below)
-
-# 🏗 Scaffold-ETH
-
-> everything you need to build on Ethereum! 🚀
-
-🧪 Quickly experiment with Solidity using a frontend that adapts to your smart contract:
-
-![image](https://user-images.githubusercontent.com/2653167/124158108-c14ca380-da56-11eb-967e-69cde37ca8eb.png)
-
-# 📚 Documentation
-
-Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
-
-# 🍦 Other Flavors
-
-- [scaffold-eth-typescript](https://github.com/scaffold-eth/scaffold-eth-typescript)
-+ [scaffold-eth-tailwind](https://github.com/stevenpslade/scaffold-eth-tailwind)
-+ [scaffold-nextjs](https://github.com/scaffold-eth/scaffold-eth/tree/scaffold-nextjs)
-+ [scaffold-chakra](https://github.com/scaffold-eth/scaffold-eth/tree/chakra-ui)
-+ [eth-hooks](https://github.com/scaffold-eth/eth-hooks)
-+ [eth-components](https://github.com/scaffold-eth/eth-components)
-+ [scaffold-eth-expo](https://github.com/scaffold-eth/scaffold-eth-expo)
-+ [scaffold-eth-truffle](https://github.com/trufflesuite/scaffold-eth)
 
 ...
 
