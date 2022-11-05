@@ -76,7 +76,7 @@
 <p>
 <a href="https://www.npmjs.com/package/ipfs-http-client">IPFS-http-client Github Repo</a> IPFS-http-client is used for storage and content-addressing services.
 </p>
-<p>Each on-chain Match gameplay state is preserved with each move to IPFS, with each previous hash appended to the next IPFS object.</p>
+<p>Each on-chain Match gameplay state is preserved with each move to IPFS, and each previous hash appended to the next IPFS object.</p>
 <p>This allows for an immutable chain of events that contributes to the Dispute resolution process.</p>
 
 # Gun.js
