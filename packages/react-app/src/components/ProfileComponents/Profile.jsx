@@ -15,12 +15,62 @@ const Profile = ({
   createProfile,
   logoutProfile,
 }) => {
-  const [passphrase, setPass] = useState();
 
-  const handlePWChange = e => {
-    // console.log(e.target.value);
-    setPass(e.target.value);
-  };
+  const HandleLogin = () => {
+    const [passphrase, setPass] = useState();
+
+    const handlePWChange = e => {
+      // console.log(e.target.value);
+      setPass(e.target.value);
+    };
+    return (
+      <><Input.Group compact>
+        <Input.Password
+          placeholder="input password"
+          onChange={e => setPass(e.target.value)}
+          iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+        />
+      </Input.Group>
+        <Button
+          onClick={() => {
+            if (passphrase) {
+              loginProfile(passphrase);
+            } else {
+              notification.open({ message: "Enter your secret passphrase!" });
+            }
+          }}
+          type="primary"
+        >
+          Submit
+        </Button>
+      </>
+    )
+  }
+
+  const HandleNewPassword = () => {
+    const [passphrase, setPass] = useState();
+    return (
+      <><Input.Group compact>
+        <Input.Password
+          placeholder="input password"
+          iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+          onChange={e => setPass(e.target.value)}
+        />
+      </Input.Group>
+        <Button
+          onClick={() => {
+            if (passphrase) {
+              createProfile(passphrase);
+            } else {
+              notification.open({ message: "Create a passphrase!" });
+            }
+          }}
+          type="primary"
+        >
+          Submit
+        </Button></>
+    )
+  }
 
   const LogInCard = () => {
     return (
@@ -37,25 +87,7 @@ const Profile = ({
                     Log-In
                   </h2>
                   <Space>
-                    <Input.Group compact>
-                      <Input.Password
-                        placeholder="input password"
-                        onChange={handlePWChange}
-                        iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                      />
-                    </Input.Group>
-                    <Button
-                      onClick={() => {
-                        if (passphrase) {
-                          loginProfile(passphrase);
-                        } else {
-                          notification.open({ message: "Enter your secret passphrase!" });
-                        }
-                      }}
-                      type="primary"
-                    >
-                      Submit
-                    </Button>
+                    <HandleLogin />
                   </Space>
                 </div>
               </Space>
@@ -67,25 +99,7 @@ const Profile = ({
                     Sign-Up
                   </h2>
                   <Space>
-                    <Input.Group compact>
-                      <Input.Password
-                        placeholder="input password"
-                        iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                        onChange={e => setPass(e.target.value)}
-                      />
-                    </Input.Group>
-                    <Button
-                      onClick={() => {
-                        if (passphrase) {
-                          createProfile(passphrase);
-                        } else {
-                          notification.open({ message: "Create a passphrase!" });
-                        }
-                      }}
-                      type="primary"
-                    >
-                      Submit
-                    </Button>
+                    <HandleNewPassword />
                   </Space>
                   <div style={{ marginTop: 30 }}>
                     <h1>Only a secure password is needed!</h1>
