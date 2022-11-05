@@ -237,6 +237,7 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @return Bool success or failure
   function startMatch(uint matchId, string memory ipfsHash) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
+    require(startmatch.player1 != address(0x0), "Match not initiated!");
     require(startmatch.startTime == 0, "Match already started!"); // Ensure a match isn't started already
     uint dId = matchIdToDeathMatchID[matchId];
     if(dId > 0) {

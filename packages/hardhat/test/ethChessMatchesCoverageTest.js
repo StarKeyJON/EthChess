@@ -700,7 +700,8 @@ describe("ETH Chess Matches Coverage Test", function () {
     });
     describe("Testing DeathMatch function branches for new reigning champion", function () {
       it("Should cycle through all of the DeathMatch function branches", async function () {
-        const [, , test3, test4, test5, test6] = await ethers.getSigners();
+        const [test, , test3, test4 /* , test5, test6 */] =
+          await ethers.getSigners();
 
         await ethChessMatches.connect(test3).startMatch(8, "IPFSHASH", {
           value: ethers.utils.parseUnits("1", "ether"),
@@ -784,25 +785,21 @@ describe("ETH Chess Matches Coverage Test", function () {
         await helpers.mine(7);
         await ethChessMatches.connect(test3).endMatch(14, "IPFSHASH");
 
-        await ethChessMatches.advanceDeathMatch(1, "IPFSHASH", {
-          value: ethers.utils.parseUnits(".5", "ether"),
+        await expect(
+          ethChessMatches.startMatch(15, "IPFSHASH")
+        ).to.be.rejectedWith("Match not initiated!");
+        await ethChessMatches.connect(test3).advanceDeathMatch(2, "IPFSHASH", {
+          value: ethers.utils.parseUnits("1", "ether"),
         });
-
-        await ethChessMatches.connect(test3).startMatch(15, "IPFSHASH");
-        await ethChessMatches
-          .connect(test3)
-          .startClaim(
-            15,
-            "StartHash",
-            "EndHash",
-            0
-          );
-
+        // To test the DeathMatch new reigning champion branch
         // await ethChessMatches.disputeClaim(
         //   15,
         //   "StartIPFSHASh",
         //   "EndIPFSHash",
-        //   0
+        //   ethers.utils.parseUnits("1", "ether"),
+        //   {
+        //     value: ethers.utils.parseUnits("1", "ether"),
+        //   }
         // );
 
         // await ethChessMatches.connect(test4).resolveDispute(15, false);
@@ -811,7 +808,7 @@ describe("ETH Chess Matches Coverage Test", function () {
         // await helpers.mine(7);
         // await ethChessMatches.endMatch(15, "ENDIPFS");
         // await ethChessMatches.advanceDeathMatch(1, "IPFSHASH", {
-        //   value: ethers.utils.parseUnits(".5", "ether"),
+        //   value: ethers.utils.parseUnits("1", "ether"),
         // });
 
         // await ethChessMatches.connect(test3).advanceDeathMatch(2, "IPFSHASH");
