@@ -257,7 +257,7 @@ describe("ETH Chess Matches Coverage Test", function () {
               value: ethers.utils.parseUnits(".1", "ether"),
             }
           )
-        ).to.be.rejectedWith("Must enter security deposit = to wager");
+        ).to.be.rejectedWith("Insufficient amount");
         await expect(
           ethChessMatches
             .connect(penTester)
@@ -512,7 +512,7 @@ describe("ETH Chess Matches Coverage Test", function () {
               value: ethers.utils.parseUnits(".1", "ether"),
             }
           )
-        ).to.be.rejectedWith("Must enter security deposit = to wager");
+        ).to.be.rejectedWith("Insufficient amount");
         await expect(
           ethChessMatches
             .connect(penTester)
@@ -592,13 +592,26 @@ describe("ETH Chess Matches Coverage Test", function () {
               value: ethers.utils.parseUnits("1", "ether"),
             }
           );
+        await expect(
+          ethChessMatches
+            .connect(test)
+            .disputeClaim(
+              7,
+              "StartIPFSHASh",
+              "EndIPFSHash",
+              ethers.utils.parseUnits("2", "ether")
+            )
+        ).to.be.rejectedWith("Insufficient amount");
         await ethChessMatches
           .connect(test)
           .disputeClaim(
             7,
             "StartIPFSHASh",
             "EndIPFSHash",
-            ethers.utils.parseUnits("2", "ether")
+            ethers.utils.parseUnits("2", "ether"),
+            {
+              value: ethers.utils.parseUnits("2", "ether"),
+            }
           );
       });
       it("Should allow for voting on a disputed claim", async function () {

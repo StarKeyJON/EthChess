@@ -274,9 +274,15 @@ contract ETHChessMatches is ReentrancyGuard {
   function startClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint security) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
     bytes memory hashBytes = bytes(startmatch.endHash);
+    uint dId = matchIdToDeathMatchID[matchId];
     require(hashBytes.length == 0, "Claim already started!");
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2);
-    require(security == startmatch.p1amount, "Must enter security deposit = to wager");
+    if(dId > 0) {
+      DeathMatch storage dMatch = idToDeathMatch[dId];
+      require(msg.value == dMatch.entranceFee, errMessage1); // Ensuring DeathMatch entranceFee is met
+    } else {
+      require(security == startmatch.p1amount, errMessage1);
+    }
     address[] memory refunds; /// Empty array used for placeholder
     idToClaim[matchId] = Claim(
       matchIds,
@@ -304,10 +310,16 @@ contract ETHChessMatches is ReentrancyGuard {
   function disputeClaim(uint matchId, string memory startIpfsHash, string memory endIpfsHash, uint dSecurity) external payable returns(bool){
     Match memory startmatch = idToMatch[matchId];
     Claim storage claim = idToClaim[matchId]; // Storage used to save claim.contested
+    uint dId = matchIdToDeathMatchID[matchId];
     require(!claim.contested, "Claim already contested!"); /// Ensure claim is not contested already
     require(claim.claimBlock + delta > block.number, "Dispute period over!"); /// Ensure the call is within the dispute time window
     require(msg.sender == startmatch.player1 || msg.sender == startmatch.player2, errMessage2); // Ensure the caller is a contestant
-    require(dSecurity == (startmatch.p1amount + startmatch.p2amount), errMessage1); /// Dispute security must be twice the amount of initial wager
+    if(dId > 0) {
+      DeathMatch storage dMatch = idToDeathMatch[dId];
+      require(msg.value == dMatch.entranceFee * 2, errMessage1); // Ensuring DeathMatch entranceFee is met
+    } else {
+      require(dSecurity == (startmatch.p1amount + startmatch.p2amount), errMessage1); /// Dispute security must be twice the amount of initial wager
+    }
     address[] memory voters; /// Empty array used for placeholders
     claim.contested = true;
     idToDispute[matchId] = Dispute(
