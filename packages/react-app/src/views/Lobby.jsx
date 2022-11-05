@@ -9,7 +9,7 @@ import { SocketContext } from "../socketContext/socketContext";
 import { useLobby, useSkirmishes } from "../components/StateComponents";
 import useSocket from "../socketStore/useSocket";
 
-const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, writeContracts }) => {
+const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, writeContracts, readContracts }) => {
   const { updateSocketData, lobbyJoinEmit, lobbyLeaveEmit } = useSocket();
   const { skirmishes, newSkirmish, endSkirmish } = useSkirmishes({
     gun,
@@ -178,7 +178,7 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
                       <FaInfoCircle size={12} />
                     </Popover>
                   </h1>
-                  <WageredTables address={address} players={fetchLobby()} tx={tx} writeContracts={writeContracts} />
+                  <WageredTables address={address} players={fetchLobby()} tx={tx} writeContracts={writeContracts} readContracts={readContracts} />
                 </div>
               </Space>
             </Card>

@@ -15,7 +15,7 @@ import { BsPersonFill } from "react-icons/bs";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { TbCurrencyEthereum } from "react-icons/tb";
 import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 import { Account, Contract, Header, NetworkDisplay, PieceBouncer, ThemeSwitch } from "./components";
 import { NETWORKS, ALCHEMY_KEY, peers } from "./constants";
@@ -413,6 +413,7 @@ function App(props) {
                   player={player}
                   setPlayer={setPlayer}
                   tx={tx}
+                  readContracts={readContracts}
                   writeContracts={writeContracts}
                   startTime={startTime}
                   loggedIn={loggedIn}

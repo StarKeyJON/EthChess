@@ -6,14 +6,16 @@ import { FaInfoCircle } from "react-icons/fa";
 import { useCallback } from "react";
 import ethlogo from "../../assets/ethereumLogo.png";
 import { TbCurrencyEthereum } from "react-icons/tb";
+import { useContractReader } from "eth-hooks";
 
-const WageredTables = ({ players, address, tx, writeContracts }) => {
+const WageredTables = ({ players, address, tx, writeContracts, readContracts }) => {
   const [newMatchModal, setNewMatchModal] = useState(false);
   const [newDeathMatchModal, setNewDeathMatchModal] = useState(false);
   const [confirmMatchModal, setConfirmMatchModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -168,7 +170,7 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
         </p>
         (*security deposit returned after dispute resolution process)
         <br />
-        (**minimum wager amount is {writeContracts?.EthChessMatches?.fee()} <TbCurrencyEthereum />
+        (**minimum wager amount is {minWager} <TbCurrencyEthereum />
         ETH)
         <Modal title="Confirm transaction" visible={confirmMatchModal} onCancel={() => setConfirmMatchModal(false)}>
           <h3>
@@ -219,7 +221,7 @@ const WageredTables = ({ players, address, tx, writeContracts }) => {
         </p>
         (*security deposit returned after dispute resolution process)
         <br />
-        (**minimum wager amount is {writeContracts?.EthChessMatches?.fee} <TbCurrencyEthereum />
+        (**minimum wager amount is {(minWager)} <TbCurrencyEthereum />
         ETH)
         <Modal title="Confirm transaction" visible={confirmMatchModal} onCancel={() => setConfirmMatchModal(false)}>
           <h3>
