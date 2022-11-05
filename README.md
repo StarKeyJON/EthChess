@@ -204,9 +204,19 @@ Register as a builder [here](https://speedrunethereum.com) and start on some of 
 ## Roadmap
 
 - [x] Add README
-- [x] Develop Matches & NFT Contracts
-- [x] Unit tests for smart contracts
-- [x] Develop mono subgraph for indexing
+- [ ] Solidity
+    - [x] Develop EthChess Matches Contract
+    - [x] Develop EthChess NFT Contract
+    - [ ] Unit tests for smart contracts
+        - [x] Statements Coverage > 90%
+        - [ ] Branch Coverage > 90%
+        - [x] Function Coverage > 90%
+        - [x] Lines Coverage > 90%
+    - [ ] Develop secondary contracts
+        - [x] EthChess Leagues
+        - [ ] EthChess Tournaments
+- [x] The Graph
+    - [x] Develop mono subgraph
 - [ ] Front-End
     - [x] Home
     - [ ] Lobby
