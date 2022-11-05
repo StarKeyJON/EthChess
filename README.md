@@ -189,7 +189,7 @@ yarn deploy
 # 💌 P.S
 <a name="usage"></a>
 
-🔑 You need to create a .env file for packages/server from the example.env file. If you would like to persist data to s3 storage, place in your s3 bucket details to enable gun.js s3, and uncomment the s3 imports in packages/server/config.js .
+🔑 You need to create a .env file for packages/server from the example.env, file as well as in packages/react-app. If you would like to persist data to s3 storage, place in your s3 bucket details to enable gun.js s3, and uncomment the s3 imports in packages/server/config.js .
 
 🌍 You need an RPC key for testnets and production deployments, create an [Alchemy](https://www.alchemy.com/) account and replace the value of `ALCHEMY_KEY = xxx` in `packages/react-app/src/constants.js` with your new key.
 
