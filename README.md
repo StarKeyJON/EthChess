@@ -23,6 +23,7 @@
 </details>
 
 <br/>
+
 # ♘ ETHChess
 
 
