@@ -148,6 +148,7 @@ let lobbyObject = {
     if(lobbyObject.players[socket.id].rooms[roomId]){
       lobbyObject.players[socket.id].rooms[roomId].connected = false;
     }
+    io.in(roomId).emit("playerLeft", socket.id);
     socket.leave(roomId);
   });
 

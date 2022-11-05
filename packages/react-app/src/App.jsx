@@ -41,7 +41,6 @@ import { Content } from "antd/lib/layout/layout";
 import useProfile from "./components/StateComponents/useProfile";
 import Voting from "./views/Voting";
 import { useGun } from "./hooks/useGunRelay";
-import { SocketContext } from "./socketContext/socketContext";
 
 const { ethers } = require("ethers");
 
@@ -224,10 +223,6 @@ function App(props) {
   useEffect(() => {
     updateGunUser();
   }, []);
-  console.log(writeContracts);
-
-  // const socket = useContext(SocketContext);
-  // let socketId = socket.id;
 
   const { loggedIn, loginProfile, createProfile, logoutProfile, player, setPlayer } = useProfile({
     gun,

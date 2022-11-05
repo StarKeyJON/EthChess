@@ -634,7 +634,7 @@ const ChessSkirmishes = ({ gun }) => {
       }
     });
 
-    socket.on("leftRoom", () => {
+    socket.on("playerLeft", () => {
       handlePlayerLeftModal();
     });
 
