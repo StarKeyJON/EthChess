@@ -71,7 +71,7 @@
 <a name="built-with"></a>
 # Technologies Used
 
-# IPFS used for immutable storage to preserve chess board state
+# IPFS
 
 <p>
 <a href="https://www.npmjs.com/package/ipfs-http-client">IPFS-http-client Github Repo</a> IPFS-http-client is used for storage and content-addressing services.
@@ -79,7 +79,7 @@
 <p>Each on-chain Match gameplay state is preserved with each move to IPFS, with each previous hash appended to the next IPFS object.</p>
 <p>This allows for an immutable chain of events that contributes to the Dispute resolution process.</p>
 
-# Gun.js used for decentralized database and cryptographic security/utilities
+# Gun.js
 
 <p>Gun.js is used in both the frontend and the backend applications for decentralized storage and cryptographic verification processes for user profiles.</p>
 </br>
@@ -101,7 +101,7 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 <div><img width="48%" src="https://gun.eco/see/stack.png"/>
 <img width="48%" align="right" src="https://gun.eco/see/layers.png"/></div>
 
-# Chess.js for chess game logic
+# Chess.js
 
 <a href="https://github.com/jhlywa/chess.js">Chess.js Github Repo</a>
 <p>chess.js is a Javascript chess library that is used for chess move generation/validation, piece placement/movement,</br> and check/checkmate/stalemate detection - basically everything but the AI.
@@ -115,9 +115,11 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 <p>This project code has been made public in condition with this repo GPL-3.0 license.</p>
 </br>
 
-> CRA platform scaffolded using Scaffold-ETH(more info found below)
 
 # 🏗 Scaffold-ETH
+
+<a href="https://github.com/scaffold-eth/scaffold-eth">Scaffold-Eth GitHub repo</a>
+<p>CRA platform scaffolded using Scaffold-ETH(more info found below)</p>
 
 > everything you need to build on Ethereum! 🚀
 
@@ -125,11 +127,9 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 
 ![image](https://user-images.githubusercontent.com/2653167/124158108-c14ca380-da56-11eb-967e-69cde37ca8eb.png)
 
-# 📚 Documentation
-
 Documentation, tutorials, challenges, and many more resources, visit: [docs.scaffoldeth.io](https://docs.scaffoldeth.io)
 
-# 🍦 Other Flavors
+<h3> 🍦 Other Flavors </h3>
 
 - [scaffold-eth-typescript](https://github.com/scaffold-eth/scaffold-eth-typescript)
 + [scaffold-eth-tailwind](https://github.com/stevenpslade/scaffold-eth-tailwind)
