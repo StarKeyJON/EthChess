@@ -1,6 +1,4 @@
 <a name="readme-top"></a>
-# ♘ ETHChess
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -23,6 +21,11 @@
     <li><a href="#contributing">Contributing</a></li>
   </ol>
 </details>
+
+<br/>
+# ♘ ETHChess
+
+
 
 <a name="about-the-project"></a>
 > Decentralized Chess app allowing p2p wagered matches and deathmatch competitions
