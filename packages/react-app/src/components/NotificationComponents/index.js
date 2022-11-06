@@ -1,1 +1,1 @@
-export { default as NotifyMatch } from "./NotifyMatch";
+export { NotifyMatch, NotifyDeathMatch } from "./NotifyMatch";

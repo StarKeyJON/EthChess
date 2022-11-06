@@ -25,4 +25,19 @@ export const NotifyDeathMatch = ({ showNotifyDeathMatch, setShowNotifyDeathMatch
             >
             </Modal></>
     )
+};
+
+export const NotifyDispute = ({ showNotifyDispute, setShowNotifyDispute, matchId }) => {
+    return (
+        <>
+            <Modal
+                title="Dispute started!"
+                visible={showNotifyDispute}
+                onCancel={() => setShowNotifyDispute(false)}
+                onOk={() => window.location.replace(`/deathmatch/${matchId}`)}
+            >
+
+            </Modal>
+        </>
+    )
 }

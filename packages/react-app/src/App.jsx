@@ -41,6 +41,8 @@ import { Content } from "antd/lib/layout/layout";
 import useProfile from "./components/StateComponents/useProfile";
 import Voting from "./views/Voting";
 import { useGun } from "./hooks/useGunRelay";
+import { NotifyDeathMatch, NotifyMatch } from "./components/NotificationComponents";
+import { NotifyDispute } from "./components/NotificationComponents/NotifyMatch";
 
 const { ethers } = require("ethers");
 
@@ -85,10 +87,13 @@ function App(props) {
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
   const [selectedNetwork, setSelectedNetwork] = useState(networkOptions[0]);
+  const [drawerCollapsed, setDrawerCollapsed] = useState(false);
+  const [showNotifyMatch, setShowNotifyMatch] = useState(false);
+  const [showNotifyDeathMatch, setShowNotifyDeathMatch] = useState(false);
+  const [showNotifyDispute, setShowNotifyDispute] = useState(false);
+  const [newMatchId, setNewMatchId] = useState(0);
 
   const location = useLocation();
-
-  const [drawerCollapsed, setDrawerCollapsed] = useState(false);
 
   const targetNetwork = NETWORKS[selectedNetwork];
 
@@ -557,7 +562,21 @@ function App(props) {
               </Route>
               <Route path="/*" component={() => <FourOFour gun={gun} />} />
             </Switch>
-
+            <NotifyMatch
+              showNotifyMatch={showNotifyMatch}
+              setShowNotifyMatch={setShowNotifyMatch}
+              matchId={newMatchId}
+            />
+            <NotifyDeathMatch
+              showNotifyDeathMatch={showNotifyDeathMatch}
+              setShowNotifyDeathMatch={setShowNotifyDeathMatch}
+              matchId={newMatchId}
+            />
+            <NotifyDispute
+              showNotifyDispute={showNotifyDispute}
+              setShowNotifyDispute={setShowNotifyDispute}
+              matchId={newMatchId}
+            />
             <ThemeSwitch />
             <LinkFooter />
           </Content>

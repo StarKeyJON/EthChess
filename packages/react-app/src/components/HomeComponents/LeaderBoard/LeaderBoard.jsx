@@ -109,7 +109,7 @@ const LeaderBoard = ({ address }) => {
       name: "Mike",
       age: 32,
       address: address,
-      league: "Stoners",
+      league: "StonePavers",
       games: 7,
       won: 2,
     },
