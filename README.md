@@ -30,44 +30,44 @@
 
 <a name="about-the-project"></a>
 > Decentralized Chess app allowing p2p wagered matches and deathmatch competitions
-</br><a href="https://eth-chess.surge.sh/">Link to test site: </a>
+<br/><a href="https://eth-chess.surge.sh/">Link to test site: </a>
 <p>ETH-Chess enables decentralized 1v1 chess matches between random or specific opponents,
-</br> as well as competitive DeathMatch tournaments where the player that wins 3 consecutive match rounds, wins the Rewards Pot!
+<br/> as well as competitive DeathMatch tournaments where the player that wins 3 consecutive match rounds, wins the Rewards Pot!
 </p>
 
 > Custom Solidity contracts for p2p wagered matches
 <p>EthChessMatches.sol allows for 1v1 random or specific chess matches or DeathMatch tournaments.</p>
 <p>EthChessNFTs.sol allows for rewarded dispute resolution processes.</p>
-</br>
+<br/>
 <h3>Chess Matches</h3>
 <p>1.) Matches are initiated with a wager amount specified by the player.</p>
-<p>2.) Competitors start the Match by entering the equivalent wager amount, </br>plus the hash of the IPFS object containing Match details and first move.</p>
+<p>2.) Competitors start the Match by entering the equivalent wager amount, <br/>plus the hash of the IPFS object containing Match details and first move.</p>
 <p>3.) The winner of the Match enters a winning claim with the final game state IPFS hash and a security deposit equal to the initial wager.</p>
 <p>4a.) The opponent has a dispute claim period of n blocks(where n is an adjustable amount initially set at 7)
-    </br>   to enter their IPFS hash and a security deposit equal to twice the amount of the initial wager.
-    </br>4b.) If disputed, up to 20 EthChess NFT holders can vote on the dispute, 10 for initial Claim is True, 10 for initial Claim is False(Dispute is true).
-    </br>4c) If the amount of True votes is >= False votes(benefit of the doubt is favored to the claimant),
-    </br>   then the claimant wins the Match total + their initial Claim security deposit back - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot).
-    </br>       Each voter that voted True receives (1/2 of the Dispute security deposit / amount of True voters).
-    </br>       The other 1/2 of the Dispute security deposit goes to the DeathMatch rewards pot.
-    </br>   If the Dispute is True, the disputer wins the Match total + their initial Dispute security deposit - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot).
-    </br>       Each voter that voted False receives ( Claim security deposit / amount of False voters).
+    <br/>   to enter their IPFS hash and a security deposit equal to twice the amount of the initial wager.
+    <br/>4b.) If disputed, up to 20 EthChess NFT holders can vote on the dispute, 10 for initial Claim is True, 10 for initial Claim is False(Dispute is true).
+    <br/>4c) If the amount of True votes is >= False votes(benefit of the doubt is favored to the claimant),
+    <br/>   then the claimant wins the Match total + their initial Claim security deposit back - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot).
+    <br/>       Each voter that voted True receives (1/2 of the Dispute security deposit / amount of True voters).
+    <br/>       The other 1/2 of the Dispute security deposit goes to the DeathMatch rewards pot.
+    <br/>   If the Dispute is True, the disputer wins the Match total + their initial Dispute security deposit - n fee(where n is an adjustable fee set at 10% that goes to the DeathMatch rewards pot).
+    <br/>       Each voter that voted False receives ( Claim security deposit / amount of False voters).
 </p>
 <h4>*The voters in the dispute resolution process receives the same amount of rewards whicever way they vote.
-</br>   1/2 of Dispute security deposit == Claim security deposit
-</br>   The only difference is if the Dispute is false, half of the security contributes to the DeathMatch rewards pot.*</h4>
-</br>
+<br/>   1/2 of Dispute security deposit == Claim security deposit
+<br/>   The only difference is if the Dispute is false, half of the security contributes to the DeathMatch rewards pot.*</h4>
+<br/>
 <h3>Chess DeathMatches</h3>
 <p>DeathMatches consists of rounds containing Match structs and a reigning champion.
-</br>1.) Player initiates DeathMatch with round wager amount.
-</br>  Each player must enter this amount each round.
-</br>2.) Opponent starts DeathMatch round by cycling through the Matches claim/dispute resolution process.
-</br>3.) Match winners can advance the DeathMatch round, starting a new Match.
-</br>   Match rewards are accumulated in the DeathMatch rewards pot.
-</br>4.) The Reigning Champion that wins 3 Rounds in a row wins the DeathMatch rewards pot + (platform rewards pot / n (where n is an adjustable fee set at 50%))
+<br/>1.) Player initiates DeathMatch with round wager amount.
+<br/>  Each player must enter this amount each round.
+<br/>2.) Opponent starts DeathMatch round by cycling through the Matches claim/dispute resolution process.
+<br/>3.) Match winners can advance the DeathMatch round, starting a new Match.
+<br/>   Match rewards are accumulated in the DeathMatch rewards pot.
+<br/>4.) The Reigning Champion that wins 3 Rounds in a row wins the DeathMatch rewards pot + (platform rewards pot / n (where n is an adjustable fee set at 50%))
 </p>
 
-</br>
+<br/>
 
 <a name="built-with"></a>
 # Technologies Used
@@ -80,14 +80,14 @@
 <p>Each on-chain Match gameplay state is preserved with each move to IPFS, and each previous hash appended to the next IPFS object.</p>
 <p>Each player will have a chain of IPFS CID's that can be submitted at the end of the match, either to cliam vicotry or to dispute the results.</p>
 <p>This allows for an immutable chain of events that contributes to the Dispute resolution process where holders of EthChess NFTs an vote on the outcome by reviewing the IPFS CID chained history.</p>
-<a href="https://github.com/StarKeyJON/EthChess/blob/main/packages/react-app/src/helpers/ipfs.js"> Link to IPFS instance hook.</a></br>
-<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L201">Link to usage.</a></br>
-<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L253">Link to usage</a></br>
+<a href="https://github.com/StarKeyJON/EthChess/blob/main/packages/react-app/src/helpers/ipfs.js"> Link to IPFS instance hook.</a><br/>
+<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L201">Link to usage.</a><br/>
+<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L253">Link to usage</a><br/>
 
 # Gun.js
 
 <p>Gun.js is used in both the frontend and the backend applications for decentralized storage and cryptographic verification processes for user profiles.</p>
-</br>
+<br/>
 **GUN** is an [ecosystem](https://gun.eco/docs/Ecosystem) of **tools** that let you build [community run](https://www.nbcnews.com/tech/tech-news/these-technologists-think-internet-broken-so-they-re-building-another-n1030136) and [encrypted applications](https://gun.eco/docs/Cartoon-Cryptography) - like an Open Source Firebase or a Decentralized Dropbox.
 
 The [Internet Archive](https://news.ycombinator.com/item?id=17685682) and [100s of other apps](https://github.com/amark/gun/wiki/awesome-gun) run GUN in-production. GUN is also part of [Twitter's Bluesky](https://blueskycommunity.net/) initiative!
@@ -109,7 +109,7 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 # Chess.js
 
 <a href="https://github.com/jhlywa/chess.js">Chess.js Github Repo</a>
-<p>chess.js is a Javascript chess library that is used for chess move generation/validation, piece placement/movement,</br> and check/checkmate/stalemate detection - basically everything but the AI.
+<p>chess.js is a Javascript chess library that is used for chess move generation/validation, piece placement/movement,<br/> and check/checkmate/stalemate detection - basically everything but the AI.
 </p>
 
 # ChessGround
@@ -118,7 +118,7 @@ The GUN ecosystem stack is a collection of independent and modular tools coverin
 <p>Chessground is a free/libre open source chess UI developed for lichess.org. It targets modern browsers, as well as mobile development using Cordova.</p>
 
 <p>This project code has been made public in condition with this repo GPL-3.0 license.</p>
-</br>
+<br/>
 
 
 # 🏗 Scaffold-ETH
@@ -187,7 +187,7 @@ cd EthChess
 yarn deploy
 ```
 
-</br>
+<br/>
 
 ...
 
