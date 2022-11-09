@@ -236,7 +236,6 @@ yarn deploy
         - [ ] Wagered DeathMatch
     - [ ] Voting
     - [ ] Mint
-    - [ ] Profile
     - [x] Info
 - [x] Back-End
     - [x] Express server
