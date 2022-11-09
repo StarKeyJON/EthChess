@@ -346,9 +346,9 @@ function App(props) {
                 <Menu.Item icon={<FaVoteYea />} key="/disputes">
                   <Link to="/disputes">Voting</Link>
                 </Menu.Item>
-                <Menu.Item icon={<FaChessKing />} key="/profile">
+                {/* <Menu.Item icon={<FaChessKing />} key="/profile">
                   <Link to="/profile">Profile</Link>
-                </Menu.Item>
+                </Menu.Item> */}
                 <Menu.Item icon={<FaInfo />} key="/info">
                   <Link to="/info">Info</Link>
                 </Menu.Item>

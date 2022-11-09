@@ -1,5 +1,5 @@
-import { Divider, Image } from "antd";
-import { FaChess, FaChessBishop, FaChessBoard, FaChessKing, FaChessRook, FaInfo, FaVoteYea } from "react-icons/fa";
+import { Divider } from "antd";
+import { FaChess, FaChessBoard, FaInfo, FaVoteYea } from "react-icons/fa";
 import { Link } from "react-router-dom";
 // import { FaDiscord, FaTelegramPlane, FaTwitter, FaMediumM, FaSatelliteDish } from "react-icons/fa";
 import image from "../assets/img.jpg";
@@ -24,11 +24,11 @@ function LinkFooter({ gun }) {
               <FaVoteYea /> Voting
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link to="/profile">
               <FaChessKing /> Profile
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link to="/info">
               <FaInfo /> Info
