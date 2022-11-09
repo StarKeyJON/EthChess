@@ -79,9 +79,9 @@
 <p>Each on-chain Match gameplay state is preserved with each move to IPFS, and each previous hash appended to the next IPFS object.</p>
 <p>Each player will have a chain of IPFS CID's that can be submitted at the end of the match, either to cliam vicotry or to dispute the results.</p>
 <p>This allows for an immutable chain of events that contributes to the Dispute resolution process where holders of EthChess NFTs an vote on the outcome by reviewing the IPFS CID chained history.</p>
-<a href="https://github.com/StarKeyJON/EthChess/blob/main/packages/react-app/src/helpers/ipfs.js"> Link to IPFS instance hook.</a>
-<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L201">Link to usage.</a>
-<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L253">Link to usage</a>
+<a href="https://github.com/StarKeyJON/EthChess/blob/main/packages/react-app/src/helpers/ipfs.js"> Link to IPFS instance hook.</a></br>
+<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L201">Link to usage.</a></br>
+<a href="https://github.com/StarKeyJON/EthChess/blob/f8195322b9643680cc3c457c6f911a9db0b6b5a8/packages/react-app/src/components/ChessComponents/ChessGrounds/ETHMatch.js#L253">Link to usage</a></br>
 
 # Gun.js
 
