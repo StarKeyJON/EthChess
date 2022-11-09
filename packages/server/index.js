@@ -1,14 +1,21 @@
 /* eslint-disable prettier/prettier */
 require('dotenv').config();
-const http = require("http");
+const https = require('https');
 const express = require("express");
 const GUN = require("gun");
 const { Chess } = require('chess.js');
 const { gun_config } = require('./config');
+const fs = require("fs");
 
+var key = fs.readFileSync(__dirname + '/../selfsigned.key');
+var cert = fs.readFileSync(__dirname + '/../selfsigned.crt');
+var options = {
+  key: key,
+  cert: cert
+};
 
 const app = express(); // creating instance of express
-const server = http.createServer(app); // creating http server from express instance & enabling cross access origin resource sharing
+const server = https.createServer(options, app); // creating https server from express instance & enabling cross access origin resource sharing
 
 // Bring in env variables
 const GUNKEY = process.env.GUN_KEY;
