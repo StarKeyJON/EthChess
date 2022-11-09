@@ -41,6 +41,7 @@ const initialState = {
   player2: "",
   settingMatch: false,
   gameInProgress: false,
+  playerLeftModal: false,
   opponentLeftModal: false,
   winningModalVisible: false,
   losingModalVisible: false,
@@ -116,6 +117,9 @@ function chessReducer(state, action) {
         return { ...state, player2Shake: true };
       }
     }
+    case "PLAYERLEFT": {
+      return { ...state, playerLeftModal: true };
+    }
     case "OPPONENTLEFT": {
       return { ...state, opponentLeftModal: true };
     }
@@ -127,16 +131,17 @@ function chessReducer(state, action) {
     }
     case "RESET":
       return initialState;
+
     default:
       break;
   }
 }
 
-const ChessSkirmishes = ({ gun }) => {
+const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 
-  const { gameId } = useParams();
+  const { matchAddress, gameId } = useParams();
 
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const gpState = useRef();
@@ -159,6 +164,7 @@ const ChessSkirmishes = ({ gun }) => {
     player2,
     settingMatch,
     gameInProgress,
+    playerLeftModal,
     opponentLeftModal,
     // winningModalVisible,
     // losingModalVisible,
@@ -190,6 +196,16 @@ const ChessSkirmishes = ({ gun }) => {
       socket.emit("opponentSet", gameId, socketId, "skirmishes");
     }
     dispatch({ type: "SHAKING" });
+  };
+
+  // IPFS file processing and uploading
+  const handleIPFSInput = async e => {
+    try {
+      let added = await AddToIPFS(e);
+      dispatch({ type: "IPFSHISTORY", load: added.path });
+    } catch (error) {
+      console.log("Error uploading file: ", error);
+    }
   };
 
   const onMove = (from, to) => {
@@ -234,6 +250,7 @@ const ChessSkirmishes = ({ gun }) => {
             turn: opp,
           },
         });
+        handleIPFSInput(file);
 
         socket.emit("onMove", gameId, socketId, file);
 
@@ -301,14 +318,14 @@ const ChessSkirmishes = ({ gun }) => {
 
   const moveGun = (from, to, prom, ack) => {
     let { gunMoved, chess } = gpState.current;
-    if (!gunMoved) {
+    if (!gunMoved && socketId !== ack.player) {
       console.log("Moving Gun!");
       if (prom !== undefined) {
         console.log("Gun promotion!", prom);
         chess.move({ from, to, promotion: prom });
         if (chess.inCheck()) {
-          const movesleft = chess.moves({ verbose: true });
-          if (movesleft.length === 0) {
+          const moves = chess.moves({ verbose: true });
+          if (moves.length === 0) {
             notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
             dispatch({ type: "GAMEOVER", winner: ack.player });
           } else {
@@ -335,6 +352,18 @@ const ChessSkirmishes = ({ gun }) => {
         });
       } else {
         chess.move({ from, to });
+        if (chess.inCheck()) {
+          const moves = chess.moves({ verbose: true });
+          if (moves.length === 0) {
+            notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
+            dispatch({ type: "GAMEOVER", winner: ack.player });
+          } else {
+            notification.open({ message: "Check!" });
+            dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
+          }
+        } else {
+          dispatch({ type: "CHECKCHECK", inCheck: false });
+        }
         let m = chess.history({ verbose: true });
         m.reverse();
         dispatch({
@@ -350,18 +379,6 @@ const ChessSkirmishes = ({ gun }) => {
             turn: ack.turn,
           },
         });
-        if (chess.inCheck()) {
-          const movesleft = chess.moves({ verbose: true });
-          if (movesleft.length === 0) {
-            notification.open({ message: `Checkmate! Game Over! ${ack.player} is the winner!` });
-            dispatch({ type: "GAMEOVER", winner: ack.player });
-          } else {
-            notification.open({ message: "Check!" });
-            dispatch({ type: "CHECKCHECK", inCheck: true, player: socketId });
-          }
-        } else {
-          dispatch({ type: "CHECKCHECK", inCheck: false });
-        }
       }
     }
   };
@@ -517,11 +534,11 @@ const ChessSkirmishes = ({ gun }) => {
     );
   };
 
-  const GameOver = () => {
+  const PlayerLeftM = () => {
     return (
       <Modal
-        title="GAME OVER!"
-        visible={gameOverModal}
+        title="The player has left the room!"
+        visible={playerLeftModal}
         onCancel={() => {
           window.location.replace("/lobby");
         }}
@@ -529,15 +546,37 @@ const ChessSkirmishes = ({ gun }) => {
           window.location.replace("/lobby");
         }}
       >
+        <PlayerLeft />
+      </Modal>
+    );
+  };
+
+  const GameOver = () => {
+    return (
+      <Modal
+        title="GAME OVER!"
+        visible={gameOverModal}
+        onCancel={() => {
+          dispatch({ type: "RESETGO" });
+        }}
+      >
         <Card>
           {winner === socketId ? (
             <>
-              <h1>Congratulations! You are the winner!</h1>
+              <h1>Congratulations!</h1>
               <br />
+              <h3>Execute the claim below!</h3>
+              <br />
+              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory, socketId })}></Button>
+              <p>Please allow a minimum of 7 blocks for the dispute resolution period!</p>
             </>
           ) : (
             <>
               <h1>Better luck next time!</h1>
+              <br />
+              <h3>You can dispute the results below!</h3>
+              <br />
+              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
             </>
           )}
         </Card>
@@ -553,10 +592,7 @@ const ChessSkirmishes = ({ gun }) => {
         onCancel={() => {
           dispatch({ type: "NOQUIT" });
         }}
-        onOk={() => {
-          socket.emit("leftRoom", gameId, socketId);
-          window.location.replace("/lobby");
-        }}
+        onOk={() => window.location.replace("/lobby")}
       >
         <h1>Are you sure you want to exit the match?</h1>
       </Modal>
@@ -588,8 +624,12 @@ const ChessSkirmishes = ({ gun }) => {
     dispatch({ type: "ILLEGALMOVE" });
   };
 
-  const handlePlayerLeftModal = useCallback(() => {
-    dispatch({ type: "OPPONENTLEFT" });
+  const handlePlayerLeftModal = useCallback(ack => {
+    if (ack === player1) {
+      dispatch({ type: "PLAYERLEFT" });
+    } else {
+      dispatch({ type: "OPPONENTLEFT" });
+    }
   }, []);
 
   const handleJoined = useCallback(() => {
@@ -629,7 +669,7 @@ const ChessSkirmishes = ({ gun }) => {
       }
     });
 
-    socket.on("playerLeft", () => {
+    socket.on("leftRoom", () => {
       handlePlayerLeftModal();
     });
 
@@ -673,6 +713,7 @@ const ChessSkirmishes = ({ gun }) => {
         <ShakeHands />
         <NewGameModal />
         <PromotionModal />
+        <PlayerLeftM />
         <OpponentLeftM />
         <GameOver />
         <HandleQuit />
