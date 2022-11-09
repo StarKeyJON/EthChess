@@ -37,6 +37,10 @@ const Info = () => {
               <Space>
                 <Card>
                   <h3>♖ Logic</h3>
+                  <p>ETH-Chess allows for decentralized wagered chess matches and tournaments by cryptographic tooling.
+                    <br/>
+                  </p>
+                  <h4>Technologies Used:</h4>
                   <p>
                     ETH-Chess uses the Ethereum blockchain as the initiation and settlement chain for all matches.
                     <br />
