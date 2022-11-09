@@ -198,7 +198,7 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
             message: <Text>{"Match Initiated!"}</Text>,
           });
         }
-    });
+      });
   };
 
   const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger }) => {
@@ -252,19 +252,18 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
   };
 
   const handleChallenge = (wageredAmount, challenger) => {
-    if (challenger && challenger.length === 42 && challenger.slice(0, 2) === "0x") {
+    if (typeof challenger === "undefined") {
+      appStage === "production"
+        ? executeNewMatch(tx, writeContracts, wageredAmount)
+        : console.log("Execute transaction!");
+    } else if (challenger && challenger.length === 42 && challenger.slice(0, 2) === "0x") {
       appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger);
-    } else {
-      notification.open({ message: "Please ensure the correct challenger address!" });
-    }
-    if (!challenger) {
-      appStage === "production" && executeNewMatch(tx, writeContracts, wageredAmount);
     }
   };
 
   const HandleNewMatch = () => {
     const [wageredAmount, setWageredAmount] = useState(0);
-    const [challenger, setChallenger] = useState("");
+    const [challenger, setChallenger] = useState();
     const setAmount = useCallback(
       amt => {
         setWageredAmount(amt);
