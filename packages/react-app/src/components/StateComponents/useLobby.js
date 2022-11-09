@@ -60,8 +60,8 @@ const useLobby = ({ gun, address, startTime, player, setPlayer, newSkirmish, end
       });
   };
   useEffect(() => {
-    gun && fetchPlayers();
-  }, [gun, joinedLobby]);
+    fetchPlayers();
+  }, [joinedLobby]);
 
   useEffect(() => {
     socket && setSocket();

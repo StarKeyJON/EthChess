@@ -11,7 +11,6 @@ import bishop from "../../../assets/images/WhiteBishop.png";
 import knight from "../../../assets/images/WhiteKnight.png";
 import { beginningFEN, GUNKEY } from "../../../constants";
 
-import { OpponentLeft, PlayerLeft } from "../modals";
 import { Chess } from "chess.js";
 import { SocketContext } from "../../../socketContext/socketContext";
 import MoveTable from "../MoveTable";
@@ -529,7 +528,13 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
           window.location.replace("/lobby");
         }}
       >
-        <OpponentLeft />
+        <Card>
+          <div>
+            Your Opponent has left!
+            <br />
+            Please return to the game lobby!
+          </div>
+        </Card>
       </Modal>
     );
   };
@@ -546,7 +551,13 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
           window.location.replace("/lobby");
         }}
       >
-        <PlayerLeft />
+        <Card>
+          <div>
+            Your Opponent has left!
+            <br />
+            Please return to the game lobby!
+          </div>
+        </Card>
       </Modal>
     );
   };
@@ -568,13 +579,13 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
               <h3>Execute the claim below!</h3>
               <br />
               <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory, socketId })}></Button>
-              <p>Please allow a minimum of 7 blocks for the dispute resolution period!</p>
+              <p>Please allow a minimum of 7 blocks for the dispute resolution period to pass!</p>
             </>
           ) : (
             <>
               <h1>Better luck next time!</h1>
               <br />
-              <h3>You can dispute the results below!</h3>
+              <h3>You can dispute the results below within 7 blocks of the initial claim!</h3>
               <br />
               <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
             </>

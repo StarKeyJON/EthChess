@@ -11,12 +11,9 @@ import bishop from "../../../assets/images/WhiteBishop.png";
 import knight from "../../../assets/images/WhiteKnight.png";
 import { beginningFEN, GUNKEY } from "../../../constants";
 
-import { OpponentLeft, PlayerLeft } from "../modals";
 import { Chess } from "chess.js";
 import { SocketContext } from "../../../socketContext/socketContext";
 import MoveTable from "../MoveTable";
-import { AddToIPFS } from "../../../helpers/ipfs";
-import { executeDispute, executeWin } from "../BoardComponents/WinLose";
 
 const initialState = {
   chess: new Chess(),
@@ -137,7 +134,7 @@ function chessReducer(state, action) {
   }
 }
 
-const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
+const ChessSkirmishes = ({ gun, address }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 
@@ -198,16 +195,6 @@ const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
     dispatch({ type: "SHAKING" });
   };
 
-  // IPFS file processing and uploading
-  const handleIPFSInput = async e => {
-    try {
-      let added = await AddToIPFS(e);
-      dispatch({ type: "IPFSHISTORY", load: added.path });
-    } catch (error) {
-      console.log("Error uploading file: ", error);
-    }
-  };
-
   const onMove = (from, to) => {
     console.log("GamePlayState: ", gameplayState);
     if (turn === socketId) {
@@ -250,7 +237,6 @@ const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
             turn: opp,
           },
         });
-        handleIPFSInput(file);
 
         socket.emit("onMove", gameId, socketId, file);
 
@@ -529,7 +515,13 @@ const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
           window.location.replace("/lobby");
         }}
       >
-        <OpponentLeft />
+        <Card>
+          <div>
+            Your Opponent has left!
+            <br />
+            Please return to the game lobby!
+          </div>
+        </Card>
       </Modal>
     );
   };
@@ -546,7 +538,13 @@ const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
           window.location.replace("/lobby");
         }}
       >
-        <PlayerLeft />
+        <Card>
+          <div>
+            Your Opponent has left!
+            <br />
+            Please return to the game lobby!
+          </div>
+        </Card>
       </Modal>
     );
   };
@@ -564,19 +562,10 @@ const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
           {winner === socketId ? (
             <>
               <h1>Congratulations!</h1>
-              <br />
-              <h3>Execute the claim below!</h3>
-              <br />
-              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory, socketId })}></Button>
-              <p>Please allow a minimum of 7 blocks for the dispute resolution period!</p>
             </>
           ) : (
             <>
               <h1>Better luck next time!</h1>
-              <br />
-              <h3>You can dispute the results below!</h3>
-              <br />
-              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
             </>
           )}
         </Card>
@@ -592,7 +581,10 @@ const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
         onCancel={() => {
           dispatch({ type: "NOQUIT" });
         }}
-        onOk={() => window.location.replace("/lobby")}
+        onOk={() => {
+          socket.emit("leftRoom", gameId, socketId);
+          window.location.replace("/lobby");
+        }}
       >
         <h1>Are you sure you want to exit the match?</h1>
       </Modal>
@@ -669,7 +661,7 @@ const ChessSkirmishes = ({ gun, address, tx, writeContracts, price }) => {
       }
     });
 
-    socket.on("leftRoom", () => {
+    socket.on("playerLeft", () => {
       handlePlayerLeftModal();
     });
 

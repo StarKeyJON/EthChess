@@ -11,7 +11,6 @@ import bishop from "../../../assets/images/WhiteBishop.png";
 import knight from "../../../assets/images/WhiteKnight.png";
 import { beginningFEN, GUNKEY } from "../../../constants";
 
-import { OpponentLeft, PlayerLeft } from "../modals";
 import { Chess } from "chess.js";
 import { SocketContext } from "../../../socketContext/socketContext";
 import MoveTable from "../MoveTable";
@@ -537,7 +536,13 @@ const ChessSkirmish = ({ gun }) => {
           window.location.replace("/lobby");
         }}
       >
-        <OpponentLeft />
+        <Card>
+          <div>
+            Your Opponent has left!
+            <br />
+            Please return to the game lobby!
+          </div>
+        </Card>
       </Modal>
     );
   };
@@ -554,7 +559,13 @@ const ChessSkirmish = ({ gun }) => {
           window.location.replace("/lobby");
         }}
       >
-        <PlayerLeft />
+        <Card>
+          <div>
+            Your Opponent has left!
+            <br />
+            Please return to the game lobby!
+          </div>
+        </Card>
       </Modal>
     );
   };
