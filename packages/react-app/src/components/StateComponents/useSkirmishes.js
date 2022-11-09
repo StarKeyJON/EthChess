@@ -69,24 +69,23 @@ const useSkirmishes = ({ gun, player }) => {
 
   useEffect(() => {
     var p = [];
-    gun &&
-      gun
-        .get(GUNKEY)
-        .get("skirmishes")
-        .map()
-        .on((ack, i) => {
-          if (ack && ack.active && !ack.gameInProgress) {
-            Object.assign(ack, { key: i });
-            let s = new Set(p);
-            if (!s.has(ack)) {
-              p.push(ack);
-            }
+    gun
+      .get(GUNKEY)
+      .get("skirmishes")
+      .map()
+      .on((ack, i) => {
+        if (ack && ack.active) {
+          Object.assign(ack, { key: i });
+          let s = new Set(p);
+          if (!s.has(ack)) {
+            p.push(ack);
           }
-        })
-        .then(() => {
-          setSkirmishes(p);
-        });
-  }, [gun, player]);
+        }
+      })
+      .then(() => {
+        setSkirmishes(p);
+      });
+  }, [player]);
 
   return {
     inSkirmish,
