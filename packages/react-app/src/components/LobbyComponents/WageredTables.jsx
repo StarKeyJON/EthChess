@@ -11,6 +11,7 @@ import Text from "antd/lib/typography/Text";
 import { utils } from "ethers";
 import AddressInput from "../AddressInput";
 import { appStage } from "../../constants";
+import { Link } from "react-router-dom";
 
 const WageredTables = ({ players, address, tx, writeContracts, readContracts, mainnetProvider }) => {
   const [newMatchModal, setNewMatchModal] = useState(false);
@@ -118,23 +119,61 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
 
   const columns = [
     {
+      title: "Game ID",
+      dataIndex: "gameId",
+      key: "key",
+      width: "20%",
+      render: gameId => <Link to={`/deathmatch/room/${gameId}`}>{gameId}</Link>,
+    },
+    {
       title: "Player",
       dataIndex: "playerName",
       key: "playerName",
-      width: "20%",
+      width: "35%",
+      ...getColumnSearchProps("playerName"),
     },
     {
       title: "Address",
       dataIndex: "address",
       key: "address",
-      width: "20%",
+      width: "45%",
+      ...getColumnSearchProps("address"),
     },
     {
       title: "Joined",
       dataIndex: "timeJoined",
       key: "timeJoined",
       width: "20%",
-      ...getColumnSearchProps("timeJoined"),
+    },
+  ];
+
+  const dcolumns = [
+    {
+      title: "Game ID",
+      dataIndex: "gameId",
+      key: "key",
+      width: "20%",
+      render: gameId => <Link to={`/match/room/${gameId}`}>{gameId}</Link>,
+    },
+    {
+      title: "Player",
+      dataIndex: "playerName",
+      key: "playerName",
+      width: "35%",
+      ...getColumnSearchProps("playerName"),
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+      width: "45%",
+      ...getColumnSearchProps("address"),
+    },
+    {
+      title: "Joined",
+      dataIndex: "timeJoined",
+      key: "timeJoined",
+      width: "20%",
     },
   ];
 
@@ -274,13 +313,12 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
         </div>
         <p style={{ marginTop: 30 }}>
           *Total funds needed will be <TbCurrencyEthereum />
-          {wageredAmount} + {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />
-          {wageredAmount} + {wageredAmount * 2} to dispute the match outcome.
+          {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />
+          {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount * 2} to dispute the match outcome.
         </p>
         (*security deposit returned after dispute resolution process)
         <br />
-        (**minimum wager amount is {minWager} <TbCurrencyEthereum />
-        ETH)
+        (**minimum wager amount is <TbCurrencyEthereum /> {minWager})
         <Modal
           title="Confirm transaction"
           visible={confirmMatchModal}
@@ -329,13 +367,12 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
         </div>
         <p style={{ marginTop: 30 }}>
           *Total funds needed will be <TbCurrencyEthereum />
-          {wageredAmount} + {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />
-          {wageredAmount} + {wageredAmount * 2} to dispute the match outcome.
+          {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount} security deposit for a winning match claim, or, <TbCurrencyEthereum />
+          {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount * 2} to dispute the match outcome.
         </p>
         (*security deposit returned after dispute resolution process)
         <br />
-        (**minimum wager amount is {minWager} <TbCurrencyEthereum />
-        ETH)
+        (**minimum wager amount is <TbCurrencyEthereum /> {minWager})
         <Modal
           title="Confirm transaction"
           visible={confirmMatchModal}
@@ -380,7 +417,7 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
                 <Button style={{ margin: 10 }} onClick={() => setNewMatchModal(true)}>
-                  Start
+                  Initiate
                 </Button>
                 <HandleNewMatch />
               </h2>
@@ -417,7 +454,7 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
                 <Button style={{ margin: 10 }} onClick={() => setNewDeathMatchModal(true)}>
-                  Start
+                  Initiate
                 </Button>
                 <HandleNewDeathMatch />
               </h2>
@@ -425,7 +462,7 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
           </div>
           <h3>Enter a DeathMatch Below!</h3>
           <Card>
-            <Table dataSource={players} columns={columns} />
+            <Table dataSource={players} columns={dcolumns} />
           </Card>
         </Col>
       </Row>
