@@ -35,6 +35,9 @@ function Subgraph(props) {
         address
       }
     }
+    _meta{
+      hasIndexingErrors
+    }
   }
   `;
   // const EXAMPLE_GQL = gql(EXAMPLE_GRAPHQL);
