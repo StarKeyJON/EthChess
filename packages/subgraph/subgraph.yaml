@@ -3,11 +3,12 @@ schema:
   file: ./src/schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: YourContract
+    name: ETHChessMatches
     network: localhost
     source:
-      abi: ETHChess
-      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+      abi: ETHChessMatches
+      startBlock: 1
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
@@ -19,12 +20,12 @@ dataSources:
         - Claim
         - Dispute
       abis:
-        - name: ETHChess
-          file: ./abis/localhost_ETHChess.json
+        - name: ETHChessMatches
+          file: ./abis/localhost_ETHChessMatches.json
       eventHandlers:
         - event: MatchInitiated(address,uint256,uint256)
           handler: handleMatchInitiated
-        - event: MatchSet(address,address,uint256,uint256,string,uint256)
+        - event: MatchSet(address,address,uint256,uint256,string)
           handler: handleMatchSet
         - event: DeathMatchStarted(uint256,address,uint256)
           handler: handleDeathMatchStarted
@@ -36,7 +37,7 @@ dataSources:
           handler: handleDisputeVoted
         - event: DisputeResolved(uint256,bool)
           handler: handleDisputeResolved
-        - event: MatchEnd(uint256,address,string)
+        - event: MatchEnd(uint256,address,string,uint256)
           handler: handleMatchEnd
         - event: DeathMatchAdvanced(uint256,address,string,uint256)
           handler: handleDeathMatchAdvanced
