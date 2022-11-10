@@ -248,7 +248,7 @@ const ChessSkirmish = ({ gun }) => {
         // setGunMoved(false);
         // setGameState(file);
         // setTurn(opp);
-        socket.emit("onMove", gameId, socketId, file);
+        socket.emit("onMove", gameId, "skirmish", socketId, file);
         console.log("Move sent!");
       }
     } else {
@@ -296,7 +296,7 @@ const ChessSkirmish = ({ gun }) => {
     // setTurn(opp);
     // setSelectVisible(false);
     // setGunMoved(false);
-    socket.emit("onMove", gameId, socketId, file);
+    socket.emit("onMove", gameId, "skirmish", socketId, file);
   };
 
   const moveGun = (from, to, prom, ack) => {

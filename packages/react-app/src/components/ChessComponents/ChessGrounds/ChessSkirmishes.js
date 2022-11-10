@@ -238,7 +238,7 @@ const ChessSkirmishes = ({ gun, address }) => {
           },
         });
 
-        socket.emit("onMove", gameId, socketId, file);
+        socket.emit("onMove", gameId, "skirmish", socketId, file);
 
         if (chess.inCheck()) {
           const movesleft = chess.moves({ verbose: true });
@@ -288,7 +288,7 @@ const ChessSkirmishes = ({ gun, address }) => {
         turn: opp,
       },
     });
-    socket.emit("onMove", gameId, socketId, file);
+    socket.emit("onMove", gameId, "skirmish", socketId, file);
     if (chess.inCheck()) {
       const movesleft = chess.moves({ verbose: true });
       if (movesleft.length === 0) {

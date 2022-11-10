@@ -251,7 +251,7 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
         });
         handleIPFSInput(file);
 
-        socket.emit("onMove", gameId, socketId, file);
+        socket.emit("onMove", gameId, "skirmish", socketId, file);
 
         if (chess.inCheck()) {
           const movesleft = chess.moves({ verbose: true });
@@ -301,7 +301,7 @@ const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
         turn: opp,
       },
     });
-    socket.emit("onMove", gameId, socketId, file);
+    socket.emit("onMove", gameId, "skirmish", socketId, file);
     if (chess.inCheck()) {
       const movesleft = chess.moves({ verbose: true });
       if (movesleft.length === 0) {

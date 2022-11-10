@@ -192,8 +192,13 @@ let lobbyObject = {
 //   console.log("game canceled!")
 // })
 
-
-  socket.on("onMove", (gameId, profile, move) => {
+  /**
+   * gameId: Id of the game
+   * type: Type of game: skirmish, match, deathmatch
+   * profile: socket.id of the player connecting
+   * move: game move object
+   */
+  socket.on("onMove", (gameId, type, profile, move) => {
     if (move.lastFen) {
       game.load(move.lastFen);
     } else {
@@ -209,16 +214,21 @@ let lobbyObject = {
     if(theMove === null){
       socket.to(profile).emit("illegalMove", profile, move);
     } else {
-      gun.get(GUNKEY).get("skirmishes").get(gameId).get("move").put(move);
-      gun.get(GUNKEY).get("skirmishHistory").get(gameId).set(move);
+      if(type === "skirmsh") {
+        gun.get(GUNKEY).get("skirmishes").get(gameId).get("move").put(move);
+        gun.get(GUNKEY).get("skirmishHistory").get(gameId).set(move);
+      }
+      if(type === "match") {
+        gun.get(GUNKEY).get("match").get(gameId).get("move").put(move);
+        gun.get(GUNKEY).get("matchHistory").get(gameId).set(move);
+      }
+      if(type === "deathMatch") {
+        gun.get(GUNKEY).get("deathMatch").get(gameId).get("move").put(move);
+        gun.get(GUNKEY).get("deathMatchHistory").get(gameId).set(move);
+      }
       io.in(gameId).emit("playerMoved", { profile: profile, move: move });
     }
   });
-
-  // socket.on('message', messageObj => {
-  //   messageObj.timestamp = new Date().toLocaleTimeString();
-    // emitter(roomId, 'message', messageObj);
-  // });
 
   socket.on('disconnect', () => {
     gun.get(GUNKEY).get("skirmishes").get(socket.id).get("active").put( false );
