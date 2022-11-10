@@ -66,19 +66,4 @@ type Refund @entity {
   player1: Boolean
   player2: Boolean
   refunded: Boolean
-}  
-
-type RewardsChest @entity {
-  id: ID!
-  holdings: BigInt!
-  classC: BigInt!
-  classB: BigInt!
-  classA: BigInt!
-}
-
-type RewardsStats @entity {
-  id: ID!
-  24Hrs: BigInt!
-  7Days: BigInt!
-  allTimeHoldings: BigInt!
 }

@@ -127,7 +127,7 @@ contract ETHChessMatches is ReentrancyGuard {
   event ClaimContested(address disputer, uint matchId, uint claimId, string startIpfsHash, string endIpfsHash, uint security);
   event DisputeVoted(address voter, uint matchId, bool vote);
   event DisputeResolved(uint matchId, bool truth);
-  event MatchEnd(uint matchId, address winner, string ipfsHash);
+  event MatchEnd(uint matchId, address winner, string ipfsHash, uint winnings);
   event MatchRefunded(uint matchId);
   event MatchRefundStarted(uint matchId, address refundStarted, address refundConfirmed);
   event DeathMatchStarted(uint id, address reign, uint entranceFee);
@@ -398,6 +398,7 @@ contract ETHChessMatches is ReentrancyGuard {
           require(sendEther(dispute.votedFor[i], voteReward)); // Ensure funds are sent
         }
         require(sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee)); // Ensure funds are sent
+        emit MatchEnd(matchId, msg.sender, ipfsHash, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee);
       } else { // Dispute is true, caller is disputer
         require(msg.sender == dispute.disputer, "Not the winner!");
         uint voters = dispute.votedAgainst.length; // Cache voters length
@@ -409,15 +410,16 @@ contract ETHChessMatches is ReentrancyGuard {
           require(sendEther(dispute.votedAgainst[i], voteReward)); // Ensure funds are sent
         }
         require(sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + dispute.dSecurity) - pfee)); // Ensure funds are sent
+        emit MatchEnd(matchId, msg.sender, ipfsHash, (startmatch.p1amount + startmatch.p2amount + dispute.dSecurity) - pfee);
       }
     } else { // Win was uncontested! Send the rewards!
       rewardsPot += pfee; // Adjust state before sending funds to prevent reentrancy attack
       startmatch.p1amount = 0;
       startmatch.p2amount = 0;
       require(sendEther(msg.sender, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee)); // Ensure funds are sent
+      emit MatchEnd(matchId, msg.sender, ipfsHash, (startmatch.p1amount + startmatch.p2amount + claim.security) - pfee);
     }
     startmatch.endHash = ipfsHash;
-    emit MatchEnd(matchId, msg.sender, ipfsHash);
     return true;
   }
 

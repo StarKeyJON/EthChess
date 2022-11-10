@@ -21,22 +21,27 @@ export function handleMatchInitiated(event: MatchInitiated): void {
   let wager = event.params.amount;
 
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
 
   let p1 = Player.load(player1);
-  if(p1 == null){
+  if(!p1){
     p1 = new Player(player1);
     p1.address = player1;
     p1.wins = BigInt.fromI32(0);
     p1.losses = BigInt.fromI32(0);
     p1.ratio = BigInt.fromI32(0);
-    p1.matches?.push(match.id)
+    if(p1.matches) {
+      p1.matches!.push(matchId.toString());
+    } else {
+      p1.matches = [];
+      p1.matches!.push(matchId.toString());
+    }
   }
   match.player1 = player1;
-  match.p1Amount = BigInt.fromI32(wager);
+  match.p1Amount = wager;
 
   p1.save();
   match.save();
@@ -48,7 +53,7 @@ export function handleMatchSet(event: MatchSet): void {
   let matchId = event.params.matchId;
   
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
@@ -59,21 +64,31 @@ export function handleMatchSet(event: MatchSet): void {
   
   let p1 = Player.load(player1);
   let p2 = Player.load(player2);
-  if(p1 == null){
+  if(!p1){
     p1 = new Player(player1);
     p1.address = player1;
     p1.wins = BigInt.fromI32(0);
     p1.losses = BigInt.fromI32(0);
     p1.ratio = BigInt.fromI32(0);
-    p1.matches?.push(match.id)
+    if(p1.matches){
+      p1.matches!.push(match.id);
+    } else {
+      p1.matches = [];
+      p1.matches!.push(match.id);
+    }
   }
-  if(p2 == null){
+  if(!p2){
     p2 = new Player(player2);
     p2.address = player2;
     p2.wins = BigInt.fromI32(0);
     p2.losses = BigInt.fromI32(0);
     p2.ratio = BigInt.fromI32(0);
-    p2.matches?.push(match.id)
+    if(p2.matches){
+      p2.matches!.push(match.id);
+    } else {
+      p2.matches = [];
+      p2.matches!.push(match.id)
+    }
   }
   match.save();
   p1.save();
@@ -85,40 +100,50 @@ export function handleDeathMatchStarted(event: DeathMatchStarted): void {
   let matchId = event.params.id;
   
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
   
-  let p1 = Player.load(player1);
-  if(p1 == null){
-    p1 = new Player(player1);
-    p1.address = player1;
-    p1.wins = BigInt.fromI32(0);
-    p1.losses = BigInt.fromI32(0);
-    p1.ratio = BigInt.fromI32(0);
-    p1.matches?.push(matchId.toString());
+  let p = Player.load(player1);
+  if(!p){
+    p = new Player(player1);
+    p.address = player1;
+    p.wins = BigInt.fromI32(0);
+    p.losses = BigInt.fromI32(0);
+    p.ratio = BigInt.fromI32(0);
+    if(p.matches) {
+      p.matches!.push(matchId.toString());
+    } else {
+      p.matches = [];
+      p.matches!.push(matchId.toString());
+    }
   }
 
   let deathmatch = DeathMatch.load(matchId.toString());
-  if(deathmatch == null) {
+  if(!deathmatch) {
     deathmatch = new DeathMatch(matchId.toString());
   }
   deathmatch.matchId = matchId;
   deathmatch.entranceFee = event.params.entranceFee;
   deathmatch.pot = event.params.entranceFee;
   deathmatch.reign = player1;
-  deathmatch.matches?.push(matchId.toString());
+  if(deathmatch.matches) {
+    deathmatch.matches!.push(matchId.toString());
+  } else {
+    deathmatch.matches = [];
+    deathmatch.matches!.push(matchId.toString());
+  }
 
   match.save();
-  p1.save();
+  p.save();
   deathmatch.save();
 }
 
 export function handleClaimStarted(event: ClaimStarted): void {
   let matchId = event.params.matchId;
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
@@ -128,7 +153,7 @@ export function handleClaimStarted(event: ClaimStarted): void {
   let endIpfs = event.params.endIpfsHash;
 
   let claim = Claim.load(matchId.toString());
-  if(claim == null){
+  if(!claim){
     claim = new Claim(matchId.toString());
   }
   claim.matchId = matchId;
@@ -148,20 +173,20 @@ export function handleClaimStarted(event: ClaimStarted): void {
 export function handleClaimContested(event: ClaimContested): void {
   let matchId = event.params.matchId;
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
 
   let claim = Claim.load(matchId.toString());
-  if(claim == null){
+  if(!claim){
     claim = new Claim(matchId.toString());
   }
 
   claim.contested = true;
 
   let dispute = Dispute.load(matchId.toString());
-  if(dispute == null) {
+  if(!dispute) {
     dispute = new Dispute(matchId.toString());
   }
 
@@ -181,15 +206,25 @@ export function handleClaimContested(event: ClaimContested): void {
 export function handleDisputeVoted(event: DisputeVoted): void {
   let matchId = event.params.matchId;
   let dispute = Dispute.load(matchId.toString());
-  if(dispute == null) {
+  if(!dispute) {
     dispute = new Dispute(matchId.toString());
   }
   let vote = event.params.vote;
   let voter = event.params.voter;
   if(vote){
-    dispute.votedFor?.push(voter.toHexString());
+    if(dispute.votedFor){ 
+      dispute.votedFor!.push(voter.toHexString());
+    } else {
+      dispute.votedFor = [];
+      dispute.votedFor!.push(voter.toHexString());
+    }
   } else {
-    dispute.votedAgainst?.push(voter.toHexString());
+    if(dispute.votedAgainst) {
+      dispute.votedAgainst!.push(voter.toHexString());
+    } else {
+      dispute.votedAgainst = [];
+      dispute.votedAgainst!.push(voter.toHexString());
+    }
   }
   dispute.save();
 }
@@ -197,13 +232,13 @@ export function handleDisputeVoted(event: DisputeVoted): void {
 export function handleDisputeResolved(event: DisputeResolved): void {
   let matchId = event.params.matchId;
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
 
   let dispute = Dispute.load(matchId.toString());
-  if(dispute == null) {
+  if(!dispute) {
     dispute = new Dispute(matchId.toString());
   }
   dispute.tally = event.params.truth;
@@ -215,7 +250,7 @@ export function handleDisputeResolved(event: DisputeResolved): void {
 export function handleMatchEnd(event: MatchEnd): void {
   let matchId = event.params.matchId;
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   let winner = event.params.winner.toHexString();
@@ -223,69 +258,97 @@ export function handleMatchEnd(event: MatchEnd): void {
   let player2 = match.player2;
 
   let p1 = Player.load(player1);
-    if(p1 == null){
+    if(!p1){
       p1 = new Player(player1);
       p1.address = player1;
       p1.wins = BigInt.fromI32(0);
       p1.losses = BigInt.fromI32(0);
       p1.ratio = BigInt.fromI32(0);
-      p1.matches?.push(matchId.toString());
+      if(p1.matches) {
+        p1.matches!.push(matchId.toString());
+      } else {
+        p1.matches = [];
+        p1.matches!.push(matchId.toString());
+      }
     }
 
   let p2 = Player.load(player2);
-    if(p2 == null){
+    if(!p2){
       p2 = new Player(player2);
       p2.address = player2;
       p2.wins = BigInt.fromI32(0);
       p2.losses = BigInt.fromI32(0);
       p2.ratio = BigInt.fromI32(0);
-      p2.matches?.push(matchId.toString());
+      if(p2.matches) {
+      p2.matches!.push(matchId.toString());
+    } else {
+      p2.matches = [];
+      p2.matches!.push(matchId.toString());
+    }
     }
 
   if(winner == player1){
-    if(p1.wins == null){
+    const pWins = p1.wins;
+    if(!pWins){
       p1.wins = BigInt.fromI32(1);
     } else {
-      p1.wins = p1.wins.plus(BigInt.fromI32(1));
+      p1.wins = p1.wins!.plus(BigInt.fromI32(1));
     }
-    if(p1.losses == null){
-      p1.ratio = p1.wins.div(BigInt.fromI32(0));
+    const pLoss = p1.losses;
+    if(!pLoss){
+      p1.ratio = p1.wins!.div(BigInt.fromI32(0));
     } else {
-      p1.ratio = p1.wins.div(p1.losses);
+      p1.ratio = p1.wins!.div(pLoss);
     }
 
-    if(p2.losses == null){
+    const p2Wins = p2.wins;
+    const p2Loss = p2.losses;
+    if(!p2Loss){
       p2.losses = BigInt.fromI32(1);
+      if(!p2Wins){
+        p2.ratio = BigInt.fromI32(0);
+      } else {
+        p2.ratio = p2.wins!.div(BigInt.fromI32(1));
+      }
     } else {
-      p2.losses = p2.losses.plus(BigInt.fromI32(1));
-    }
-    if(p2.wins == null){
-      p2.ratio = BigInt.fromI32(0);
-    } else {
-      p2.ratio = p2.wins.div(p2.losses);
+      p2.losses = p2.losses!.plus(BigInt.fromI32(1));
+      if(!p2Wins){
+        p2.ratio = BigInt.fromI32(0);
+      } else {
+        p2.ratio = p2.wins!.div(p2Loss);
+      }
     }
   } else {
     
-    if(p1.losses == null){
+    const p1Wins = p1.wins;
+    const p1Loss = p1.losses;
+    if(!p1Loss){
       p1.losses = BigInt.fromI32(1);
+      if(!p1Wins){
+        p1.ratio = BigInt.fromI32(0);
+      } else {
+        p1.ratio = p1.wins!.div(BigInt.fromI32(1));
+      }
     } else {
-      p1.losses = p1.losses.plus(BigInt.fromI32(1));
+      p1.losses = p1.losses!.plus(BigInt.fromI32(1));
+      if(!p1Wins){
+        p1.ratio = BigInt.fromI32(0);
+      } else {
+        p1.ratio = p1.wins!.div(p1Loss);
+      }
     }
-    if(p1.wins == null){
-      p1.ratio = BigInt.fromI32(0);
-    } else {
-      p1.ratio = p1.wins.div(p1.losses);
-    }
-
-    if(p2.wins == null){
+    
+    const p2Wins = p2.wins;
+    const p2Loss = p2.losses;
+    if(!p2Wins){
       p2.wins = BigInt.fromI32(1);
     } else {
-      p2.wins = p2.wins.plus(BigInt.fromI32(1));
-    }
-    if(p2.losses == null){
-      p2.ratio = p2.wins.div(BigInt.fromI32(0));
-    } else {
-      p2.ratio = p2.wins.div(p2.losses);
+      p2.wins = p2.wins!.plus(BigInt.fromI32(1));
+      if(!p2Loss){
+        p2.ratio = p2Wins.div(BigInt.fromI32(0));
+      } else {
+        p2.ratio = p2.wins!.div(p2Loss);
+      }
     }
   }
   p1.save();
@@ -300,36 +363,47 @@ export function handleMatchEnd(event: MatchEnd): void {
 export function handleDeathMatchAdvanced(event: DeathMatchAdvanced): void {
   let matchId = event.params.id;
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
 
-  let player1 = event.params.winner.toHexString();
-  let p1 = Player.load(player1);
-  if(p1 == null){
-    p1 = new Player(player1);
-    p1.address = player1;
-    p1.wins = BigInt.fromI32(0);
-    p1.losses = BigInt.fromI32(0);
-    p1.ratio = BigInt.fromI32(0);
-    p1.matches?.push(matchId.toString());
+  let player = event.params.winner.toHexString();
+  let p = Player.load(player);
+  if(!p){
+    p = new Player(player);
+    p.address = player;
+    p.wins = BigInt.fromI32(0);
+    p.losses = BigInt.fromI32(0);
+    p.ratio = BigInt.fromI32(0);
+  }
+  if(p.matches) {
+    p.matches!.push(matchId.toString());
+  } else {
+    p.matches = [];
+    p.matches!.push(matchId.toString());
   }
 
   let advanceFee = event.params.entranceFee;
   let deathmatch = DeathMatch.load(matchId.toString());
-  if(deathmatch == null) {
+  if(!deathmatch) {
     deathmatch = new DeathMatch(matchId.toString());
     deathmatch.matchId = matchId;
   }
   deathmatch.reign = event.params.winner.toHexString();
-  if(deathmatch.pot == null){
+  const pot = deathmatch.pot;
+  if(!pot){
     deathmatch.pot = advanceFee;
   } else {
-    deathmatch.pot = deathmatch.pot?.plus(advanceFee);
+    deathmatch.pot = pot.plus(advanceFee);
   }
-  deathmatch.matches?.push(matchId.toString());
-
+  if(deathmatch.matches) {
+    deathmatch.matches!.push(matchId.toString());
+  } else {
+    deathmatch.matches = [];
+    deathmatch.matches!.push(matchId.toString());
+  }
+  p.save();
   deathmatch.save();
   match.save();
 }
@@ -337,7 +411,7 @@ export function handleDeathMatchAdvanced(event: DeathMatchAdvanced): void {
 export function handleDeathMatchEnded(event: DeathMatchEnded): void {
   let matchId = event.params.id;
   let deathmatch = DeathMatch.load(matchId.toString());
-  if(deathmatch == null) {
+  if(!deathmatch) {
     deathmatch = new DeathMatch(matchId.toString());
     deathmatch.matchId = matchId;
   }
@@ -350,14 +424,14 @@ export function handleDeathMatchEnded(event: DeathMatchEnded): void {
 export function handleMatchRefundStarted(event: MatchRefundStarted): void {
   let matchId = event.params.matchId;
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
   let player1 = event.params.refundStarted;
 
   let refund = Refund.load(matchId.toString());
-  if(refund == null){
+  if(!refund){
     refund = new Refund(matchId.toString());
     refund.matchId = matchId;
   }
@@ -373,12 +447,12 @@ export function handleMatchRefundStarted(event: MatchRefundStarted): void {
 export function handleMatchRefunded(event: MatchRefunded): void {
   let matchId = event.params.matchId;
   let match = Match.load(matchId.toString());
-  if(match == null) {
+  if(!match) {
     match = new Match(matchId.toString());
   }
   match.matchId = matchId;
   let refund = Refund.load(matchId.toString());
-  if(refund == null){
+  if(!refund){
     refund = new Refund(matchId.toString());
     refund.matchId = matchId;
   }
