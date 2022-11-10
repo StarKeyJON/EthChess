@@ -10,7 +10,7 @@ import {
   useUserProviderAndSigner,
 } from "eth-hooks";
 import CookieConsent from "react-cookie-consent";
-import { FaChessBoard, FaChess, FaChessKing, FaInfo, FaVoteYea } from "react-icons/fa";
+import { FaChessBoard, FaChess, FaInfo, FaVoteYea } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { TbCurrencyEthereum } from "react-icons/tb";
@@ -35,7 +35,6 @@ import {
   ChessSkirmishes,
   ETHMatch,
   ETHDeathMatch,
-  ETHChallengeMatch,
 } from "./components/ChessComponents/ChessGrounds";
 import { Content } from "antd/lib/layout/layout";
 import useProfile from "./components/StateComponents/useProfile";
