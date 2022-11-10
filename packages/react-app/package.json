@@ -103,7 +103,7 @@
     "test": "react-scripts test",
     "lint": "eslint ./src/**/*.{js,jsx} --ignore-path ./.eslintignore --max-warnings=0",
     "ipfs": "node ./scripts/ipfs.js",
-    "surge": "cp build/index.html build/200.html && surge ./build --domain eth-chess.surge.sh",
+    "surge": "cp build/index.html build/200.html && surge ./build --domain ethchess.com",
     "ssl": "surge ssl --pem ./surge.pem --domain ethchess.com",
     "s3": "node ./scripts/s3.js",
     "ship": "yarn surge",
