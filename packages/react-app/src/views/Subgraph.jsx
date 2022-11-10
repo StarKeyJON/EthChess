@@ -1,19 +1,9 @@
 import { gql, useQuery } from "@apollo/client";
-import { Button, Input, Table, Typography } from "antd";
 import "antd/dist/antd.css";
 import GraphiQL from "graphiql";
 import "graphiql/graphiql.min.css";
 import fetch from "isomorphic-fetch";
-import React, { useState } from "react";
-import { Address } from "../components";
-
-const highlight = {
-  marginLeft: 4,
-  marginRight: 8,
-  /* backgroundColor: "#f9f9f9", */ padding: 4,
-  borderRadius: 4,
-  fontWeight: "bolder",
-};
+import React from "react";
 
 function Subgraph(props) {
   function graphQLFetcher(graphQLParams) {
@@ -47,33 +37,8 @@ function Subgraph(props) {
     }
   }
   `;
-  const EXAMPLE_GQL = gql(EXAMPLE_GRAPHQL);
-  const { loading, data } = useQuery(EXAMPLE_GQL, { pollInterval: 2500 });
-
-  // const purposeColumns = [
-  //   {
-  //     title: "Purpose",
-  //     dataIndex: "purpose",
-  //     key: "purpose",
-  //   },
-  //   {
-  //     title: "Sender",
-  //     key: "id",
-  //     render: record => <Address value={record.sender.id} ensProvider={props.mainnetProvider} fontSize={16} />,
-  //   },
-  //   {
-  //     title: "createdAt",
-  //     key: "createdAt",
-  //     dataIndex: "createdAt",
-  //     render: d => new Date(d * 1000).toISOString(),
-  //   },
-  // ];
-
-  // const [newPurpose, setNewPurpose] = useState("loading...");
-
-  // const deployWarning = (
-  //   <div style={{ marginTop: 8, padding: 8 }}>Warning: 🤔 Have you deployed your subgraph yet?</div>
-  // );
+  // const EXAMPLE_GQL = gql(EXAMPLE_GRAPHQL);
+  // const { loading, data } = useQuery(EXAMPLE_GQL, { pollInterval: 2500 });
 
   return (
     <>
