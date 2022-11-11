@@ -178,9 +178,9 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
     },
   ];
 
-  const executeNewMatch = ({ tx, writeContracts, wageredAmount }) => {
+  const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen }) => {
     tx(
-      writeContracts.ETHChessMatches.initMatch({
+      writeContracts.ETHChessMatches.initMatch(fen, {
         value: utils.parseEther(wageredAmount.toString()),
       }),
       update => {
@@ -202,9 +202,9 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
       });
   };
 
-  const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger }) => {
+  const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger, fen }) => {
     tx(
-      writeContracts.ETHChessMatches.initChallengeMatch(challenger, {
+      writeContracts.ETHChessMatches.initChallengeMatch(challenger, fen, {
         value: utils.parseEther(wageredAmount.toString()),
       }),
       update => {
@@ -252,13 +252,13 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
     );
   };
 
-  const handleChallenge = (wageredAmount, challenger) => {
+  const handleChallenge = (wageredAmount, challenger, fen) => {
     if (typeof challenger === "undefined") {
       appStage === "production"
-        ? executeNewMatch(tx, writeContracts, wageredAmount)
-        : console.log("Execute transaction!");
+        ? executeNewMatch(tx, writeContracts, wageredAmount, fen)
+        : console.log("Execute transaction!", tx, writeContracts, wageredAmount, fen);
     } else if (challenger && challenger.length === 42 && challenger.slice(0, 2) === "0x") {
-      appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger);
+      appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger, fen);
     }
   };
 
@@ -411,7 +411,7 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
           visible={confirmMatchModal}
           onCancel={() => setConfirmMatchModal(false)}
           onOk={() => {
-            handleChallenge(wageredAmount, challenger);
+            handleChallenge(wageredAmount, challenger, fen);
           }}
         >
           <h3>You are about to execute a transaction to initiate a new Match.</h3>
