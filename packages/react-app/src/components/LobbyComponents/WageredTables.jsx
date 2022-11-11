@@ -188,12 +188,12 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
           message.info(" 🍾 Transaction " + update.hash + " finished!");
           message.info(
             " ⛽️ " +
-              update.gasUsed +
-              "/" +
-              (update.gasLimit || update.gas) +
-              " @ " +
-              parseFloat(update.gasPrice) / 1000000000 +
-              " gwei",
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
           );
           notification.open({
             message: <Text>{"Match Initiated!"}</Text>,
@@ -212,12 +212,12 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
           message.info(" 🍾 Transaction " + update.hash + " finished!");
           message.info(
             " ⛽️ " +
-              update.gasUsed +
-              "/" +
-              (update.gasLimit || update.gas) +
-              " @ " +
-              parseFloat(update.gasPrice) / 1000000000 +
-              " gwei",
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
           );
           notification.open({
             message: <Text>{"Match Initiated with Challenger " + challenger + "!"}</Text>,
@@ -237,12 +237,12 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
           message.info(" 🍾 Transaction " + update.hash + " finished!");
           message.info(
             " ⛽️ " +
-              update.gasUsed +
-              "/" +
-              (update.gasLimit || update.gas) +
-              " @ " +
-              parseFloat(update.gasPrice) / 1000000000 +
-              " gwei",
+            update.gasUsed +
+            "/" +
+            (update.gasLimit || update.gas) +
+            " @ " +
+            parseFloat(update.gasPrice) / 1000000000 +
+            " gwei",
           );
           notification.open({
             message: <Text>{"Match Initiated!"}</Text>,
