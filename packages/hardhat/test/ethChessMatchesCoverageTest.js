@@ -215,10 +215,10 @@ describe("ETH Chess Matches Coverage Test", function () {
         // const matchId = 1;
         await getSignersBalance();
 
-        await expect(ethChessMatches.initMatch()).to.be.rejectedWith(
-          "Insufficient amount"
-        );
-        await ethChessMatches.initMatch({
+        await expect(ethChessMatches.initMatch("IPFSHASH"), {
+          value: ethers.utils.parseUnits("1", "ether"),
+        }).to.be.rejectedWith("Insufficient amount");
+        await ethChessMatches.initMatch("IPFSHASH", {
           value: ethers.utils.parseUnits("10", "ether"),
         });
       });
@@ -478,11 +478,15 @@ describe("ETH Chess Matches Coverage Test", function () {
       it("Should be able to initialize a new challenge match", async function () {
         const [test3, test4] = await ethers.getSigners();
         await expect(
-          ethChessMatches.connect(test3).initChallengeMatch(test4.address)
+          ethChessMatches
+            .connect(test3)
+            .initChallengeMatch(test4.address, "IPFSHASH")
         ).to.be.rejectedWith("Insufficient amount");
-        await ethChessMatches.connect(test3).initChallengeMatch(test4.address, {
-          value: ethers.utils.parseUnits("1", "ether"),
-        });
+        await ethChessMatches
+          .connect(test3)
+          .initChallengeMatch(test4.address, "IPFSHASH", {
+            value: ethers.utils.parseUnits("1", "ether"),
+          });
       });
     });
     describe("Challenge match tests", function () {
@@ -632,7 +636,7 @@ describe("ETH Chess Matches Coverage Test", function () {
         const [test, test2, test3] = await ethers.getSigners();
         await ethChessMatches
           .connect(test)
-          .initMatch({ value: ethers.utils.parseUnits("1", "ether") });
+          .initMatch("IPFS", { value: ethers.utils.parseUnits("1", "ether") });
         await ethChessMatches.connect(test2).startMatch(9, "StartHash", {
           value: ethers.utils.parseUnits("1", "ether"),
         });
@@ -650,7 +654,7 @@ describe("ETH Chess Matches Coverage Test", function () {
         const [test, test2] = await ethers.getSigners();
         await ethChessMatches
           .connect(test)
-          .initMatch({ value: ethers.utils.parseUnits("1", "ether") });
+          .initMatch("IPFS", { value: ethers.utils.parseUnits("1", "ether") });
         await ethChessMatches.connect(test2).startMatch(10, "StartHash", {
           value: ethers.utils.parseUnits("1", "ether"),
         });
@@ -674,7 +678,7 @@ describe("ETH Chess Matches Coverage Test", function () {
         const [test, test2, test3] = await ethers.getSigners();
         await ethChessMatches
           .connect(test)
-          .initMatch({ value: ethers.utils.parseUnits("1", "ether") });
+          .initMatch("IPFS", { value: ethers.utils.parseUnits("1", "ether") });
         await ethChessMatches.connect(test2).startMatch(11, "StartHash", {
           value: ethers.utils.parseUnits("1", "ether"),
         });

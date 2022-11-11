@@ -195,14 +195,14 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @notice Initiates a new 1v1 match with a set wager value.
   /// @dev Player initiates a new match that anyone can start by matching the wager
   /// @return matchId Id of the initiated match
-  function initMatch() external payable returns(uint matchId){
+  function initMatch(string memory ipfsHash) external payable returns(uint matchId){
       require(msg.value > minWager, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
         msg.sender,
         address(0x0),
         0,
-        "",
+        ipfsHash,
         "",
         msg.value,
         0
@@ -214,14 +214,14 @@ contract ETHChessMatches is ReentrancyGuard {
   /// @notice Initiates a new match with a set wager value between specific challengers.
   /// @dev Player initiates a new match that only the challenger can start by matching the wager
   /// @return matchId Id of the initiated match
-  function initChallengeMatch(address comp) external payable returns(uint matchId){
+  function initChallengeMatch(address comp, string memory ipfsHash) external payable returns(uint matchId){
       require(msg.value > minWager, errMessage1);
       matchIds++;
       idToMatch[matchIds] = Match(
         msg.sender,
         comp,
         0,
-        "",
+        ipfsHash,
         "",
         msg.value,
         0
