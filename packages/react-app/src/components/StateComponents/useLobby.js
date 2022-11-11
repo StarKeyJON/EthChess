@@ -2,16 +2,12 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { GUNKEY } from "../../constants";
 import { SocketContext } from "../../socketContext/socketContext";
 
-const useLobby = ({ gun, address, startTime, player, setPlayer, newSkirmish, endSkirmish, lobbyJoinEmit }) => {
+const useLobby = ({ gun, address, startTime, setPlayer, newSkirmish, endSkirmish, lobbyJoinEmit }) => {
   const socket = useContext(SocketContext);
   let socketId = socket.id;
-  const [age, setAge] = useState(player?.age ?? Math.ceil(Math.random() * 100));
   const [joinedLobby, setJoinedLobby] = useState(false);
   const [players, setPlayers] = useState([]);
   const [profile, setProfile] = useState({
-    name: `Player_${startTime}`,
-    age: age,
-    location: "web3",
     address: address ?? "",
     active: true,
     inMatch: false,
@@ -47,7 +43,7 @@ const useLobby = ({ gun, address, startTime, player, setPlayer, newSkirmish, end
       .get("chessLobby")
       .map()
       .on((ack, i) => {
-        if (ack && ack.active) {
+        if (ack && ack.active === true) {
           Object.assign(ack, { key: i });
           let s = new Set(p);
           if (!s.has(ack)) {
@@ -85,7 +81,6 @@ const useLobby = ({ gun, address, startTime, player, setPlayer, newSkirmish, end
   const leaveLobby = () => {
     if (profile.active) {
       gun.get(GUNKEY).get("chessLobby").get(socketId).put({ active: false });
-      setAge(Math.ceil(Math.random() * 100));
       endSkirmish(profile.gameId);
       setJoinedLobby(false);
       socket.emit("leftLobby", socketId, profile);

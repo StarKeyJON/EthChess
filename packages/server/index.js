@@ -230,9 +230,9 @@ let lobbyObject = {
     }
   });
 
-  socket.on('disconnect', () => {
-    gun.get(GUNKEY).get("skirmishes").get(socket.id).get("active").put( false );
-    gun.get(GUNKEY).get("chessLobby").get(socket.id).get("active").put( false );
+  socket.on('disconnect', () => { 
+    gun.get(GUNKEY).get("skirmishes").get(socket.id).put({ active: false });
+    gun.get(GUNKEY).get("chessLobby").get(socket.id).put({ active: false });
     lobbyObject.skirmishes[socket.id] = null;
     lobbyObject.players[socket.id] = null;
   });

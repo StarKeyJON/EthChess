@@ -9,7 +9,7 @@ export const BLOCKNATIVE_DAPPID = process.env.REACT_APP_BLOCK_NATIVE_KEY;
 
 export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY;
 
-export const GUNKEY = "eth-chess-v0.1.15";
+export const GUNKEY = "eth-chess-v0.1.16";
 
 export const SOCKET_URL = "http://localhost:8080";
 
