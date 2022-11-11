@@ -125,7 +125,7 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
       dataIndex: "gameId",
       key: "key",
       width: "20%",
-      render: gameId => <Link to={`/deathmatch/room/${gameId}`}>{gameId}</Link>,
+      render: gameId => <Link to={`/match/room/${gameId}`}>{gameId}</Link>,
     },
     {
       title: "Player",
@@ -155,27 +155,26 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
       dataIndex: "gameId",
       key: "key",
       width: "20%",
-      render: gameId => <Link to={`/match/room/${gameId}`}>{gameId}</Link>,
+      render: gameId => <Link to={`/deathmatch/room/${gameId}`}>{gameId}</Link>,
     },
     {
-      title: "Player",
-      dataIndex: "playerName",
-      key: "playerName",
-      width: "35%",
-      ...getColumnSearchProps("playerName"),
-    },
-    {
-      title: "Address",
+      title: "Reigning Champ",
       dataIndex: "address",
       key: "address",
-      width: "45%",
-      ...getColumnSearchProps("address"),
+      width: "30%",
     },
     {
-      title: "Joined",
+      title: "Match Started",
+      dataIndex: "matchStarted",
+      key: "matchStarted",
+      width: "15%",
+    },
+    {
+      title: "Join",
       dataIndex: "timeJoined",
       key: "timeJoined",
-      width: "20%",
+      width: "10%",
+      render: (match) => <Button>Join</Button>
     },
   ];
 
@@ -606,11 +605,13 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
           <div style={{ alignContent: "center", justifyContent: "center", display: "flex", margin: 30 }}>
             <Card>
               <h2>
-                Initiate New Death Match{" "}
+                Initiate a New Death Match{" "}
                 <Popover
                   content={
                     <>
                       DeathMatches operate just as regular matches, but with a rolling reigning champion to beat!
+                      <br />
+                      There can be only one DeathMatch at a time!
                       <br />
                       Enter an ETH amount to set the DeathMatch entrance fee and execute the transaction to initiate the
                       DeathMatch.
@@ -618,7 +619,8 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
                       Each opponent must pay the entrance fee to start a new round. If the opponent wins, they become
                       the new reigning champion.
                       <br />
-                      The first reigning champion to beat three contestants in a row wins the entrance fee pool.
+                      The first reigning champion to beat three contestants in a row wins the entrance fee pool, plus
+                      half of the ETHChess Rewards pool!
                       <br /> If a claim is disputed, ETHChess NFT holders will review the results and vote for the round
                       winner.
                       <br /> No refunds can be initiated.
@@ -634,9 +636,23 @@ const WageredTables = ({ players, address, tx, writeContracts, readContracts, ma
               </h2>
             </Card>
           </div>
-          <h3>Enter a DeathMatch Below!</h3>
+          <h3>Enter the DeathMatch Below!</h3>
           <Card>
-            <Table dataSource={players} columns={dcolumns} />
+            <Table
+              dataSource={[
+                {
+                  title: "",
+                  gameId: "mhSLAoHm2wFYDuRCAAAt",
+                  address: "0xE78E38A6AeCdf8C50CBbDE3063A9412dBc9F376f",
+                  matchStarted: false,
+                  join: {
+                    gameId: "mhSLAoHm2wFYDuRCAAAt",
+                    address: "0xE78E38A6AeCdf8C50CBbDE3063A9412dBc9F376f",
+                  },
+                },
+              ]}
+              columns={dcolumns}
+            />
           </Card>
         </Col>
       </Row>
