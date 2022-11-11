@@ -1,13 +1,13 @@
 // MY INFURA_ID, SWAP IN YOURS FROM https://infura.io/dashboard/ethereum
-export const INFURA_ID = "460f40a260564ac4a4f4b3fffb032dad";
+export const INFURA_ID = process.env.REACT_APP_INFURA_ID;
 
 // MY ETHERSCAN_ID, SWAP IN YOURS FROM https://etherscan.io/myapikey
-export const ETHERSCAN_KEY = "DNXJA8RX2Q3VZ4URQIWP7Z68CJXQZSC6AW";
+export const ETHERSCAN_KEY = process.env.REACT_APP_ETHERSCAN_KEY;
 
 // BLOCKNATIVE ID FOR Notify.js:
-export const BLOCKNATIVE_DAPPID = "0b58206a-f3c0-4701-a62f-73c7243e8c77";
+export const BLOCKNATIVE_DAPPID = process.env.REACT_APP_BLOCK_NATIVE_KEY;
 
-export const ALCHEMY_KEY = "oKxs-03sij-U_N0iOlrSsZFr29-IqbuF";
+export const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY;
 
 export const GUNKEY = "eth-chess-v0.1.15";
 
@@ -18,7 +18,6 @@ export const IPFS_GATEWAY = "https://ethchess.infura-ipfs.io";
 export const IPFS_ENDPOINT = "https://ipfs.infura.io:5001";
 
 export const peers = [
-  "https://phunky-gun-db.herokuapp.com/gun",
   "https://gun-ckx8k.ondigitalocean.app/gun",
   // window.location.origin + "/gun",
 ];
