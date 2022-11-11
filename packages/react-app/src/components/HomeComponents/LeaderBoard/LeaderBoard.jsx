@@ -2,6 +2,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Card, Table, Button, Input, Space } from "antd";
 import { useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import { TbCurrencyEthereum } from "react-icons/tb";
 
 const LeaderBoard = ({ address }) => {
   const [searchText, setSearchText] = useState("");
@@ -106,41 +107,23 @@ const LeaderBoard = ({ address }) => {
   const dataSource = [
     {
       key: "1",
-      name: "Mike",
-      age: 32,
-      address: address,
-      league: "StonePavers",
+      address: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
       games: 7,
       won: 2,
+      loss: 5,
+      winnings:  3.1,
     },
     {
       key: "2",
-      name: "John",
-      age: 42,
       address: "0xf1a9f2f52a02A89399059b0bC6E371E0CAff3d61",
-      league: "♖ Wizards",
       games: 3,
       won: 1,
+      loss: 2,
+      winnings: 0.21,
     },
   ];
 
   const columns = [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      width: "20%",
-      ...getColumnSearchProps("name"),
-    },
-    {
-      title: "Age",
-      dataIndex: "age",
-      key: "age",
-      width: "10%",
-      ...getColumnSearchProps("age"),
-      sorter: (a, b) => a.age - b.age,
-      ellipsis: true,
-    },
     {
       title: "Address",
       dataIndex: "address",
@@ -149,18 +132,10 @@ const LeaderBoard = ({ address }) => {
       ...getColumnSearchProps("address"),
     },
     {
-      title: "League",
-      dataIndex: "league",
-      key: "league",
-      width: "20%",
-      ...getColumnSearchProps("league"),
-    },
-    {
-      title: "Games",
+      title: "Total Games",
       dataIndex: "games",
       key: "games",
       width: "10%",
-      ...getColumnSearchProps("games"),
       sorter: (a, b) => a.games - b.games,
       ellipsis: true,
     },
@@ -169,8 +144,23 @@ const LeaderBoard = ({ address }) => {
       dataIndex: "won",
       key: "won",
       width: "10%",
-      ...getColumnSearchProps("won"),
       sorter: (a, b) => a.won - b.won,
+      ellipsis: true,
+    },
+    {
+      title: "Loss",
+      dataIndex: "loss",
+      key: "loss",
+      width: "10%",
+      sorter: (a, b) => a.loss - b.loss,
+      ellipsis: true,
+    },
+    {
+      title: "Total ETH Payout",
+      dataIndex: "winnings",
+      key: "winnings",
+      width: "10%",
+      sorter: (a, b) => a.winnings - b.winnings,
       ellipsis: true,
     },
   ];

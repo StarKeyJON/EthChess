@@ -81,23 +81,23 @@ function Home({ gun, address, timeStamp }) {
                 </Link>
               </div>
               <div style={{ margin: 30 }}>
-                <h4>Play against competitors from around the world!</h4>
-                <Link to={"/lobby"}>
-                  <Button type="primary" size="large">
-                    ♙
-                  </Button>
-                </Link>
-              </div>
-              <div style={{ margin: 30 }}>
-                <h4>Connect your crypto wallet and create a profile to compete!</h4>
-                <Link to="/profile">
+                <h4>Connect your crypto wallet and compete against the world!</h4>
+                <Link to="/lobby">
                   <Button type="primary" size="large">
                     ♘
                   </Button>
                 </Link>
               </div>
+              <div style={{ margin: 30 }}>
+                <h4>Hold a ETHChess NFT and vote in match disputes!</h4>
+                <Link to={"/mint"}>
+                  <Button type="primary" size="large">
+                    ♚
+                  </Button>
+                </Link>
+              </div>
               <p>
-                Compete against players from around the world in unwagered skirmishes
+                Play against players from around the world in unwagered skirmishes,
                 <br />
                 wagered matches and competitive deathmatches.
               </p>
@@ -174,8 +174,7 @@ function Home({ gun, address, timeStamp }) {
               <Image preview={false} sizes="large" src={security} alt="Cyber Security image" />
               <p>
                 Your security and privacy is paramount in this age of information.
-                <br /> Only an ETH address is needed to create a profile. Disclose only the information that you feel
-                necessary.
+                <br /> Only an ETH address is needed to compete.
               </p>
               <p>
                 Gameplay state across players is secured using advanced offchain cryptographic protocols.
