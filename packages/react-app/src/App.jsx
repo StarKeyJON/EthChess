@@ -398,7 +398,7 @@ function App(props) {
               USE_NETWORK_SELECTOR={USE_NETWORK_SELECTOR}
             />
 
-            <h1>Currently In Initial Build Stage</h1>
+            <h1>Currently In Development Stage!</h1>
             <Switch>
               <Route exact path="/">
                 {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}

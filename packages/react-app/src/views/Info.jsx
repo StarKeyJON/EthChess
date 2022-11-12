@@ -40,7 +40,10 @@ const Info = () => {
                   <p>
                     ETH-Chess uses the Ethereum blockchain as the initiation and settlement chain for all matches.
                     <br />
-                    The chess gameplay is built around the{" "}
+                    <a href="https://thegraph.com/en/">The Graph</a> GraphQL subgraph is used for decentralized
+                    indexing.
+                    <br />
+                    Chess gameplay move validation is built around the{" "}
                     <a href="https://github.com/jhlywa/chess.js/blob/master/README.md">chess.js</a> library logic.
                     <br />
                     <a href="https://ipfs.io">IPFS </a>is used for an external immutable storage system.
@@ -58,15 +61,17 @@ const Info = () => {
           <Space>
             <Card style={{ margin: 100 }}>
               <h3>♗ Matches</h3>
-              <p>- A Player Initiates a competition by entering an amount to wager.</p>
+              <p>- A Player Initiates a Match by entering an amount to wager.</p>
+              <p>The match initiator can decide to take the first move or let their opponent take the first move.</p>
+              <p>They can also choose to challenge a specific opponet by entering their address.</p>
               <p>
-                - Any player can Start the match by taking the first move and matching the wagered amount of Player1.
+                - Players can Start the match by taking their move and matching the wagered amount of Player1.
                 <br /> The initial IPFS hash of the gameplay state is saved to the blockchain along with the players
                 addresses.
               </p>
               <p>- Each move taken is saved to IPFS and each users P2P profile for continuity.</p>
               <p>
-                - The winner of the match can initiate a claim process and supply the final IPFS hash with the wagered
+                - The winner of the match can initiate a claim process and supply their final IPFS hash with the wagered
                 amount as a security deposit.
                 <br />
               </p>
@@ -101,7 +106,7 @@ const Info = () => {
                     <br /> - Competitors pay the entry wager per round and have 1 shot to win.
                     <br /> If the competitor wins, they become the new Reigning Champion.
                     <br /> - The first Reigning Champion to beat 3 straight opponents wins 50% of the Rewards pool + the
-                    DeathMatch bets!
+                    DeathMatch accumulated rewards!
                   </p>
                 </Card>
               </Space>
@@ -124,8 +129,9 @@ const Info = () => {
             <Card>
               <h3>♔ NFTs</h3>
               <p>
-                ETH-Chess NFTs can be minted and used to resolve match dispute in exchange for settlements.
-                <br /> - Majority portion of the mint proceeds goes to the Rewards pool for DeathMatch winners.
+                ETH-Chess NFTs can be minted and used to resolve match disputes in exchange for settlements.
+                <br /> - 70% of the mint proceeds goes to the Rewards pool for DeathMatch winners. The remaining goes to
+                the developer.
                 <br /> Only holders of ETH-Chess NFTs can resolve disputes.
               </p>
               <Divider />
@@ -140,6 +146,8 @@ const Info = () => {
               <h3>Fee Schedule</h3>
               <p>
                 There is a 10% fee for all final settlements that goes to the DeathMatch rewards pool.
+                <br />
+                There is a 50% fee for all final DeathMatch results that goes back to the rewards pool.
                 <br />
                 There is no fee charged on refunds and security deposits.
               </p>

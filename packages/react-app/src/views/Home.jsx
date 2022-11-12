@@ -89,7 +89,7 @@ function Home({ gun, address, timeStamp }) {
                 </Link>
               </div>
               <div style={{ margin: 30 }}>
-                <h4>Hold a ETHChess NFT and vote in match disputes!</h4>
+                <h4>Hold a ETHChess NFT to vote in match disputes!</h4>
                 <Link to={"/mint"}>
                   <Button type="primary" size="large">
                     ♚

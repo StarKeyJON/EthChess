@@ -2,7 +2,7 @@ import { Button, Card, Col, Image, Modal, Popover, Row, Space } from "antd";
 import React, { useContext, useState } from "react";
 import { FaInfoCircle } from "react-icons/fa";
 import { TbCurrencyEthereum } from "react-icons/tb";
-import { LobbyPlayersTable, UnWageredTables, WageredTables } from "../components/LobbyComponents";
+import { UnWageredTables, WageredTables } from "../components/LobbyComponents";
 import Skirmish from "../assets/chessSkirmish.jpg";
 import { Link } from "react-router-dom";
 import { SocketContext } from "../socketContext/socketContext";
@@ -75,11 +75,9 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
                       <Popover
                         content={
                           <>
-                            Sign-up or log-in with your profile to save gameplay stats!
+                            Connect your wallet to save gameplay stats!
                             <br />
-                            If no alias is created a generic profile will be used.
-                            <br />
-                            Connect an Ethereum wallet and create a profile to compete.
+                            If no wallet is connected a generic alias will be used.
                           </>
                         }
                       >
@@ -105,13 +103,12 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
                     >
                       {loggedIn ? (
                         <>
-                          <h1>Your player info will be used!</h1>
                           <p>Gameplay stats will be saved!</p>
                         </>
                       ) : (
                         <>
                           <div style={{ alignContent: "center", justifyContent: "center", display: "flex" }}>
-                            <Link to="/profile">Log-in/Sign-up!</Link>
+                            Connect your wallet,
                             <br /> or a temporary gameplay alias will be used.
                           </div>
                         </>
@@ -121,10 +118,10 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
                 )}
               </Col>
               <Col flex="auto">
-                {loggedIn ? (
+                {address ? (
                   <>
                     <h3>Player Data</h3>
-                    <p>Name: {player.name}</p>
+                    <p>Alias: {player.address}</p>
                     <p>
                       Room: <Link to={`/skirmish/room/${socketId}`}>{socketId}</Link>
                     </p>
@@ -134,7 +131,7 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
                     {joinedLobby ? (
                       <>
                         <h3>Temporary Profile Data</h3>
-                        <p>Name: {profile.name}</p>
+                        <p>Alias: {profile.socketId}</p>
                         <p>
                           Room: <Link to={`/skirmish/room/${socketId}`}>{socketId}</Link>
                         </p>
@@ -165,18 +162,25 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
                         <>
                           Matches are initiated on the Ethereum blockchain with a set wager amount in ETH.
                           <br />
-                          Any player can enter by matching the set wager and taking the first move.
+                          Matches can be against random opponents or specific addresses if desired.
+                          <br />
+                          Match initiators can decide to take the first move or let their opponet move first.
+                          <br />
+                          Any player can enter by matching the set wager and taking their move.
                           <br />
                           An ephemeral cryptographic keypair is generated for each user with every game.
                           <br />
                           Moves are validated by chess.js logic.
                           <br />
-                          All moves are recorded to IPFS and each users cryptographic storage node.
+                          All moves are recorded to IPFS and each users cryptographic storage node in a decentralized
+                          graph.
                           <br />
                           The winner can submit the ending IPFS hash and a security amount equal to the starting wager.
                           <br />
-                          The opponent can dispute the claim by entering their ending IPFS hash and a security amount
-                          equal to 2x the starting wager.
+                          7 blocks must pass to allow time for a dispute to be made.
+                          <br />
+                          The loser can dispute the winners claim by entering their ending IPFS hash and a security
+                          amount equal to 2x the starting wager.
                           <br />
                           ETHChess NFT holders can vote for the winner after reviewing and comparing the preserved data
                           and entered hashes.
