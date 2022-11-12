@@ -143,11 +143,13 @@ function Home({ gun, address, timeStamp }) {
             <h5>
               Initiate a new DeathMatch + set entry fee.
               <br />
-              Compete against a random opponent!
+              Entrance fees are accumulated towards the total DeathMatch rewards.
+              <br />
+              Compete against random opponents!
               <br />
               If you lose, you are eliminated!
               <br />
-              Beat three opponents in a row and win!
+              Beat three opponents in a row and win the DeathMatch rewards + 1/2 of the total ETH-Chess Rewards Pot!!
             </h5>
           </Card>
         </Space>
