@@ -480,6 +480,9 @@ function App(props) {
                   gun={gun}
                 />
               </Route>
+              <Route exact path="/deathmatch/view/:gameId">
+                <ChessViewer gun={gun} />
+              </Route>
               <Route exact path="/match/view/:gameId">
                 <ChessViewer gun={gun} />
               </Route>
