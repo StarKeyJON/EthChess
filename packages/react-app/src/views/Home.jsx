@@ -126,9 +126,11 @@ function Home({ gun, address, timeStamp }) {
             <h5>
               Connect an ETH wallet.
               <br />
-              Initiate a new Match + set entry fee.
+              Initiate a new Match + set entry fee + and/or set an opponent.
               <br />
-              Compete against a random opponent!
+              Compete against a random or specific opponent!
+              <br />
+              Finalize chess match settlements through a dispute resolution process!
             </h5>
           </Card>
         </Space>
@@ -143,6 +145,8 @@ function Home({ gun, address, timeStamp }) {
               <br />
               Compete against a random opponent!
               <br />
+              If you lose, you are eliminated!
+              <br />
               Beat three opponents in a row and win!
             </h5>
           </Card>
@@ -153,7 +157,7 @@ function Home({ gun, address, timeStamp }) {
         <Space>
           <div className="hidden">
             <Card>
-              <h3>Mint ETH-Chess NFTs to settle Match Disputes and receive settlement funding for voting!</h3>
+              <h3>Mint ETH-Chess NFTs to settle Match Disputes!</h3>
               <div style={styles.NFTs}>
                 <Card>
                   <Image preview={false} sizes="small" src={bitcoin} alt="Bitcoin chess piece" />
@@ -162,6 +166,16 @@ function Home({ gun, address, timeStamp }) {
               <Link to="/mint">
                 Mint now for .01 ETH <Button>Mint!</Button>
               </Link>
+              <h1>♚ Mint/Collect ETH-Chess NFTs to vote in disputed matches!</h1>
+              <h5>
+                Winning match claims can be disputed by the opponent.
+                <br />
+                A security deposit is placed by both parties to support their stance.
+                <br />
+                Match moves are reviewed by ETH-Chess NFT holders and the dispute voted on.
+                <br />
+                Voters receive the slashed security deposit of the stance determined false.
+              </h5>
             </Card>
           </div>
         </Space>
@@ -172,10 +186,8 @@ function Home({ gun, address, timeStamp }) {
           <div className="hidden">
             <Card>
               <Image preview={false} sizes="large" src={security} alt="Cyber Security image" />
-              <p>
-                Your security and privacy is paramount in this age of information.
-                <br /> Only an ETH address is needed to compete.
-              </p>
+              <h2>Your security and privacy is paramount in this age of information.</h2>
+              Only an ETH address is needed to compete.
               <p>
                 Gameplay state across players is secured using advanced offchain cryptographic protocols.
                 <br />
