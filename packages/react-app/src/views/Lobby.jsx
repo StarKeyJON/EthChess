@@ -131,8 +131,8 @@ const Lobby = ({
               <Col flex="auto">
                 {address ? (
                   <>
-                    <h3>Player Data</h3>
-                    <p>Alias: {player.address}</p>
+                    <h3>Player Info</h3>
+                    <p>Alias: {address}</p>
                     <p>
                       Room: <Link to={`/skirmish/room/${socketId}`}>{socketId}</Link>
                     </p>

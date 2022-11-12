@@ -95,11 +95,20 @@ const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen) => 
   }
 };
 
-export const HandleNewMatch = ({ tx, writeContracts, readContracts, mainnetProvider, confirmMatchModal, setConfirmMatchModal, newMatchModal, setNewMatchModal }) => {
+export const HandleNewMatch = ({
+  tx,
+  writeContracts,
+  readContracts,
+  mainnetProvider,
+  confirmMatchModal,
+  setConfirmMatchModal,
+  newMatchModal,
+  setNewMatchModal,
+}) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
   const [wageredAmount, setWageredAmount] = useState(0);
-  const [challenger, setChallenger] = useState();
+  const [challenger, setChallenger] = useState("");
   const [fen, setFen] = useState(beginningFEN);
   const setAmount = useCallback(
     amt => {
@@ -107,6 +116,13 @@ export const HandleNewMatch = ({ tx, writeContracts, readContracts, mainnetProvi
     },
     [wageredAmount],
   );
+
+  const revert = () => {
+    setWageredAmount(0);
+    setFen(beginningFEN);
+    setNewMatchModal(false);
+    setChallenger("");
+  };
 
   const MoveBoardModal = () => {
     const chess = new Chess();
@@ -149,7 +165,11 @@ export const HandleNewMatch = ({ tx, writeContracts, readContracts, mainnetProvi
 
     return (
       <>
-        <Modal style={{ alignItems: "center", justifyContent: "center", display: "flex" }} visible={moveBoardVisible}>
+        <Modal
+          onCancel={() => setMoveBoardVisible(false)}
+          style={{ alignItems: "center", justifyContent: "center", display: "flex" }}
+          visible={moveBoardVisible}
+        >
           <Chessground
             width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
             height={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
@@ -179,7 +199,7 @@ export const HandleNewMatch = ({ tx, writeContracts, readContracts, mainnetProvi
         }
       }}
       onCancel={() => {
-        setNewMatchModal(false);
+        revert();
       }}
     >
       <h3>Initiate a new Match by entering a wagered amount!</h3>
@@ -227,7 +247,7 @@ export const HandleNewMatch = ({ tx, writeContracts, readContracts, mainnetProvi
         <div style={{ alignContent: "center", justifyContent: "center", display: "flex" }}>
           <MoveBoardModal />
         </div>
-        <p>Current gameplay FEN: {fen}</p>
+        <p>Current gameplay FEN: {fen === beginningFEN ? "Unmoved board" : fen}</p>
       </div>
       <Divider />
       <p style={{ marginTop: 30 }}>
@@ -255,7 +275,15 @@ export const HandleNewMatch = ({ tx, writeContracts, readContracts, mainnetProvi
   );
 };
 
-export const HandleNewDeathMatch = ({ tx, writeContracts, readContracts, confirmMatchModal, setConfirmMatchModal, newDeathMatchModal, setNewDeathMatchModal }) => {
+export const HandleNewDeathMatch = ({
+  tx,
+  writeContracts,
+  readContracts,
+  confirmMatchModal,
+  setConfirmMatchModal,
+  newDeathMatchModal,
+  setNewDeathMatchModal,
+}) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
   const [wageredAmount, setWageredAmount] = useState(0);
@@ -266,6 +294,12 @@ export const HandleNewDeathMatch = ({ tx, writeContracts, readContracts, confirm
     },
     [wageredAmount],
   );
+
+  const revert = () => {
+    setWageredAmount(0);
+    setFen(beginningFEN);
+    setNewDeathMatchModal(false);
+  };
 
   const MoveBoardModal = () => {
     const chess = new Chess();
@@ -308,7 +342,7 @@ export const HandleNewDeathMatch = ({ tx, writeContracts, readContracts, confirm
 
     return (
       <>
-        <Modal style={{ alignItems: "center", justifyContent: "center", display: "flex" }} visible={moveBoardVisible}>
+        <Modal onCancel={()=>setMoveBoardVisible(false)} style={{ alignItems: "center", justifyContent: "center", display: "flex" }} visible={moveBoardVisible}>
           <Chessground
             width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
             height={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
@@ -338,7 +372,7 @@ export const HandleNewDeathMatch = ({ tx, writeContracts, readContracts, confirm
         }
       }}
       onCancel={() => {
-        setNewDeathMatchModal(false);
+        revert();
       }}
     >
       <h3>Initiate a new DeathMatch by entering a wagered amount!</h3>
@@ -368,7 +402,7 @@ export const HandleNewDeathMatch = ({ tx, writeContracts, readContracts, confirm
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex" }}>
         <MoveBoardModal />
       </div>
-      <p>Current gameplay FEN: {fen}</p>
+      <p>Current gameplay FEN: {fen === beginningFEN ? "Unmoved board" : fen}</p>
       <Divider />
       <p style={{ marginTop: 30 }}>
         *Total funds needed will be <TbCurrencyEthereum />

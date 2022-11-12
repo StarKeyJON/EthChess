@@ -136,7 +136,7 @@ function chessReducer(state, action) {
   }
 }
 
-const ETHMatch = ({ gun, address, tx, writeContracts, price }) => {
+const ETHMatch = ({ gun, tx, writeContracts }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 

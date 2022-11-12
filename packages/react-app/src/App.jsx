@@ -451,34 +451,10 @@ function App(props) {
                 </div>
               </Route>
               <Route exact path="/match/room/:gameId">
-                <ETHMatch
-                  startTime={startTime}
-                  address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                  gun={gun}
-                />
+                <ETHMatch tx={tx} writeContracts={writeContracts} gun={gun} />
               </Route>
               <Route exact path="/deathmatch/room/:gameId">
-                <ETHDeathMatch
-                  startTime={startTime}
-                  address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                  gun={gun}
-                />
+                <ETHDeathMatch tx={tx} writeContracts={writeContracts} gun={gun} />
               </Route>
               <Route exact path="/deathmatch/view/:gameId">
                 <ChessViewer gun={gun} />
@@ -489,11 +465,6 @@ function App(props) {
               <Route exact path="/disputes">
                 <Voting
                   address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
                   tx={tx}
                   writeContracts={writeContracts}
                   readContracts={readContracts}
