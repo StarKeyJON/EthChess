@@ -9,7 +9,18 @@ import { SocketContext } from "../socketContext/socketContext";
 import { useLobby, useSkirmishes } from "../components/StateComponents";
 import useSocket from "../socketStore/useSocket";
 
-const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, writeContracts, readContracts, mainnetProvider }) => {
+const Lobby = ({
+  gun,
+  player,
+  setPlayer,
+  loggedIn,
+  address,
+  startTime,
+  tx,
+  writeContracts,
+  readContracts,
+  mainnetProvider,
+}) => {
   const { updateSocketData, lobbyJoinEmit, lobbyLeaveEmit } = useSocket();
   const { skirmishes, newSkirmish, endSkirmish } = useSkirmishes({
     gun,
@@ -40,13 +51,13 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
       <title>Lobby</title>
       <div style={{ marginTop: 50 }}>
         <>
-        <h1>ETH-Chess Lobby</h1>
-        <br/>
-        <div>
-          <h1>Skirmish against players, hold wagered matches and compete in ETH-Chess Deathmatches!</h1>
-          <h3>For unwagered matches, please join the lobby and an alias will be created for you.</h3>
-          <p></p>
-        </div>
+          <h1>ETH-Chess Lobby</h1>
+          <br />
+          <div>
+            <h1>Skirmish against players, hold wagered matches and compete in ETH-Chess Deathmatches!</h1>
+            <h3>For unwagered matches, please join the lobby and an alias will be created for you.</h3>
+            <p></p>
+          </div>
           <Space style={{ marginBottom: 50 }}>
             <Row>
               <Col flex="auto">
@@ -190,7 +201,13 @@ const Lobby = ({ gun, player, setPlayer, loggedIn, address, startTime, tx, write
                       <FaInfoCircle size={12} />
                     </Popover>
                   </h1>
-                  <WageredTables address={address} players={fetchLobby()} tx={tx} writeContracts={writeContracts} readContracts={readContracts} mainnetProvider={mainnetProvider} />
+                  <WageredTables
+                    players={fetchLobby()}
+                    tx={tx}
+                    writeContracts={writeContracts}
+                    readContracts={readContracts}
+                    mainnetProvider={mainnetProvider}
+                  />
                 </div>
               </Space>
             </Card>
