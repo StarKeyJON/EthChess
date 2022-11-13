@@ -2,7 +2,7 @@ import { Avatar, Button, Divider, Image, InputNumber, message, Modal, notificati
 import Text from "antd/lib/typography/Text";
 import { Chess } from "chess.js";
 import { utils } from "ethers";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Chessground from "react-chessground/chessground";
 import { TbCurrencyEthereum } from "react-icons/tb";
 import { appStage, beginningFEN, GUNKEY } from "../../constants";
@@ -11,6 +11,7 @@ import ethlogo from "../../assets/ethereumLogo.png";
 import { useContractReader } from "eth-hooks";
 import { gun } from "../../hooks/useGunRelay";
 import { gql, useQuery } from "@apollo/client";
+import { GetFromIPFS } from "../../helpers/ipfs";
 
 const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen, address }) => {
   tx(
@@ -510,6 +511,7 @@ export const HandleStartMatch = ({
         endHash
         p1Amount
         p2Amount
+        inProgress
       }
     }`;
   const MATCH_GQL = gql(matchQ);
@@ -517,15 +519,15 @@ export const HandleStartMatch = ({
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
 
   const [startFen, setStartFen] = useState(beginningFEN);
-  const [fen, setFen] = useState(beginningFEN);
+  const [fen, setFen] = useState();
 
   const revert = () => {
     setFen(beginningFEN);
     setStartMatchModal(false);
   };
 
-  const MoveBoardModal = () => {
-    const chess = new Chess(matchData?.fen ? matchData?.fen : "");
+  const MoveBoardModal = ({ fen }) => {
+    const chess = new Chess(fen);
     const [chessObject, setChessObject] = useState({
       pendingMove: [],
       lastMove: [],
@@ -562,6 +564,13 @@ export const HandleStartMatch = ({
         };
       }
     };
+
+    useEffect(() => {
+      if (!loading && matchData) {
+        let startIpfs = GetFromIPFS(matchData.startIpfs);
+        setFen(startIpfs.fen);
+      }
+    }, [loading]);
 
     return (
       <>
@@ -618,7 +627,7 @@ export const HandleStartMatch = ({
           </Button>
         </div>
         <div style={{ alignContent: "center", justifyContent: "center", display: "flex" }}>
-          <MoveBoardModal />
+          <MoveBoardModal fen={fen} />
         </div>
         <p>Current gameplay FEN: {fen === beginningFEN ? "Unmoved board" : fen}</p>
       </div>
@@ -676,6 +685,7 @@ export const HandleStartDMatch = ({
       endHash
       p1Amount
       p2Amount
+      inProgress
     }
   }`;
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
@@ -684,7 +694,7 @@ export const HandleStartDMatch = ({
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
   const [wageredAmount, setWageredAmount] = useState(0);
   const [challenger, setChallenger] = useState("");
-  const [fen, setFen] = useState(beginningFEN);
+  const [fen, setFen] = useState();
 
   const revert = () => {
     setWageredAmount(0);
@@ -693,8 +703,8 @@ export const HandleStartDMatch = ({
     setChallenger("");
   };
 
-  const MoveBoardModal = () => {
-    const chess = new Chess();
+  const MoveBoardModal = ({ fen }) => {
+    const chess = new Chess(fen);
     const [chessObject, setChessObject] = useState({
       lastMove: [],
       fen: "",
@@ -730,6 +740,13 @@ export const HandleStartDMatch = ({
         };
       }
     };
+
+    useEffect(() => {
+      if (!loading && matchData) {
+        let startIpfs = GetFromIPFS(matchData.startIpfs);
+        setFen(startIpfs.fen);
+      }
+    }, [loading]);
 
     return (
       <>
