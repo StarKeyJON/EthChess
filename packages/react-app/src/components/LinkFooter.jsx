@@ -1,5 +1,5 @@
 import { Divider } from "antd";
-import { FaChess, FaChessBoard, FaInfo, FaVoteYea } from "react-icons/fa";
+import { FaChess, FaChessBoard, FaChessKing, FaInfo, FaVoteYea } from "react-icons/fa";
 import { Link } from "react-router-dom";
 // import { FaDiscord, FaTelegramPlane, FaTwitter, FaMediumM, FaSatelliteDish } from "react-icons/fa";
 import image from "../assets/img.jpg";
@@ -24,44 +24,17 @@ function LinkFooter({ gun }) {
               <FaVoteYea /> Voting
             </Link>
           </li>
-          {/* <li>
+          <li>
             <Link to="/profile">
               <FaChessKing /> Profile
             </Link>
-          </li> */}
+          </li>
           <li>
             <Link to="/info">
               <FaInfo /> Info
             </Link>
           </li>
           <br />
-          {/* <p>External Links</p>
-          <li style={{ marginBottom: 10 }}>
-            <FaSatelliteDish style={{ marginRight: 5 }} />{" "}
-            <a href="https://phar-out-labs.gitbook.io/pharout-market-guide/">Phar-Out Market Guide</a>
-          </li>
-          <li>
-            <FaDiscord style={{ marginRight: 10 }} />
-            <a href="https://discord.gg/YWQzDwUyq2">Discord</a>
-          </li>
-          <li>
-            <FaTelegramPlane style={{ marginRight: 10 }} />
-            <a href="http://t.me/pharoutlabs">Telegram</a>
-          </li>
-          <li>
-            <FaTwitter style={{ marginRight: 10 }} />
-            <a
-              href="https://twitter.com/PharOutLabs?ref_src=twsrc%5Etfw"
-              className="twitter-follow-button"
-              data-show-count="false"
-            >
-              Twitter
-            </a>
-          </li>
-          <li>
-            <FaMediumM style={{ marginRight: 10 }} />
-            <a href="https://pharoutlabs.medium.com/">Medium</a>
-          </li> */}
         </ul>
       </div>
       <div>

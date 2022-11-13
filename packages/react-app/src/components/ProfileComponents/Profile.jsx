@@ -4,33 +4,19 @@ import React, { useState } from "react";
 import ethLogo from "../../assets/ethereumLogo.png";
 import ProfilePage from "./ProfilePage";
 
-const Profile = ({
-  gun,
-  address,
-  gunUser,
-  setGunUser,
-  startTime,
-  loggedIn,
-  loginProfile,
-  createProfile,
-  logoutProfile,
-}) => {
-
+const Profile = ({ gun, address, gunUser, loggedIn, loginProfile, createProfile }) => {
   const HandleLogin = () => {
     const [passphrase, setPass] = useState();
 
-    const handlePWChange = e => {
-      // console.log(e.target.value);
-      setPass(e.target.value);
-    };
     return (
-      <><Input.Group compact>
-        <Input.Password
-          placeholder="input password"
-          onChange={e => setPass(e.target.value)}
-          iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-        />
-      </Input.Group>
+      <>
+        <Input.Group compact>
+          <Input.Password
+            placeholder="input password"
+            onChange={e => setPass(e.target.value)}
+            iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+          />
+        </Input.Group>
         <Button
           onClick={() => {
             if (passphrase) {
@@ -44,19 +30,20 @@ const Profile = ({
           Submit
         </Button>
       </>
-    )
-  }
+    );
+  };
 
   const HandleNewPassword = () => {
     const [passphrase, setPass] = useState();
     return (
-      <><Input.Group compact>
-        <Input.Password
-          placeholder="input password"
-          iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-          onChange={e => setPass(e.target.value)}
-        />
-      </Input.Group>
+      <>
+        <Input.Group compact>
+          <Input.Password
+            placeholder="input password"
+            iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+            onChange={e => setPass(e.target.value)}
+          />
+        </Input.Group>
         <Button
           onClick={() => {
             if (passphrase) {
@@ -68,9 +55,10 @@ const Profile = ({
           type="primary"
         >
           Submit
-        </Button></>
-    )
-  }
+        </Button>
+      </>
+    );
+  };
 
   const LogInCard = () => {
     return (

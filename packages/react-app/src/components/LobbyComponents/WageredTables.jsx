@@ -233,14 +233,15 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
           <Card>
             <Table dataSource={players} columns={columns} />
           </Card>
-          <HandleStartMatch 
-          tx={tx}
-          writeContracts={writeContracts}
-          readContracts={readContracts}
-          confirmMatchModal={confirmMatchModal}
-          setConfirmMatchModal={setConfirmMatchModal}
-          startMatchModal={startMatchModal}
-          setStartMatchModal={setStartMatchModal}/>
+          <HandleStartMatch
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+            confirmMatchModal={confirmMatchModal}
+            setConfirmMatchModal={setConfirmMatchModal}
+            startMatchModal={startMatchModal}
+            setStartMatchModal={setStartMatchModal}
+          />
         </Col>
         <Col flex="auto">
           <div style={{ alignContent: "center", justifyContent: "center", display: "flex", margin: 30 }}>
@@ -304,13 +305,14 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
             />
           </Card>
           <HandleStartDMatch
-          tx={tx}
-          writeContracts={writeContracts}
-          readContracts={readContracts}
-          confirmMatchModal={confirmMatchModal}
-          setConfirmMatchModal={setConfirmMatchModal}
-          startDMatchModal={startDMatchModal}
-          setStartDMatchModal={setStartDMatchModal}/>
+            tx={tx}
+            writeContracts={writeContracts}
+            readContracts={readContracts}
+            confirmMatchModal={confirmMatchModal}
+            setConfirmMatchModal={setConfirmMatchModal}
+            startDMatchModal={startDMatchModal}
+            setStartDMatchModal={setStartDMatchModal}
+          />
         </Col>
       </Row>
       <br />

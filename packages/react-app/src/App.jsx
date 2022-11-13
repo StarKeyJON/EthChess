@@ -10,7 +10,7 @@ import {
   useUserProviderAndSigner,
 } from "eth-hooks";
 import CookieConsent from "react-cookie-consent";
-import { FaChessBoard, FaChess, FaInfo, FaVoteYea } from "react-icons/fa";
+import { FaChessBoard, FaChess, FaInfo, FaVoteYea, FaChessKing } from "react-icons/fa";
 import { BsPersonFill } from "react-icons/bs";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { TbCurrencyEthereum } from "react-icons/tb";
@@ -345,9 +345,9 @@ function App(props) {
                 <Menu.Item icon={<FaVoteYea />} key="/disputes">
                   <Link to="/disputes">Voting</Link>
                 </Menu.Item>
-                {/* <Menu.Item icon={<FaChessKing />} key="/profile">
+                <Menu.Item icon={<FaChessKing />} key="/profile">
                   <Link to="/profile">Profile</Link>
-                </Menu.Item> */}
+                </Menu.Item>
                 <Menu.Item icon={<FaInfo />} key="/info">
                   <Link to="/info">Info</Link>
                 </Menu.Item>
@@ -401,14 +401,7 @@ function App(props) {
             <h1>Currently In Development Stage!</h1>
             <Switch>
               <Route exact path="/">
-                {/* pass in any web3 props to this Home component. For example, yourLocalBalance */}
-                <Home
-                  gun={gun}
-                  address={address}
-                  yourLocalBalance={yourLocalBalance}
-                  readContracts={readContracts}
-                  timeStamp={startTime}
-                />
+                <Home gun={gun} address={address} readContracts={readContracts} timeStamp={startTime} />
               </Route>
               <Route exact path="/lobby">
                 <Lobby
