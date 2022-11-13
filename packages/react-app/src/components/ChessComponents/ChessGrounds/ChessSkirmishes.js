@@ -1,9 +1,10 @@
 // credits https://github.com/lichess-org/chessground, https://github.com/ruilisi/react-chessground
 
 import React, { useCallback, useContext, useEffect, useReducer, useRef } from "react";
-import { useParams, useHistory, Redirect } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import Chessground from "react-chessground";
-import "./styles/chessGround.css";
+// import "./styles/chessGround.css";
+import "chessground/assets/chessground.cburnett.css";
 import { Button, Card, Modal, notification, Space, Spin } from "antd";
 import queen from "../../../assets/images/WhiteQueen.png";
 import rook from "../../../assets/images/WhiteRook.png";
@@ -445,7 +446,8 @@ const ChessSkirmishes = ({ gun, address }) => {
         footer={null}
         closable={false}
         onCancel={() => {
-          directoryHistory.push("/lobby")}}
+          directoryHistory.push("/lobby");
+        }}
       >
         <h1>Both players must shake hands to start the match!</h1>
         {player1 && player2 ? (
@@ -717,7 +719,7 @@ const ChessSkirmishes = ({ gun, address }) => {
             <Button
               onClick={() => {
                 gun.get(GUNKEY).get("match").get(gameId).put({ player2: null, started: false });
-                history.push('./lobby');
+                history.push("./lobby");
               }}
             >
               Cancel

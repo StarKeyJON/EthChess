@@ -18,7 +18,7 @@ import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, Route, Switch, useLocation } from "react-router-dom";
 import { Account, Contract, Header, NetworkDisplay, PieceBouncer, ThemeSwitch } from "./components";
-import { NETWORKS, ALCHEMY_KEY, peers } from "./constants";
+import { NETWORKS, ALCHEMY_KEY, peers, appStage } from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
@@ -48,7 +48,7 @@ import Modal from "antd/lib/modal/Modal";
 const { ethers } = require("ethers");
 
 /// 📡 What chain are your contracts deployed to?
-const initialNetwork = NETWORKS.localhost; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const initialNetwork = appStage === "development" ? NETWORKS.localhost : NETWORKS.goerli; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
 const DEBUG = false;
