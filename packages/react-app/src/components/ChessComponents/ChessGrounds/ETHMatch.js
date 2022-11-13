@@ -1,7 +1,7 @@
 // credits https://github.com/lichess-org/chessground, https://github.com/ruilisi/react-chessground
 
 import React, { useCallback, useContext, useEffect, useReducer, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import Chessground from "react-chessground";
 import "./styles/chessGround.css";
 import { Button, Card, Modal, notification, Space, Spin } from "antd";
@@ -16,6 +16,7 @@ import { SocketContext } from "../../../socketContext/socketContext";
 import MoveTable from "../MoveTable";
 import { AddToIPFS } from "../../../helpers/ipfs";
 import { executeDispute, executeWin } from "../BoardComponents/WinLose";
+import { gql, useQuery } from "@apollo/client";
 
 const initialState = {
   chess: new Chess(),
@@ -80,21 +81,6 @@ function chessReducer(state, action) {
         moving: false,
       };
     }
-    case "JOINED": {
-      // console.log("JOINED", action);
-      if (action.socketId !== action.gameId) {
-        return { ...state, joined: true, player1: state.gameId, player2: action.socketId, gameId: action.gameId };
-      } else {
-        return { ...state, joined: true, player1: action.socketId, gameId: action.gameId };
-      }
-    }
-    case "HANDLEOPPONENT": {
-      if (action.opp !== state.gameId) {
-        return { ...state, player2: action.opp };
-      } else {
-        return { ...state };
-      }
-    }
     case "GUN": {
       let data = action.ack;
       if (data.player2) {
@@ -103,19 +89,12 @@ function chessReducer(state, action) {
         return { ...state, player1: data.player1, gunState: data };
       }
     }
+    case "UPDATEGUN": {
+      return { ...state, gunState: action.ack };
+    }
     case "IPFSHISTORY":
       let data = action.load;
       return { ...state, ipfsHistory: [...state.ipfsHistory, data], lastHash: data };
-    case "SHAKING": {
-      return { ...state, shakingHands: true };
-    }
-    case "SHOOK": {
-      if (action.p === 1) {
-        return { ...state, player1Shake: true };
-      } else {
-        return { ...state, player2Shake: true };
-      }
-    }
     case "PLAYERLEFT": {
       return { ...state, playerLeftModal: true };
     }
@@ -136,11 +115,34 @@ function chessReducer(state, action) {
   }
 }
 
-const ETHMatch = ({ gun, tx, writeContracts }) => {
+const ETHMatch = ({ gun, tx, writeContracts, address }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 
-  const { matchAddress, gameId } = useParams();
+  const { gameId } = useParams();
+  const directoryHistory = useHistory();
+
+  const matchQ = `
+  {
+      match(id: ${gameId}){
+        id
+        matchId
+        player1 {
+          id
+        }
+        player2 {
+          id
+        }
+        startTime
+        startHash
+        endHash
+        p1Amount
+        p2Amount
+        inProgress
+      }
+    }`;
+  const MATCH_GQL = gql(matchQ);
+  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
 
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const gpState = useRef();
@@ -157,7 +159,6 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
     ipfsHistory,
     inCheck,
     selectVisible,
-    shakingHands,
     joined,
     player1,
     player2,
@@ -169,32 +170,22 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
     // losingModalVisible,
     userQuitModal,
     gameOverModal,
-    player1Shake,
-    player2Shake,
     winner,
   } = gameplayState;
 
-  let opp = player1 === socketId ? player2 : player1;
-  let color = socketId === player1 ? "white" : "black";
+  let opp = player1 === address ? player2 : player1;
+  let color = address === player1 ? "white" : "black";
 
-  const fetchGunState = () => {
+  const prepRoom = () => {
     gun
       .get(GUNKEY)
-      .get("skirmishes")
+      .get("matches")
       .get(gameId)
       .once(ack => {
         if (ack) {
           dispatch({ type: "GUN", ack: ack });
         }
       });
-  };
-
-  const prepRoom = () => {
-    fetchGunState();
-    if (socketId !== gameId) {
-      socket.emit("opponentSet", gameId, socketId, "skirmishes");
-    }
-    dispatch({ type: "SHAKING" });
   };
 
   // IPFS file processing and uploading
@@ -251,7 +242,7 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
         });
         handleIPFSInput(file);
 
-        socket.emit("onMove", gameId, "skirmish", socketId, file);
+        socket.emit("onMove", gameId, "match", socketId, file);
 
         if (chess.inCheck()) {
           const movesleft = chess.moves({ verbose: true });
@@ -301,7 +292,7 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
         turn: opp,
       },
     });
-    socket.emit("onMove", gameId, "skirmish", socketId, file);
+    socket.emit("onMove", gameId, "match", socketId, file);
     if (chess.inCheck()) {
       const movesleft = chess.moves({ verbose: true });
       if (movesleft.length === 0) {
@@ -449,73 +440,6 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
     );
   };
 
-  const ShakeHands = () => {
-    return (
-      <Modal
-        visible={shakingHands}
-        footer={null}
-        closable={false}
-        onCancel={() => {
-          // roomLeaveEmit();
-          window.location.replace("/lobby");
-        }}
-      >
-        <h1>Both players must shake hands to start the match!</h1>
-        {player1 && player2 ? (
-          <>
-            {socketId === player1 ? (
-              <>
-                <span>
-                  {!player1Shake ? (
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        dispatch({ type: "SHOOK", p: 1 });
-                        // dispatchBoard({ type: "SHOOK", p: 1 });
-                        // setPlayer1Shake(true);
-                        socket.emit("handShake", gameId, "skirmishes", socketId);
-                      }}
-                    >
-                      {" "}
-                      🤝{" "}
-                    </Button>
-                  ) : (
-                    <p>Waiting for Opponent handshake...</p>
-                  )}
-                </span>
-              </>
-            ) : (
-              <>
-                <span>
-                  {!player2Shake ? (
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        dispatch({ type: "SHOOK", p: 2 });
-                        // dispatchBoard({ type: "SHOOK", p: 2 });
-                        // setPlayer2Shake(true);
-                        socket.emit("handShake", gameId, "skirmishes", socketId);
-                      }}
-                    >
-                      {" "}
-                      🤝{" "}
-                    </Button>
-                  ) : (
-                    <p>Waiting for Player handshake...</p>
-                  )}
-                </span>
-              </>
-            )}
-          </>
-        ) : (
-          <>
-            <Spin /> ... Waiting for opponent ...
-          </>
-        )}
-      </Modal>
-    );
-  };
-
   const OpponentLeftM = () => {
     return (
       <Modal
@@ -610,19 +534,6 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
     );
   };
 
-  const handleHand = (add, pl) => {
-    if (pl === "p1") {
-      dispatch({ type: "SHOOK", p: 1 });
-    } else if (pl === "p2") {
-      dispatch({ type: "SHOOK", p: 2 });
-    }
-  };
-
-  const handleOpp = opponent => {
-    // console.log("Handle opp!", opponent, socketId);
-    dispatch({ type: "HANDLEOPPONENT", opp: opponent, pla: socketId });
-  };
-
   const handleMove = (prof, ack) => {
     // console.log("GamePlayState: ", gpState.current, ack, prof);
     let m = JSON.parse(ack.move);
@@ -646,31 +557,23 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
   const handleJoined = useCallback(() => {
     if (!joined) {
       prepRoom();
-      socket.emit("joinedRoom", gameId, "skirmishes");
       dispatch({ type: "JOINED", socketId: socketId, gameId: gameId });
     }
   }, [socketId]);
 
   useEffect(() => {
-    if (shakingHands && player1Shake && player2Shake) {
-      dispatch({ type: "STARTMATCH", player1: player1 });
-      gun.get(GUNKEY).get("skirmishes").get(gameId).put({ gameInProgress: true });
+    if (!loading) {
+      address === matchData.player1 || address === matchData.player2
+        ? handleJoined()
+        : directoryHistory.push(`/match/view/${gameId}`);
     }
-  }, [gameId, gun, player1, player1Shake, player2Shake, shakingHands]);
+  }, []);
 
   useEffect(() => {
     handleJoined();
     socket.on("playerJoined", ack => {
       notification.open({ message: `Player ${ack} joined the match!` });
       handleJoined(ack);
-    });
-
-    socket.on("handShaken", (add, pl) => {
-      handleHand(add, pl);
-    });
-
-    socket.on("setOpponent", opponent => {
-      handleOpp(opponent);
     });
 
     socket.on("playerMoved", ack => {
@@ -687,10 +590,36 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
     socket.on("illegalMove", ack => {
       handleIllMove(ack);
     });
+
     return () => {
       socket.emit("leftRoom", gameId, socketId);
-      // roomLeaveEmit(gameId, "skirmishes", socketId);
     };
+  }, []);
+
+  useEffect(() => {
+    gun
+      .get(GUNKEY)
+      .get("match")
+      .get(gameId)
+      .get("move")
+      .on(ack => {
+        if (ack && ack.fen !== fen) {
+          let file = {
+            gameId: ack.gameId,
+            nonce: ack.nonce,
+            fen: ack.fen,
+            lastFen: ack.lastFen,
+            turn: ack.turn,
+            move: JSON.parse(ack.move),
+            lastMove: JSON.parse(ack.lastMove),
+            history: JSON.stringify(ack.history),
+          };
+          dispatch({
+            type: "UPDATEBOARD",
+            data: { ...file },
+          });
+        }
+      });
   }, []);
 
   useEffect(() => {
@@ -701,7 +630,7 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
     <>
       {inCheck[0] && <h1>Check!</h1>}
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
-        {gameState && gameInProgress ? (
+        {gameState ?? (
           <Chessground
             width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
             height={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
@@ -714,14 +643,7 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
             style={{ margin: "auto" }}
             orientation={color}
           />
-        ) : (
-          <>
-            <h1>
-              Waiting for opponent to join... <Spin />
-            </h1>
-          </>
         )}
-        <ShakeHands />
         <NewGameModal />
         <PromotionModal />
         <PlayerLeftM />
@@ -729,21 +651,7 @@ const ETHMatch = ({ gun, tx, writeContracts }) => {
         <GameOver />
         <HandleQuit />
       </div>
-      {history.length === 0 ? (
-        <Space>
-          <Card>
-            <h1>Cancel the game before the first move is made!</h1>
-            <Button
-              onClick={() => {
-                gun.get(GUNKEY).get("match").get(gameId).put({ player2: null, started: false });
-                window.location.replace("/lobby");
-              }}
-            >
-              Cancel
-            </Button>
-          </Card>
-        </Space>
-      ) : (
+      {history.length === 0 ?? (
         <Space style={{ marginTop: 30 }}>
           <Card>
             <p>Quit the match?</p>

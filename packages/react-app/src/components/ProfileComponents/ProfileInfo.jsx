@@ -1,4 +1,5 @@
 import { SearchOutlined } from "@ant-design/icons";
+import { gql, useQuery } from "@apollo/client";
 import { Button, Card, Input, Space, Table } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
@@ -11,6 +12,27 @@ const ProfilePage = ({ gun, address }) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+  const matchQ = `
+  {
+      matches(player1: ${address}){
+        id
+        matchId
+        player1 {
+          id
+        }
+        player2 {
+          id
+        }
+        startTime
+        startHash
+        endHash
+        p1Amount
+        p2Amount
+        inProgress
+      }
+    }`;
+  const MATCH_GQL = gql(matchQ);
+  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -113,7 +135,7 @@ const ProfilePage = ({ gun, address }) => {
       dataIndex: "gameId",
       key: "key",
       width: "20%",
-      render: gameId => <Link>{gameId}</Link>,
+      render: gameId => <Link to={`/match/room/${gameId}`}>{gameId}</Link>,
     },
     {
       title: "Player1",
@@ -131,8 +153,8 @@ const ProfilePage = ({ gun, address }) => {
     },
     {
       title: "Started",
-      dataIndex: "started",
-      key: "started",
+      dataIndex: "inProgress",
+      key: "inProgress",
       width: "10%",
     },
     {
