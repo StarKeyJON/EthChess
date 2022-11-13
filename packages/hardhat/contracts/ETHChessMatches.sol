@@ -349,10 +349,12 @@ contract ETHChessMatches is ReentrancyGuard {
     Dispute storage dispute = idToDispute[matchId];
     address[] storage votedFor = dispute.votedFor;
     address[] storage votedAgainst = dispute.votedAgainst;
-    if(vote && votedFor.length < 10){
+    if(vote){
+      require(votedFor.length < 10, "Voting quorum met.");
       votedFor.push(msg.sender);
       emit DisputeVoted(msg.sender, matchId, vote);
-    } else if(!vote && votedAgainst.length < 10){
+    } else if(!vote){
+      require(votedAgainst.length < 10, "Voting quorum met.");
       votedAgainst.push(msg.sender);
       emit DisputeVoted(msg.sender, matchId, vote);
     }
