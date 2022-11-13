@@ -14,5 +14,6 @@ export const matchQ = `
       endHash
       p1Amount
       p2Amount
+      inProgress
     }
   }`;

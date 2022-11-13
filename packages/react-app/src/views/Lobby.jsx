@@ -14,6 +14,7 @@ const Lobby = ({
   player,
   setPlayer,
   loggedIn,
+  setLoginModal,
   address,
   startTime,
   tx,
@@ -207,6 +208,8 @@ const Lobby = ({
                     writeContracts={writeContracts}
                     readContracts={readContracts}
                     mainnetProvider={mainnetProvider}
+                    loggedIn={loggedIn}
+                    setLoginModal={setLoginModal}
                   />
                 </div>
               </Space>

@@ -40,6 +40,7 @@ export function handleMatchInitiated(event: MatchInitiated): void {
       p1.matches!.push(matchId.toString());
     }
   }
+  match.inProgress = false;
   match.player1 = player1;
   match.p1Amount = wager;
 
@@ -61,6 +62,7 @@ export function handleMatchSet(event: MatchSet): void {
   match.player2 = player2;
   match.startHash = event.params.ipfsHash;
   match.startTime = event.params.startTime;
+  match.inProgress = true;
   
   let p1 = Player.load(player1);
   let p2 = Player.load(player2);
@@ -102,6 +104,7 @@ export function handleDeathMatchStarted(event: DeathMatchStarted): void {
   let match = Match.load(matchId.toString());
   if(!match) {
     match = new Match(matchId.toString());
+    match.inProgress = true;
   }
   match.matchId = matchId;
   
@@ -354,6 +357,7 @@ export function handleMatchEnd(event: MatchEnd): void {
   p1.save();
   p2.save();
   
+  match.inProgress = false;
   match.matchId = matchId;
   match.winner = winner;
   match.endHash = event.params.ipfsHash;
@@ -366,6 +370,7 @@ export function handleDeathMatchAdvanced(event: DeathMatchAdvanced): void {
   if(!match) {
     match = new Match(matchId.toString());
   }
+  match.inProgress = false;
   match.matchId = matchId;
 
   let player = event.params.winner.toHexString();
@@ -440,6 +445,7 @@ export function handleMatchRefundStarted(event: MatchRefundStarted): void {
   } else {
     refund.player2 = true;
   }
+  match.inProgress = false;
   refund.save();
   match.save();
 }

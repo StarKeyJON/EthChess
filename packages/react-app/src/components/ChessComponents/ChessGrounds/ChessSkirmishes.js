@@ -240,7 +240,6 @@ const ChessSkirmishes = ({ gun, address }) => {
             turn: opp,
           },
         });
-
         socket.emit("onMove", gameId, "skirmish", socketId, file);
 
         if (chess.inCheck()) {
@@ -626,13 +625,13 @@ const ChessSkirmishes = ({ gun, address }) => {
     }
   }, []);
 
-  const handleJoined = useCallback(() => {
+  const handleJoined = () => {
     if (!joined) {
       prepRoom();
       socket.emit("joinedRoom", gameId, "skirmishes");
       dispatch({ type: "JOINED", socketId: socketId, gameId: gameId });
     }
-  }, [socketId]);
+  };
 
   useEffect(() => {
     if (shakingHands && player1Shake && player2Shake) {
@@ -670,10 +669,7 @@ const ChessSkirmishes = ({ gun, address }) => {
     socket.on("illegalMove", ack => {
       handleIllMove(ack);
     });
-    return () => {
-      socket.emit("leftRoom", gameId, socketId);
-      // roomLeaveEmit(gameId, "skirmishes", socketId);
-    };
+
   }, []);
 
   useEffect(() => {

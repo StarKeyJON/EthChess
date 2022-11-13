@@ -10,6 +10,7 @@ type Player @entity {
 type Match @entity {
   id: ID!
   matchId: BigInt!
+  inProgress: Boolean!
   player1: Player!
   player2: Player!
   startTime: BigInt!

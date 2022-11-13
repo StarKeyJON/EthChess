@@ -450,6 +450,7 @@ function App(props) {
                   writeContracts={writeContracts}
                   startTime={startTime}
                   loggedIn={loggedIn}
+                  setLoginModal={setLoginModal}
                   mainnetProvider={mainnetProvider}
                 />
               </Route>

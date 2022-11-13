@@ -7,7 +7,16 @@ import { FaInfoCircle } from "react-icons/fa";
 import { HandleNewDeathMatch, HandleNewMatch, HandleStartDMatch, HandleStartMatch } from "./MoveModals";
 import { matchQ } from "./matchGraphQ";
 
-const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProvider, address }) => {
+const WageredTables = ({
+  players,
+  tx,
+  writeContracts,
+  readContracts,
+  mainnetProvider,
+  address,
+  loggedIn,
+  setLoginModal,
+}) => {
   const MATCH_GQL = gql(matchQ);
   const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
   const [newMatchModal, setNewMatchModal] = useState(false);
@@ -117,20 +126,28 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
 
   const columns = [
     {
-      title: "Game ID",
+      title: "Start Match",
       dataIndex: "gameId",
       key: "key",
-      width: "20%",
       render: gameId => (
         <Button
           onClick={() => {
-            setGameId(gameId);
-            setStartMatchModal(true);
+            if (loggedIn) {
+              setGameId(gameId);
+              setStartMatchModal(true);
+            } else {
+              setLoginModal(true);
+            }
           }}
         >
           Enter
         </Button>
       ),
+    },
+    {
+      title: "Game ID",
+      dataIndex: "gameId",
+      key: "key",
     },
     {
       title: "Player1",
@@ -148,8 +165,8 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
     },
     {
       title: "Started",
-      dataIndex: "started",
-      key: "started",
+      dataIndex: "inProgress",
+      key: "inProgress",
       width: "10%",
     },
     {
@@ -162,20 +179,29 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
 
   const dcolumns = [
     {
-      title: "Game ID",
+      title: "Start Round",
       dataIndex: "gameId",
       key: "key",
-      width: "20%",
       render: gameId => (
         <Button
           onClick={() => {
-            setGameId(gameId);
-            setStartMatchModal(true);
+            if (loggedIn) {
+              setGameId(gameId);
+              setStartMatchModal(true);
+            } else {
+              setLoginModal(true);
+            }
           }}
         >
           Enter
         </Button>
       ),
+    },
+    {
+      title: "Game ID",
+      dataIndex: "gameId",
+      key: "gameId",
+      width: "20%",
     },
     {
       title: "Reigning Champion",
@@ -185,8 +211,8 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
     },
     {
       title: "Round Started",
-      dataIndex: "roundStarted",
-      key: "roundStarted",
+      dataIndex: "inProgress",
+      key: "inProgress",
       // width: "10%",
     },
     {
@@ -232,7 +258,12 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
                 >
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
-                <Button style={{ margin: 10 }} onClick={() => setNewMatchModal(true)}>
+                <Button
+                  style={{ margin: 10 }}
+                  onClick={() => {
+                    loggedIn ? setNewMatchModal(true) : setLoginModal(true);
+                  }}
+                >
                   Initiate
                 </Button>
                 <HandleNewMatch
@@ -293,7 +324,12 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
                 >
                   <FaInfoCircle size={12} />
                 </Popover>{" "}
-                <Button style={{ margin: 10 }} onClick={() => setNewDeathMatchModal(true)}>
+                <Button
+                  style={{ margin: 10 }}
+                  onClick={() => {
+                    loggedIn ? setNewMatchModal(true) : setLoginModal(true);
+                  }}
+                >
                   Initiate
                 </Button>
                 <HandleNewDeathMatch

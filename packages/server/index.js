@@ -214,7 +214,7 @@ let lobbyObject = {
     if(theMove === null){
       socket.to(profile).emit("illegalMove", profile, move);
     } else {
-      if(type === "skirmsh") {
+      if(type === "skirmish") {
         gun.get(GUNKEY).get("skirmishes").get(gameId).get("move").put(move);
         gun.get(GUNKEY).get("skirmishHistory").get(gameId).set(move);
       }
