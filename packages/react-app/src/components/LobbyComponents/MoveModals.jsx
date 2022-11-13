@@ -5,12 +5,14 @@ import { utils } from "ethers";
 import { useCallback, useState } from "react";
 import Chessground from "react-chessground/chessground";
 import { TbCurrencyEthereum } from "react-icons/tb";
-import { appStage, beginningFEN } from "../../constants";
+import { appStage, beginningFEN, GUNKEY } from "../../constants";
 import AddressInput from "../AddressInput";
 import ethlogo from "../../assets/ethereumLogo.png";
 import { useContractReader } from "eth-hooks";
+import { gun } from "../../hooks/useGunRelay";
+import { gql, useQuery } from "@apollo/client";
 
-const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen }) => {
+const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen, address }) => {
   tx(
     writeContracts.ETHChessMatches.initMatch(fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -30,12 +32,16 @@ const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen }) => {
         notification.open({
           message: <Text>{"Match Initiated!"}</Text>,
         });
+        gun.get(GUNKEY).get("matches").get(address).set({
+          txnHash: update.hash,
+          wageredAmount: wageredAmount,
+        });
       }
     },
   );
 };
 
-const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger, fen }) => {
+const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger, fen, address }) => {
   tx(
     writeContracts.ETHChessMatches.initChallengeMatch(challenger, fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -55,12 +61,17 @@ const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenge
         notification.open({
           message: <Text>{"Match Initiated with Challenger " + challenger + "!"}</Text>,
         });
+        gun.get(GUNKEY).get("matches").get(address).set({
+          txnHash: update.hash,
+          wageredAmount: wageredAmount,
+          challenger: challenger,
+        });
       }
     },
   );
 };
 
-const executeNewDeathMatch = ({ tx, writeContracts, wageredAmount }) => {
+const executeNewDeathMatch = ({ tx, writeContracts, wageredAmount, address }) => {
   tx(
     writeContracts.ETHChessMatches.initDeathMatch({
       value: utils.parseEther(wageredAmount.toString()),
@@ -79,6 +90,10 @@ const executeNewDeathMatch = ({ tx, writeContracts, wageredAmount }) => {
         );
         notification.open({
           message: <Text>{"Match Initiated!"}</Text>,
+        });
+        gun.get(GUNKEY).get("matches").get(address).set({
+          txnHash: update.hash,
+          wageredAmount: wageredAmount,
         });
       }
     },
@@ -110,13 +125,13 @@ const executeStartMatch = ({ tx, writeContracts, wageredAmount, fen, gameId }) =
   );
 };
 
-const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen) => {
+const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen, address) => {
   if (typeof challenger === "undefined") {
     appStage === "production"
-      ? executeNewMatch(tx, writeContracts, wageredAmount, fen)
+      ? executeNewMatch(tx, writeContracts, wageredAmount, fen, address)
       : console.log("Execute transaction!", tx, writeContracts, wageredAmount, fen);
   } else if (challenger && challenger.length === 42 && challenger.slice(0, 2) === "0x") {
-    appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger, fen);
+    appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger, fen, address);
   }
 };
 
@@ -135,6 +150,7 @@ export const HandleNewMatch = ({
   setConfirmMatchModal,
   newMatchModal,
   setNewMatchModal,
+  address,
 }) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
@@ -295,7 +311,7 @@ export const HandleNewMatch = ({
         visible={confirmMatchModal}
         onCancel={() => setConfirmMatchModal(false)}
         onOk={() => {
-          handleChallenge(tx, writeContracts, wageredAmount, challenger, fen);
+          handleChallenge(tx, writeContracts, wageredAmount, challenger, fen, address);
         }}
       >
         <h3>You are about to execute a transaction to initiate a new Match.</h3>
@@ -314,6 +330,7 @@ export const HandleNewDeathMatch = ({
   setConfirmMatchModal,
   newDeathMatchModal,
   setNewDeathMatchModal,
+  address,
 }) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
@@ -448,7 +465,7 @@ export const HandleNewDeathMatch = ({
         title="Confirm transaction"
         visible={confirmMatchModal}
         onOk={() => {
-          appStage === "production" && executeNewDeathMatch(tx, writeContracts, wageredAmount);
+          appStage === "production" && executeNewDeathMatch(tx, writeContracts, wageredAmount, address);
         }}
         onCancel={() => setConfirmMatchModal(false)}
       >
@@ -470,9 +487,29 @@ export const HandleStartMatch = ({
   startMatchModal,
   setStartMatchModal,
   gameId,
+  address,
 }) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
-  // GraphQL query for match with gameId
+  const matchQ = `
+  {
+      match(id: ${gameId}){
+        id
+        matchId
+        player1 {
+          id
+        }
+        player2 {
+          id
+        }
+        startTime
+        startHash
+        endHash
+        p1Amount
+        p2Amount
+      }
+    }`;
+  const MATCH_GQL = gql(matchQ);
+  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
 
   const [startFen, setStartFen] = useState(beginningFEN);
@@ -550,22 +587,15 @@ export const HandleStartMatch = ({
     <Modal
       title="Start Match"
       visible={startMatchModal}
-      onOk={() => {
-        if (fen !== startFen) {
-          setConfirmMatchModal(true);
-        } else {
-          notification.open({ message: "Please take your first move!" });
-        }
-      }}
       onCancel={() => {
         revert();
       }}
     >
-      <h3>Initiate a new Match by entering a wagered amount!</h3>
+      <h3>Start a new Match by matching the wagered amount!</h3>
       <br />
       <div style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>
         <div>
-          Wagered Amount
+          {matchData.wager}
           <br />
           <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} />
           ETH
@@ -573,7 +603,7 @@ export const HandleStartMatch = ({
       </div>
       <Divider />
       <div>
-        <p>Take the first move, or let your opponent take the first move.</p>
+        <p>Take your first move!</p>
         <div style={{ alignItems: "right", justifyContent: "right", display: "flex" }}>
           <Button
             onClick={() => {
@@ -589,12 +619,12 @@ export const HandleStartMatch = ({
         <p>Current gameplay FEN: {fen === beginningFEN ? "Unmoved board" : fen}</p>
       </div>
       <Divider />
-      {/* <p style={{ marginTop: 30 }}>
+      <p style={{ marginTop: 30 }}>
         *Total funds needed will be <TbCurrencyEthereum />
-        {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount} security deposit for a winning match claim, or,{" "}
+        {matchData.wager} + <TbCurrencyEthereum /> {matchData.wager} security deposit for a winning match claim, or,{" "}
         <TbCurrencyEthereum />
-        {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount * 2} to dispute the match outcome.
-      </p> */}
+        {matchData.wager} + <TbCurrencyEthereum /> {matchData.wager * 2} to dispute the match outcome.
+      </p>
       (*security deposit returned after dispute resolution process)
       <br />
       (**minimum wager amount is <TbCurrencyEthereum /> {minWager})
@@ -624,18 +654,33 @@ export const HandleStartDMatch = ({
   startDMatchModal,
   setStartDMatchModal,
   gameId,
+  address,
 }) => {
+  const matchQ = `
+{
+    match(id: ${gameId}){
+      id
+      matchId
+      player1 {
+        id
+      }
+      player2 {
+        id
+      }
+      startTime
+      startHash
+      endHash
+      p1Amount
+      p2Amount
+    }
+  }`;
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
+  const MATCH_GQL = gql(matchQ);
+  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
   const [wageredAmount, setWageredAmount] = useState(0);
   const [challenger, setChallenger] = useState("");
   const [fen, setFen] = useState(beginningFEN);
-  const setAmount = useCallback(
-    amt => {
-      setWageredAmount(amt);
-    },
-    [wageredAmount],
-  );
 
   const revert = () => {
     setWageredAmount(0);
@@ -711,50 +756,24 @@ export const HandleStartDMatch = ({
     <Modal
       title="Start DeathMatch"
       visible={startDMatchModal}
-      onOk={() => {
-        if (wageredAmount > 0) {
-          setConfirmMatchModal(true);
-        } else {
-          notification.open({ message: "Please enter a wager amount!" });
-        }
-      }}
       onCancel={() => {
         revert();
       }}
     >
-      <h3>Initiate a new Match by entering a wagered amount!</h3>
+      <h3>Start a new DeathMatch Round!</h3>
       <br />
       <div style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>
         <div>
-          Wagered Amount
+          Entrance Fee Needed
           <br />
-          <InputNumber
-            min={0.00001}
-            defaultValue={0.00001}
-            onChange={val => {
-              setAmount(val);
-            }}
-          />
+          {matchData?.entranceFee}
           <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} />
           ETH
         </div>
       </div>
       <Divider />
-      <div style={{ alignItems: "center", justifyContent: "center", display: "flex", marginTop: 10, marginBottom: 20 }}>
-        <div>
-          Enter an address/ENS name for a Challenge match, else leave blank.
-          <AddressInput
-            value={challenger}
-            ensProvider={mainnetProvider}
-            onChange={e => {
-              setChallenger(e);
-            }}
-          />
-        </div>
-      </div>
-      <Divider />
       <div>
-        <p>Take the first move, or let your opponent take the first move.</p>
+        <p>Take your first move.</p>
         <div style={{ alignItems: "right", justifyContent: "right", display: "flex" }}>
           <Button
             onClick={() => {
@@ -772,9 +791,9 @@ export const HandleStartDMatch = ({
       <Divider />
       <p style={{ marginTop: 30 }}>
         *Total funds needed will be <TbCurrencyEthereum />
-        {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount} security deposit for a winning match claim, or,{" "}
+        {matchData?.entranceFee} + <TbCurrencyEthereum /> {matchData?.entranceFee} security deposit for a winning match claim, or,{" "}
         <TbCurrencyEthereum />
-        {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount * 2} to dispute the match outcome.
+        {matchData?.entranceFee} + <TbCurrencyEthereum /> {matchData?.entranceFee * 2} to dispute the match outcome.
       </p>
       (*security deposit returned after dispute resolution process)
       <br />
@@ -784,7 +803,7 @@ export const HandleStartDMatch = ({
         visible={confirmMatchModal}
         onCancel={() => setConfirmMatchModal(false)}
         onOk={() => {
-          handleChallenge(tx, writeContracts, wageredAmount, challenger, fen);
+          startMatch(tx, writeContracts, wageredAmount, challenger, fen, address);
         }}
       >
         <h3>You are about to execute a transaction to initiate a new Match.</h3>

@@ -7,7 +7,7 @@ import { FaInfoCircle } from "react-icons/fa";
 import { HandleNewDeathMatch, HandleNewMatch, HandleStartDMatch, HandleStartMatch } from "./MoveModals";
 import { matchQ } from "./matchGraphQ";
 
-const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProvider }) => {
+const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProvider, address }) => {
   const MATCH_GQL = gql(matchQ);
   const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
   const [newMatchModal, setNewMatchModal] = useState(false);
@@ -15,6 +15,7 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
   const [startMatchModal, setStartMatchModal] = useState(false);
   const [startDMatchModal, setStartDMatchModal] = useState(false);
   const [confirmMatchModal, setConfirmMatchModal] = useState(false);
+  const [gameId, setGameId] = useState();
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
@@ -156,7 +157,16 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
       dataIndex: "gameId",
       key: "key",
       width: "20%",
-      render: gameId => <Button onClick={() => setStartMatchModal(true)}>Start</Button>,
+      render: gameId => (
+        <Button
+          onClick={() => {
+            setGameId(gameId);
+            setStartMatchModal(true);
+          }}
+        >
+          Start
+        </Button>
+      ),
     },
     {
       title: "Reigning Champion",
@@ -225,6 +235,7 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
                   setConfirmMatchModal={setConfirmMatchModal}
                   newMatchModal={newMatchModal}
                   setNewMatchModal={setNewMatchModal}
+                  address={address}
                 />
               </h2>
             </Card>
@@ -241,6 +252,8 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
             setConfirmMatchModal={setConfirmMatchModal}
             startMatchModal={startMatchModal}
             setStartMatchModal={setStartMatchModal}
+            address={address}
+            gameId={gameId}
           />
         </Col>
         <Col flex="auto">
@@ -282,6 +295,7 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
                   setConfirmMatchModal={setConfirmMatchModal}
                   newDeathMatchModal={newDeathMatchModal}
                   setNewDeathMatchModal={setNewDeathMatchModal}
+                  address={address}
                 />
               </h2>
             </Card>
@@ -312,6 +326,7 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
             setConfirmMatchModal={setConfirmMatchModal}
             startDMatchModal={startDMatchModal}
             setStartDMatchModal={setStartDMatchModal}
+            address={address}
           />
         </Col>
       </Row>
