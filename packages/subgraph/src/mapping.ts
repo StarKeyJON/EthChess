@@ -193,6 +193,7 @@ export function handleClaimContested(event: ClaimContested): void {
     dispute = new Dispute(matchId.toString());
   }
 
+  dispute.onGoing = true;
   dispute.matchId = matchId;
   dispute.claimStart = event.block.number;
   dispute.security = event.params.security;
@@ -245,7 +246,8 @@ export function handleDisputeResolved(event: DisputeResolved): void {
     dispute = new Dispute(matchId.toString());
   }
   dispute.tally = event.params.truth;
-
+  dispute.onGoing = false;
+  
   dispute.save();
   match.save();
 }

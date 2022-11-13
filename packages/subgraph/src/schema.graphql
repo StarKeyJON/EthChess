@@ -59,6 +59,7 @@ type Dispute @entity {
   tally: Boolean
   votedFor: [String!]
   votedAgainst: [String!]
+  onGoing: Boolean!
 }
 
 type Refund @entity {

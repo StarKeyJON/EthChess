@@ -95,12 +95,6 @@ function chessReducer(state, action) {
     case "IPFSHISTORY":
       let data = action.load;
       return { ...state, ipfsHistory: [...state.ipfsHistory, data], lastHash: data };
-    case "PLAYERLEFT": {
-      return { ...state, playerLeftModal: true };
-    }
-    case "OPPONENTLEFT": {
-      return { ...state, opponentLeftModal: true };
-    }
     case "QUIT": {
       return { ...state, userQuitModal: true };
     }
@@ -162,10 +156,6 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     joined,
     player1,
     player2,
-    settingMatch,
-    gameInProgress,
-    playerLeftModal,
-    opponentLeftModal,
     // winningModalVisible,
     // losingModalVisible,
     userQuitModal,
@@ -417,75 +407,6 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     );
   };
 
-  const NewGameModal = () => {
-    return (
-      <Modal
-        visible={settingMatch}
-        footer={null}
-        closable={false}
-        onCancel={() => {
-          window.location.replace("/lobby");
-        }}
-      >
-        <div>
-          <h1>Both players must shake hands to start the match!</h1>
-          <span>
-            <Spin />
-          </span>
-          <span>
-            <Button>Shake</Button>
-          </span>
-        </div>
-      </Modal>
-    );
-  };
-
-  const OpponentLeftM = () => {
-    return (
-      <Modal
-        title="The opponent has left the room!"
-        visible={opponentLeftModal}
-        onCancel={() => {
-          window.location.replace("/lobby");
-        }}
-        onOk={() => {
-          window.location.replace("/lobby");
-        }}
-      >
-        <Card>
-          <div>
-            Your Opponent has left!
-            <br />
-            Please return to the game lobby!
-          </div>
-        </Card>
-      </Modal>
-    );
-  };
-
-  const PlayerLeftM = () => {
-    return (
-      <Modal
-        title="The player has left the room!"
-        visible={playerLeftModal}
-        onCancel={() => {
-          window.location.replace("/lobby");
-        }}
-        onOk={() => {
-          window.location.replace("/lobby");
-        }}
-      >
-        <Card>
-          <div>
-            Your Opponent has left!
-            <br />
-            Please return to the game lobby!
-          </div>
-        </Card>
-      </Modal>
-    );
-  };
-
   const GameOver = () => {
     return (
       <Modal
@@ -644,10 +565,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
             orientation={color}
           />
         )}
-        <NewGameModal />
         <PromotionModal />
-        <PlayerLeftM />
-        <OpponentLeftM />
         <GameOver />
         <HandleQuit />
       </div>

@@ -3,11 +3,34 @@ import { Button, Card, Input, Popover, Space, Table } from "antd";
 import React, { useRef, useState } from "react";
 import { FaInfoCircle, FaVoteYea } from "react-icons/fa";
 import Highlighter from "react-highlight-words";
+import { gql, useQuery } from "@apollo/client";
 
 const Voting = ({ players }) => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+
+  const matchQ = `
+  {
+      disputes(where: onGoing){
+        id
+        matchId
+        player1 {
+          id
+        }
+        player2 {
+          id
+        }
+        startTime
+        startHash
+        endHash
+        p1Amount
+        p2Amount
+        inProgress
+      }
+    }`;
+  const MATCH_GQL = gql(matchQ);
+  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -137,6 +160,8 @@ const Voting = ({ players }) => {
       ...getColumnSearchProps("security"),
     },
   ];
+
+
   return (
     <>
       <div>
@@ -160,7 +185,7 @@ const Voting = ({ players }) => {
                 <FaInfoCircle size={12} />
               </Popover>
             </h1>
-            <Table dataSource={players} columns={columns} />
+            <Table dataSource={!loading ? matchData : ""} columns={columns} />
           </div>
         </Card>
       </div>
