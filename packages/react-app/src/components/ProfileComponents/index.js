@@ -1,2 +1,3 @@
 export { default as Profile } from "./Profile";
-export { default as ProfilePage } from "./ProfilePage";
+export { default as ProfileModal } from "./ProfileModal";
+export { default as ProfilePage } from "./ProfileInfo";

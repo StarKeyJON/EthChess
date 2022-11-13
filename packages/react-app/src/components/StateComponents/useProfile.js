@@ -8,6 +8,7 @@ const useProfile = ({ gun, address, gunUser, setGunUser }) => {
   // let socketId = socket.id;
   const [loggedIn, setLoggedIn] = useState(false);
   const [player, setPlayer] = useState();
+  const [loginModal, setLoginModal] = useState(false);
   const loginProfile = passphrase => {
     if (address) {
       gunUser.auth(`ETHCHESS_USER_${address}`, passphrase, ack => {
@@ -71,7 +72,7 @@ const useProfile = ({ gun, address, gunUser, setGunUser }) => {
     setPlayer({});
   };
 
-  return { loggedIn, createProfile, loginProfile, logoutProfile, player, setPlayer };
+  return { loggedIn, loginModal, setLoginModal, createProfile, loginProfile, logoutProfile, player, setPlayer };
 };
 
 export default useProfile;

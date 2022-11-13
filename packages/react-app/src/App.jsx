@@ -42,6 +42,8 @@ import Voting from "./views/Voting";
 import { useGun } from "./hooks/useGunRelay";
 import { NotifyDeathMatch, NotifyMatch } from "./components/NotificationComponents";
 import { NotifyDispute } from "./components/NotificationComponents/NotifyMatch";
+import ProfileModal from "./components/ProfileComponents/ProfileModal";
+import Modal from "antd/lib/modal/Modal";
 
 const { ethers } = require("ethers");
 
@@ -228,12 +230,13 @@ function App(props) {
     updateGunUser();
   }, []);
 
-  const { loggedIn, loginProfile, createProfile, logoutProfile, player, setPlayer } = useProfile({
-    gun,
-    address,
-    gunUser,
-    setGunUser,
-  });
+  const { loggedIn, loginModal, setLoginModal, loginProfile, createProfile, logoutProfile, player, setPlayer } =
+    useProfile({
+      gun,
+      address,
+      gunUser,
+      setGunUser,
+    });
 
   return gun ? (
     <div className="App">
@@ -281,10 +284,43 @@ function App(props) {
                 blockExplorer={blockExplorer}
               />
             </div>
+            {loggedIn ? (
+              <Button
+                onClick={() => {
+                  logoutProfile();
+                }}
+              >
+                ♛ Log-Out
+              </Button>
+            ) : (
+              <Button
+                onClick={() => {
+                  setLoginModal(true);
+                }}
+              >
+                ♛ Log-In
+              </Button>
+            )}
           </div>
         </Header>
         <Layout>
           <Space>
+            <Modal
+              visible={loginModal}
+              onOk={() => {
+                setLoginModal(false);
+              }}
+              onCancel={() => {
+                setLoginModal(false);
+              }}
+            >
+              <ProfileModal
+                address={address}
+                loginProfile={loginProfile}
+                createProfile={createProfile}
+                logoutProfile={logoutProfile}
+              />
+            </Modal>
             <Button
               type="primary"
               key="meun-open-button"
@@ -439,9 +475,7 @@ function App(props) {
                 <ChessViewer gun={gun} />
               </Route>
               <Route exact path="/match/ai">
-                <div style={{ marginTop: 40 }}>
-                  <ChessMatch />
-                </div>
+                <ChessMatch />
               </Route>
               <Route exact path="/match/room/:gameId">
                 <ETHMatch tx={tx} writeContracts={writeContracts} gun={gun} />

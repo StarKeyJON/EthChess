@@ -1,7 +1,7 @@
 // credits https://github.com/lichess-org/chessground, https://github.com/ruilisi/react-chessground
 
 import React, { useCallback, useContext, useEffect, useReducer, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import Chessground from "react-chessground";
 import "./styles/chessGround.css";
 import { Button, Card, Modal, notification, Space, Spin } from "antd";
@@ -20,6 +20,7 @@ const ChessSkirmish = ({ gun }) => {
   const socketId = socket.id;
 
   const { gameId } = useParams();
+  let directoryHistory = useHistory();
 
   const initialState = {
     chess: new Chess(),
@@ -441,7 +442,7 @@ const ChessSkirmish = ({ gun }) => {
         footer={null}
         closable={false}
         onCancel={() => {
-          window.location.replace("/lobby");
+          directoryHistory.goBack();
         }}
       >
         <div>
@@ -465,7 +466,7 @@ const ChessSkirmish = ({ gun }) => {
         closable={false}
         onCancel={() => {
           // roomLeaveEmit();
-          window.location.replace("/lobby");
+          directoryHistory.goBack();
         }}
       >
         <h1>Both players must shake hands to start the match!</h1>
@@ -530,10 +531,10 @@ const ChessSkirmish = ({ gun }) => {
         title="The opponent has left the room!"
         visible={opponentLeftModal}
         onCancel={() => {
-          window.location.replace("/lobby");
+          directoryHistory.goBack();
         }}
         onOk={() => {
-          window.location.replace("/lobby");
+          directoryHistory.goBack();
         }}
       >
         <Card>
@@ -553,10 +554,10 @@ const ChessSkirmish = ({ gun }) => {
         title="The player has left the room!"
         visible={playerLeftModal}
         onCancel={() => {
-          window.location.replace("/lobby");
+          directoryHistory.goBack();
         }}
         onOk={() => {
-          window.location.replace("/lobby");
+          directoryHistory.goBack();
         }}
       >
         <Card>
@@ -700,7 +701,7 @@ const ChessSkirmish = ({ gun }) => {
             <Button
               onClick={() => {
                 gun.get(GUNKEY).get("match").get(gameId).put({ player2: null, started: false });
-                window.location.replace("/lobby");
+                directoryHistory.goBack();
               }}
             >
               Cancel

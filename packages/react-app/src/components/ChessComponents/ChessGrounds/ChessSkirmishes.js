@@ -1,7 +1,7 @@
 // credits https://github.com/lichess-org/chessground, https://github.com/ruilisi/react-chessground
 
 import React, { useCallback, useContext, useEffect, useReducer, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory, Redirect } from "react-router-dom";
 import Chessground from "react-chessground";
 import "./styles/chessGround.css";
 import { Button, Card, Modal, notification, Space, Spin } from "antd";
@@ -138,7 +138,9 @@ const ChessSkirmishes = ({ gun, address }) => {
   const socket = useContext(SocketContext);
   const socketId = socket.id;
 
-  const { matchAddress, gameId } = useParams();
+  const { gameId } = useParams();
+
+  const directoryHistory = useHistory();
 
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const gpState = useRef();
@@ -420,7 +422,7 @@ const ChessSkirmishes = ({ gun, address }) => {
         footer={null}
         closable={false}
         onCancel={() => {
-          window.location.replace("/lobby");
+          directoryHistory.push("/lobby");
         }}
       >
         <div>
@@ -443,9 +445,7 @@ const ChessSkirmishes = ({ gun, address }) => {
         footer={null}
         closable={false}
         onCancel={() => {
-          // roomLeaveEmit();
-          window.location.replace("/lobby");
-        }}
+          directoryHistory.push("/lobby")}}
       >
         <h1>Both players must shake hands to start the match!</h1>
         {player1 && player2 ? (
@@ -509,10 +509,10 @@ const ChessSkirmishes = ({ gun, address }) => {
         title="The opponent has left the room!"
         visible={opponentLeftModal}
         onCancel={() => {
-          window.location.replace("/lobby");
+          directoryHistory.push("/lobby");
         }}
         onOk={() => {
-          window.location.replace("/lobby");
+          directoryHistory.push("/lobby");
         }}
       >
         <Card>
@@ -532,10 +532,10 @@ const ChessSkirmishes = ({ gun, address }) => {
         title="The player has left the room!"
         visible={playerLeftModal}
         onCancel={() => {
-          window.location.replace("/lobby");
+          directoryHistory.push("/lobby");
         }}
         onOk={() => {
-          window.location.replace("/lobby");
+          directoryHistory.push("/lobby");
         }}
       >
         <Card>
@@ -583,7 +583,7 @@ const ChessSkirmishes = ({ gun, address }) => {
         }}
         onOk={() => {
           socket.emit("leftRoom", gameId, socketId);
-          window.location.replace("/lobby");
+          directoryHistory.push("/lobby");
         }}
       >
         <h1>Are you sure you want to exit the match?</h1>
@@ -717,7 +717,7 @@ const ChessSkirmishes = ({ gun, address }) => {
             <Button
               onClick={() => {
                 gun.get(GUNKEY).get("match").get(gameId).put({ player2: null, started: false });
-                window.location.replace("/lobby");
+                history.push('./lobby');
               }}
             >
               Cancel
