@@ -121,7 +121,16 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
       dataIndex: "gameId",
       key: "key",
       width: "20%",
-      render: gameId => <Button onClick={() => setStartMatchModal(true)}>Start</Button>,
+      render: gameId => (
+        <Button
+          onClick={() => {
+            setGameId(gameId);
+            setStartMatchModal(true);
+          }}
+        >
+          Enter
+        </Button>
+      ),
     },
     {
       title: "Player1",
@@ -164,7 +173,7 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
             setStartMatchModal(true);
           }}
         >
-          Start
+          Enter
         </Button>
       ),
     },

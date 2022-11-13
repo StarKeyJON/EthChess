@@ -696,12 +696,11 @@ export const HandleStartDMatch = ({
   const MoveBoardModal = () => {
     const chess = new Chess();
     const [chessObject, setChessObject] = useState({
-      pendingMove: [],
       lastMove: [],
       fen: "",
     });
 
-    const onMove = (from, to, data) => {
+    const onMove = (from, to) => {
       var themove = chess.move({ from, to });
       if (themove == null) {
         notification.open({ message: "Illegal move!" });

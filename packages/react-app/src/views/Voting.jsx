@@ -106,23 +106,35 @@ const Voting = ({ players }) => {
 
   const columns = [
     {
-      title: "Player",
-      dataIndex: "playerName",
-      key: "playerName",
+      title: "GameId",
+      dataIndex: "gameId",
+      key: "gameId",
       width: "20%",
     },
     {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
+      title: "Claim",
+      dataIndex: "claimHash",
+      key: "claimHash",
       width: "20%",
     },
     {
-      title: "Joined",
-      dataIndex: "timeJoined",
-      key: "timeJoined",
+      title: "Dispute",
+      dataIndex: "disputeHash",
+      key: "disputeHash",
       width: "20%",
-      ...getColumnSearchProps("timeJoined"),
+    },
+    {
+      title: "Votes",
+      dataIndex: "votes",
+      key: "votes",
+      width: "20%",
+    },
+    {
+      title: "Security",
+      dataIndex: "security",
+      key: "security",
+      width: "20%",
+      ...getColumnSearchProps("security"),
     },
   ];
   return (
