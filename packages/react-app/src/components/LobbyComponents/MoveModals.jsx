@@ -521,7 +521,7 @@ export const HandleStartMatch = ({
   };
 
   const MoveBoardModal = () => {
-    const chess = new Chess();
+    const chess = new Chess(matchData?.fen ? matchData?.fen : "");
     const [chessObject, setChessObject] = useState({
       pendingMove: [],
       lastMove: [],
@@ -572,11 +572,11 @@ export const HandleStartMatch = ({
             turnColor={"white"}
             movable={calcMovable()}
             lastMove={chessObject.lastMove}
-            fen={chessObject.fen}
+            fen={matchData?.fen ? matchData?.fen : chessObject.fen}
             onMove={onMove}
             check={"false"}
             style={{ margin: "auto" }}
-            orientation={"white"}
+            orientation={matchData?.fen ? "black" : "white"}
           />
         </Modal>
       </>
@@ -595,7 +595,7 @@ export const HandleStartMatch = ({
       <br />
       <div style={{ alignItems: "center", justifyContent: "center", display: "flex" }}>
         <div>
-          {matchData.wager}
+          {matchData?.wager}
           <br />
           <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} />
           ETH
@@ -621,9 +621,9 @@ export const HandleStartMatch = ({
       <Divider />
       <p style={{ marginTop: 30 }}>
         *Total funds needed will be <TbCurrencyEthereum />
-        {matchData.wager} + <TbCurrencyEthereum /> {matchData.wager} security deposit for a winning match claim, or,{" "}
+        {matchData?.wager} + <TbCurrencyEthereum /> {matchData?.wager} security deposit for a winning match claim, or,{" "}
         <TbCurrencyEthereum />
-        {matchData.wager} + <TbCurrencyEthereum /> {matchData.wager * 2} to dispute the match outcome.
+        {matchData?.wager} + <TbCurrencyEthereum /> {matchData?.wager * 2} to dispute the match outcome.
       </p>
       (*security deposit returned after dispute resolution process)
       <br />
