@@ -137,8 +137,8 @@ const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen, add
 
 const startMatch = (tx, writeContracts, wageredAmount, fen) => {
   appStage === "production"
-      ? executeStartMatch(tx, writeContracts, wageredAmount, fen)
-      : console.log("Execute transaction!", tx, writeContracts, wageredAmount, fen);
+    ? executeStartMatch(tx, writeContracts, wageredAmount, fen)
+    : console.log("Execute transaction!", tx, writeContracts, wageredAmount, fen);
 };
 
 export const HandleNewMatch = ({
@@ -390,7 +390,11 @@ export const HandleNewDeathMatch = ({
 
     return (
       <>
-        <Modal onCancel={()=>setMoveBoardVisible(false)} style={{ alignItems: "center", justifyContent: "center", display: "flex" }} visible={moveBoardVisible}>
+        <Modal
+          onCancel={() => setMoveBoardVisible(false)}
+          style={{ alignItems: "center", justifyContent: "center", display: "flex" }}
+          visible={moveBoardVisible}
+        >
           <Chessground
             width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
             height={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
@@ -791,8 +795,8 @@ export const HandleStartDMatch = ({
       <Divider />
       <p style={{ marginTop: 30 }}>
         *Total funds needed will be <TbCurrencyEthereum />
-        {matchData?.entranceFee} + <TbCurrencyEthereum /> {matchData?.entranceFee} security deposit for a winning match claim, or,{" "}
-        <TbCurrencyEthereum />
+        {matchData?.entranceFee} + <TbCurrencyEthereum /> {matchData?.entranceFee} security deposit for a winning match
+        claim, or, <TbCurrencyEthereum />
         {matchData?.entranceFee} + <TbCurrencyEthereum /> {matchData?.entranceFee * 2} to dispute the match outcome.
       </p>
       (*security deposit returned after dispute resolution process)
