@@ -1,4 +1,3 @@
-import { gql, useQuery } from "@apollo/client";
 import "antd/dist/antd.css";
 import GraphiQL from "graphiql";
 import "graphiql/graphiql.min.css";

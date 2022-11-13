@@ -1,14 +1,19 @@
 import React, { useRef, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
 import { Card, Table, Button, Input, Space, Row, Col, Popover } from "antd";
 import { FaInfoCircle } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { HandleNewDeathMatch, HandleNewMatch } from "./MoveModals";
+import { HandleNewDeathMatch, HandleNewMatch, HandleStartDMatch, HandleStartMatch } from "./MoveModals";
+import { matchQ } from "./matchGraphQ";
 
 const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProvider }) => {
+  const MATCH_GQL = gql(matchQ);
+  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
   const [newMatchModal, setNewMatchModal] = useState(false);
   const [newDeathMatchModal, setNewDeathMatchModal] = useState(false);
+  const [startMatchModal, setStartMatchModal] = useState(false);
+  const [startDMatchModal, setStartDMatchModal] = useState(false);
   const [confirmMatchModal, setConfirmMatchModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -115,14 +120,14 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
       dataIndex: "gameId",
       key: "key",
       width: "20%",
-      render: gameId => <Link to={`/match/room/${gameId}`}>{gameId}</Link>,
+      render: gameId => <Button onClick={() => setStartMatchModal(true)}>Start</Button>,
     },
     {
       title: "Player1",
-      dataIndex: "address",
-      key: "address",
+      dataIndex: "player1",
+      key: "player1",
       // width: "45%",
-      ...getColumnSearchProps("address"),
+      ...getColumnSearchProps("player1"),
     },
     {
       title: "Player2",
@@ -151,12 +156,12 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
       dataIndex: "gameId",
       key: "key",
       width: "20%",
-      render: gameId => <Link to={`/deathmatch/room/${gameId}`}>{gameId}</Link>,
+      render: gameId => <Button onClick={() => setStartMatchModal(true)}>Start</Button>,
     },
     {
-      title: "Reigning Champ",
-      dataIndex: "address",
-      key: "address",
+      title: "Reigning Champion",
+      dataIndex: "reigningChamp",
+      key: "reigningChamp",
       // width: "30%",
     },
     {
@@ -166,17 +171,16 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
       // width: "10%",
     },
     {
+      title: "Total Rewards",
+      dataIndex: "totalRewards",
+      key: "totalRewards",
+      width: "10%",
+    },
+    {
       title: "Entrance Fee",
       dataIndex: "entranceFee",
       key: "entranceFee",
       width: "10%",
-    },
-    {
-      title: "Join",
-      dataIndex: "timeJoined",
-      key: "timeJoined",
-      width: "10%",
-      render: match => <Button>Join</Button>,
     },
   ];
 
@@ -229,6 +233,14 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
           <Card>
             <Table dataSource={players} columns={columns} />
           </Card>
+          <HandleStartMatch 
+          tx={tx}
+          writeContracts={writeContracts}
+          readContracts={readContracts}
+          confirmMatchModal={confirmMatchModal}
+          setConfirmMatchModal={setConfirmMatchModal}
+          startMatchModal={startMatchModal}
+          setStartMatchModal={setStartMatchModal}/>
         </Col>
         <Col flex="auto">
           <div style={{ alignContent: "center", justifyContent: "center", display: "flex", margin: 30 }}>
@@ -273,7 +285,7 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
               </h2>
             </Card>
           </div>
-          <h3>Enter the DeathMatch Below!</h3>
+          <h3>Enter a DeathMatch Below!</h3>
           <Card>
             <Table
               dataSource={[
@@ -291,6 +303,14 @@ const WageredTables = ({ players, tx, writeContracts, readContracts, mainnetProv
               columns={dcolumns}
             />
           </Card>
+          <HandleStartDMatch
+          tx={tx}
+          writeContracts={writeContracts}
+          readContracts={readContracts}
+          confirmMatchModal={confirmMatchModal}
+          setConfirmMatchModal={setConfirmMatchModal}
+          startDMatchModal={startDMatchModal}
+          setStartDMatchModal={setStartDMatchModal}/>
         </Col>
       </Row>
       <br />
