@@ -126,7 +126,7 @@ const executeStartMatch = ({ tx, writeContracts, wageredAmount, fen, gameId }) =
   );
 };
 
-const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen, address) => {
+const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser) => {
   if (typeof challenger === "undefined") {
     appStage === "production"
       ? executeNewMatch(tx, writeContracts, wageredAmount, fen, address)
@@ -153,7 +153,7 @@ export const HandleNewMatch = ({
   setNewMatchModal,
   address,
   gun,
-  gunUser
+  gunUser,
 }) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
@@ -314,7 +314,7 @@ export const HandleNewMatch = ({
         visible={confirmMatchModal}
         onCancel={() => setConfirmMatchModal(false)}
         onOk={() => {
-          handleChallenge(tx, writeContracts, wageredAmount, challenger, fen, address);
+          handleChallenge(tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser);
         }}
       >
         <h3>You are about to execute a transaction to initiate a new Match.</h3>
@@ -326,6 +326,8 @@ export const HandleNewMatch = ({
 };
 
 export const HandleNewDeathMatch = ({
+  gun,
+  gunUser,
   tx,
   writeContracts,
   readContracts,
@@ -485,6 +487,8 @@ export const HandleNewDeathMatch = ({
 };
 
 export const HandleStartMatch = ({
+  gun,
+  gunUser,
   tx,
   writeContracts,
   readContracts,
@@ -660,6 +664,8 @@ export const HandleStartMatch = ({
 };
 
 export const HandleStartDMatch = ({
+  gun,
+  gunUser,
   tx,
   writeContracts,
   readContracts,

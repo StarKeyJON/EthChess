@@ -440,6 +440,7 @@ function App(props) {
               <Route exact path="/lobby">
                 <Lobby
                   gun={gun}
+                  gunUser={gunUser}
                   address={address}
                   player={player}
                   setPlayer={setPlayer}
@@ -453,19 +454,7 @@ function App(props) {
                 />
               </Route>
               <Route exact path="/match">
-                <ChessMatch
-                  startTime={startTime}
-                  address={address}
-                  userSigner={userSigner}
-                  mainnetProvider={mainnetProvider}
-                  localProvider={localProvider}
-                  yourLocalBalance={yourLocalBalance}
-                  price={price}
-                  tx={tx}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
-                  gun={gun}
-                />
+                <ChessMatch />
               </Route>
               <Route exact path="/skirmish/room/:gameId">
                 <ChessSkirmishes gun={gun} />
@@ -477,10 +466,10 @@ function App(props) {
                 <ChessMatch />
               </Route>
               <Route exact path="/match/room/:gameId">
-                <ETHMatch tx={tx} writeContracts={writeContracts} gun={gun} />
+                <ETHMatch tx={tx} writeContracts={writeContracts} gun={gun} gunUser={gunUser} />
               </Route>
               <Route exact path="/deathmatch/room/:gameId">
-                <ETHDeathMatch tx={tx} writeContracts={writeContracts} gun={gun} />
+                <ETHDeathMatch tx={tx} writeContracts={writeContracts} gun={gun} gunUser={gunUser} />
               </Route>
               <Route exact path="/deathmatch/view/:gameId">
                 <ChessViewer gun={gun} />
@@ -495,10 +484,18 @@ function App(props) {
                   writeContracts={writeContracts}
                   readContracts={readContracts}
                   gun={gun}
+                  gunUser={gunUser}
                 />
               </Route>
               <Route exact path="/disputes/:disputeId">
-                <Disputes />
+                <Disputes
+                  gun={gun}
+                  gunUser={gunUser}
+                  tx={tx}
+                  address={address}
+                  writeContracts={writeContracts}
+                  readContracts={readContracts}
+                />
               </Route>
               <Route exact path="/profile">
                 <Profile
@@ -506,9 +503,6 @@ function App(props) {
                   gunUser={gunUser}
                   setGunUser={setGunUser}
                   loggedIn={loggedIn}
-                  startTime={startTime}
-                  writeContracts={writeContracts}
-                  readContracts={readContracts}
                   gun={gun}
                   loginProfile={loginProfile}
                   createProfile={createProfile}

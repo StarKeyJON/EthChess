@@ -11,6 +11,7 @@ import useSocket from "../socketStore/useSocket";
 
 const Lobby = ({
   gun,
+  gunUser,
   player,
   setPlayer,
   loggedIn,
@@ -205,6 +206,8 @@ const Lobby = ({
                   <WageredTables
                     players={fetchLobby()}
                     tx={tx}
+                    gun={gun}
+                    gunUser={gunUser}
                     writeContracts={writeContracts}
                     readContracts={readContracts}
                     mainnetProvider={mainnetProvider}

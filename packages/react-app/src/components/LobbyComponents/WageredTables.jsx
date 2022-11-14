@@ -8,6 +8,8 @@ import { HandleNewDeathMatch, HandleNewMatch, HandleStartDMatch, HandleStartMatc
 import { matchQ } from "./matchGraphQ";
 
 const WageredTables = ({
+  gun,
+  gunUser,
   players,
   tx,
   writeContracts,
@@ -267,6 +269,8 @@ const WageredTables = ({
                   Initiate
                 </Button>
                 <HandleNewMatch
+                  gun={gun}
+                  gunUser={gunUser}
                   tx={tx}
                   writeContracts={writeContracts}
                   readContracts={readContracts}
@@ -285,6 +289,8 @@ const WageredTables = ({
             <Table dataSource={players} columns={columns} />
           </Card>
           <HandleStartMatch
+            gun={gun}
+            gunUser={gunUser}
             tx={tx}
             writeContracts={writeContracts}
             readContracts={readContracts}
@@ -333,6 +339,8 @@ const WageredTables = ({
                   Initiate
                 </Button>
                 <HandleNewDeathMatch
+                  gun={gun}
+                  gunUser={gunUser}
                   tx={tx}
                   writeContracts={writeContracts}
                   readContracts={readContracts}
@@ -364,6 +372,8 @@ const WageredTables = ({
             />
           </Card>
           <HandleStartDMatch
+            gun={gun}
+            gunUser={gunUser}
             tx={tx}
             writeContracts={writeContracts}
             readContracts={readContracts}
