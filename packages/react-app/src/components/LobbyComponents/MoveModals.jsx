@@ -152,6 +152,8 @@ export const HandleNewMatch = ({
   newMatchModal,
   setNewMatchModal,
   address,
+  gun,
+  gunUser
 }) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);

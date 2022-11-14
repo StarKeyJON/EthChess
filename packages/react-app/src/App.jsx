@@ -221,9 +221,7 @@ function App(props) {
   }, [loadWeb3Modal]);
 
   const updateGunUser = useCallback(() => {
-    if (gun) {
-      setGunUser(gun.user().recall({ sessionStorage: true }));
-    }
+    setGunUser(gun.user().recall({ sessionStorage: true }));
   }, [gun]);
 
   useEffect(() => {
