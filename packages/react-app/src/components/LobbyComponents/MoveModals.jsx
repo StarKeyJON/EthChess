@@ -12,8 +12,9 @@ import { useContractReader } from "eth-hooks";
 import { gun } from "../../hooks/useGunRelay";
 import { gql, useQuery } from "@apollo/client";
 import { GetFromIPFS } from "../../helpers/ipfs";
+import { SEA } from "gun";
 
-const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen, address }) => {
+const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen, address, gun }) => {
   tx(
     writeContracts.ETHChessMatches.initMatch(fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -33,16 +34,17 @@ const executeNewMatch = ({ tx, writeContracts, wageredAmount, fen, address }) =>
         notification.open({
           message: <Text>{"Match Initiated!"}</Text>,
         });
-        gun.get(GUNKEY).get("matches").get(address).set({
+        gun.get(GUNKEY).get(address).get("matches").set({
           txnHash: update.hash,
           wageredAmount: wageredAmount,
+          fen: fen,
         });
       }
     },
   );
 };
 
-const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger, fen, address }) => {
+const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenger, fen, address, gun }) => {
   tx(
     writeContracts.ETHChessMatches.initChallengeMatch(challenger, fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -62,17 +64,18 @@ const executeNewChallengeMatch = ({ tx, writeContracts, wageredAmount, challenge
         notification.open({
           message: <Text>{"Match Initiated with Challenger " + challenger + "!"}</Text>,
         });
-        gun.get(GUNKEY).get("matches").get(address).set({
+        gun.get(GUNKEY).get(address).get("matches").set({
           txnHash: update.hash,
           wageredAmount: wageredAmount,
           challenger: challenger,
+          fen: fen,
         });
       }
     },
   );
 };
 
-const executeNewDeathMatch = ({ tx, writeContracts, wageredAmount, address }) => {
+const executeNewDeathMatch = ({ tx, writeContracts, wageredAmount, address, gun }) => {
   tx(
     writeContracts.ETHChessMatches.initDeathMatch({
       value: utils.parseEther(wageredAmount.toString()),
@@ -101,7 +104,7 @@ const executeNewDeathMatch = ({ tx, writeContracts, wageredAmount, address }) =>
   );
 };
 
-const executeStartMatch = ({ tx, writeContracts, wageredAmount, fen, gameId }) => {
+const executeStartMatch = ({ tx, writeContracts, wageredAmount, fen, gameId, gun, address, player1 }) => {
   tx(
     writeContracts.ETHChessMatches.startMatch(gameId, fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -121,6 +124,21 @@ const executeStartMatch = ({ tx, writeContracts, wageredAmount, fen, gameId }) =
         notification.open({
           message: <Text>{"Match Started!"}</Text>,
         });
+        var pair = SEA.pair();
+        gun.get(GUNKEY).get(address).get("matches").set({
+          txnHash: update.hash,
+          wageredAmount: wageredAmount,
+          fen: fen,
+          gameId: gameId,
+        });
+        gun.get(GUNKEY).get("matches").get(gameId).get("meta").put({
+          txnHash: update.hash,
+          wageredAmount: wageredAmount,
+          fen: fen,
+          player1: player1,
+          player2: address,
+          player2PubKey: pair.pub,
+        });
       }
     },
   );
@@ -129,16 +147,16 @@ const executeStartMatch = ({ tx, writeContracts, wageredAmount, fen, gameId }) =
 const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser) => {
   if (typeof challenger === "undefined") {
     appStage === "production"
-      ? executeNewMatch(tx, writeContracts, wageredAmount, fen, address)
+      ? executeNewMatch(tx, writeContracts, wageredAmount, fen, address, gun, gunUser)
       : console.log("Execute transaction!", tx, writeContracts, wageredAmount, fen);
   } else if (challenger && challenger.length === 42 && challenger.slice(0, 2) === "0x") {
-    appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger, fen, address);
+    appStage === "production" && executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser);
   }
 };
 
-const startMatch = (tx, writeContracts, wageredAmount, fen) => {
+const startMatch = (tx, writeContracts, wageredAmount, fen, gun, address, player1) => {
   appStage === "production"
-    ? executeStartMatch(tx, writeContracts, wageredAmount, fen)
+    ? executeStartMatch(tx, writeContracts, wageredAmount, fen, gun, address, player1)
     : console.log("Execute transaction!", tx, writeContracts, wageredAmount, fen);
 };
 
@@ -474,7 +492,7 @@ export const HandleNewDeathMatch = ({
         title="Confirm transaction"
         visible={confirmMatchModal}
         onOk={() => {
-          appStage === "production" && executeNewDeathMatch(tx, writeContracts, wageredAmount, address);
+          appStage === "production" && executeNewDeathMatch(tx, writeContracts, wageredAmount, address, gun);
         }}
         onCancel={() => setConfirmMatchModal(false)}
       >
@@ -499,6 +517,7 @@ export const HandleStartMatch = ({
   setStartMatchModal,
   gameId,
   address,
+  player1,
 }) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const matchQ = `
@@ -676,6 +695,7 @@ export const HandleStartDMatch = ({
   setStartDMatchModal,
   gameId,
   address,
+  player1,
 }) => {
   const matchQ = `
 {
@@ -831,7 +851,7 @@ export const HandleStartDMatch = ({
         visible={confirmMatchModal}
         onCancel={() => setConfirmMatchModal(false)}
         onOk={() => {
-          startMatch(tx, writeContracts, wageredAmount, challenger, fen, address);
+          startMatch(tx, writeContracts, wageredAmount, challenger, fen, gun, address, player1);
         }}
       >
         <h3>You are about to execute a transaction to initiate a new Match.</h3>
