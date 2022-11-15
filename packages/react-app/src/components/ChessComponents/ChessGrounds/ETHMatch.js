@@ -448,7 +448,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
         onCancel={() => {
           dispatch({ type: "NOQUIT" });
         }}
-        onOk={() => window.location.replace("/lobby")}
+        onOk={() => directoryHistory.push("/lobby")}
       >
         <h1>Are you sure you want to exit the match?</h1>
       </Modal>
