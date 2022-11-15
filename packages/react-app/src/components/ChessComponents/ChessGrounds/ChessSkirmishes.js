@@ -27,7 +27,6 @@ const initialState = {
   lastMove: [],
   pendingMove: [],
   history: [],
-  ipfsHistory: [],
   lastHash: "",
   inCheck: [false, ""],
   moving: false,
@@ -102,9 +101,6 @@ function chessReducer(state, action) {
         return { ...state, player1: data.player1, gunState: data };
       }
     }
-    case "IPFSHISTORY":
-      let data = action.load;
-      return { ...state, ipfsHistory: [...state.ipfsHistory, data], lastHash: data };
     case "SHAKING": {
       return { ...state, shakingHands: true };
     }
@@ -155,7 +151,6 @@ const ChessSkirmishes = ({ gun, address }) => {
     lastMove,
     pendingMove,
     history,
-    ipfsHistory,
     inCheck,
     selectVisible,
     shakingHands,

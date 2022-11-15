@@ -517,7 +517,6 @@ export const HandleStartMatch = ({
   setStartMatchModal,
   gameId,
   address,
-  player1,
 }) => {
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const matchQ = `
@@ -671,7 +670,7 @@ export const HandleStartMatch = ({
         visible={confirmMatchModal}
         onCancel={() => setConfirmMatchModal(false)}
         onOk={() => {
-          // startMatch(tx, writeContracts, wageredAmount, fen);
+          startMatch(tx, writeContracts, matchData.wageredAmount, fen, gun, address, matchData.player1.id);
         }}
       >
         <h3>You are about to execute a transaction to initiate a new Match.</h3>
