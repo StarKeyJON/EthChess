@@ -168,7 +168,9 @@ const ChessMatch = () => {
   return (
     <>
       <h1>{whosMove}'s turn!</h1>
-      {inCheck[0] && (<h1 style={{ fontStyle: "italic", fontWeight: "bold", fontSize: 28 }}>{inCheck[1]} is in Check!</h1>)}
+      {inCheck[0] && (
+        <h1 style={{ fontStyle: "italic", fontWeight: "bold", fontSize: 28 }}>{inCheck[1]} is in Check!</h1>
+      )}
       <div style={{ alignContent: "center", justifyContent: "center", display: "flex", marginBottom: 50 }}>
         <Chessground
           width={window.screen.availWidth < 1000 ? "80vw" : "50vw"}
