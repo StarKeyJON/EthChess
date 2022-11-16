@@ -2,7 +2,7 @@ import { message, notification } from "antd";
 import Text from "antd/lib/typography/Text";
 
 const executeWin = ({ tx, writeContracts, ipfsHistory }) => {
-  tx(writeContracts.ETHChess.startClaim(ipfsHistory), update => {
+  tx(writeContracts.ETHChessMatches.startClaim(ipfsHistory), update => {
     if (update && (update.status === "confirmed" || update.status === 1)) {
       message.info(" 🍾 Transaction " + update.hash + " finished!");
       message.info(
@@ -22,7 +22,7 @@ const executeWin = ({ tx, writeContracts, ipfsHistory }) => {
 };
 
 const executeDispute = ({ tx, writeContracts, ipfsHistory }) => {
-  tx(writeContracts.ETHChess.startDispute(ipfsHistory), update => {
+  tx(writeContracts.ETHChessMatches.startDispute(ipfsHistory), update => {
     if (update && (update.status === "confirmed" || update.status === 1)) {
       message.info(" 🍾 Transaction " + update.hash + " finished!");
       message.info(

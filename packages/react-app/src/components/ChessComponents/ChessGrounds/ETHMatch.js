@@ -136,7 +136,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
       }
     }`;
   const MATCH_GQL = gql(matchQ);
-  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
+  const { loading, data } = useQuery(MATCH_GQL, { pollInterval: 2500 });
 
   const [gameplayState, dispatch] = useReducer(chessReducer, initialState);
   const gpState = useRef();
@@ -164,10 +164,14 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     winner,
   } = gameplayState;
 
-  let opp = matchData?.player1 === address ? matchData?.player2 : matchData?.player1;
+  let opp = data?.player1 === address ? data?.player2 : data?.player1;
+
+  const sendGunMove = file => {
+    gun.get(GUNKEY).get("matches").get(gameId).get("move").put(file);
+  };
 
   const prepRoom = () => {
-    if (address === matchData?.player1.id || address === matchData?.player2.id) {
+    if (address === data?.player1.id || address === data?.player2.id) {
       gun
         .get(GUNKEY)
         .get("matches")
@@ -236,6 +240,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
           },
         });
         handleIPFSInput(file);
+        sendGunMove(file);
 
         socket.emit("onMove", gameId, "match", socketId, file);
 
@@ -303,10 +308,10 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
 
   const moveGun = (from, to, prom, ack) => {
     let { gunMoved, chess } = gpState.current;
-    if (!gunMoved && socketId !== ack.player) {
-      console.log("Moving Gun!");
+    if (!gunMoved && address !== ack.player) {
+      console.log("Moving Opponent!");
       if (prom !== undefined) {
-        console.log("Gun promotion!", prom);
+        console.log("Promotion!", prom);
         chess.move({ from, to, promotion: prom });
         if (chess.inCheck()) {
           const moves = chess.moves({ verbose: true });
@@ -428,7 +433,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
               <br />
               <h3>Execute the claim below!</h3>
               <br />
-              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory, socketId })}></Button>
+              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory })}></Button>
               <p>Please allow a minimum of 7 blocks for the dispute resolution period to pass!</p>
             </>
           ) : (
@@ -437,7 +442,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
               <br />
               <h3>You can dispute the results below within 7 blocks of the initial claim!</h3>
               <br />
-              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory, socketId })}></Button>
+              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory })}></Button>
             </>
           )}
         </Card>
@@ -460,10 +465,10 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     );
   };
 
-  const handleMove = (prof, ack) => {
+  const handleMove = ack => {
     // console.log("GamePlayState: ", gpState.current, ack, prof);
-    let m = JSON.parse(ack.move);
-    if (prof !== socketId && ack.nonce === gpState.current.nonce + 1) {
+    let m = ack.move;
+    if (ack.nonce === gpState.current.nonce + 1) {
       moveGun(m[0], m[1], m[2], ack);
     }
   };
@@ -488,7 +493,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
 
   useEffect(() => {
     if (!loading) {
-      address === matchData.player1 || address === matchData.player2
+      address === data.player1 || address === data.player2
         ? handleJoined()
         : directoryHistory.push(`/match/view/${gameId}`);
     }
@@ -537,12 +542,13 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
             turn: ack.turn,
             move: JSON.parse(ack.move),
             lastMove: JSON.parse(ack.lastMove),
-            history: JSON.stringify(ack.history),
+            history: JSON.parse(ack.history),
           };
-          dispatch({
-            type: "UPDATEBOARD",
-            data: { ...file },
-          });
+          handleMove(file);
+          // dispatch({
+          //   type: "UPDATEBOARD",
+          //   data: { ...file },
+          // });
         }
       });
   }, []);
