@@ -433,7 +433,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
               <br />
               <h3>Execute the claim below!</h3>
               <br />
-              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory })}></Button>
+              <Button onClick={() => executeWin({ tx, writeContracts, ipfsHistory })}>Claim</Button>
               <p>Please allow a minimum of 7 blocks for the dispute resolution period to pass!</p>
             </>
           ) : (
@@ -442,7 +442,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
               <br />
               <h3>You can dispute the results below within 7 blocks of the initial claim!</h3>
               <br />
-              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory })}></Button>
+              <Button onClick={() => executeDispute({ tx, writeContracts, ipfsHistory })}>Dispute</Button>
             </>
           )}
         </Card>

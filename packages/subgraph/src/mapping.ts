@@ -134,6 +134,7 @@ export function handleDeathMatchStarted(event: DeathMatchStarted): void {
   deathmatch.entranceFee = event.params.entranceFee;
   deathmatch.pot = event.params.entranceFee;
   deathmatch.reign = player1;
+  deathmatch.inProgress = true;
   if(deathmatch.matches) {
     deathmatch.matches!.push(matchId.toString());
   } else {
@@ -428,6 +429,7 @@ export function handleDeathMatchEnded(event: DeathMatchEnded): void {
   deathmatch.winner = event.params.winner.toHexString();
   deathmatch.winnings = event.params.winnings;
   deathmatch.endHash = event.params.ipfsHash;
+  deathmatch.inProgress = false;
   deathmatch.save();
 }
 

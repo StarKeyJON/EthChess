@@ -32,6 +32,7 @@ type DeathMatch @entity {
   winnings: BigInt
   endHash: String
   matches: [Match!]
+  inProgress: Boolean!
 }
 
 type Claim @entity {

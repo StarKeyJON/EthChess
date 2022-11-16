@@ -20,7 +20,7 @@ const WageredTables = ({
   setLoginModal,
 }) => {
   const MATCH_GQL = gql(matchQ);
-  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
+  const { loading, data } = useQuery(MATCH_GQL, { pollInterval: 2500 });
   const [newMatchModal, setNewMatchModal] = useState(false);
   const [newDeathMatchModal, setNewDeathMatchModal] = useState(false);
   const [startMatchModal, setStartMatchModal] = useState(false);
@@ -30,7 +30,7 @@ const WageredTables = ({
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
 
-  console.log(matchData);
+  // console.log(data);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -287,7 +287,7 @@ const WageredTables = ({
           </div>
           <h3>Enter a Wagered Match Below!</h3>
           <Card>
-            <Table dataSource={players} columns={columns} />
+            <Table dataSource={data?.matches} columns={columns} />
           </Card>
           <HandleStartMatch
             gun={gun}
@@ -351,21 +351,7 @@ const WageredTables = ({
           </div>
           <h3>Enter a DeathMatch Below!</h3>
           <Card>
-            <Table
-              dataSource={[
-                {
-                  title: "",
-                  gameId: "mhSLAoHm2wFYDuRCAAAt",
-                  address: "0xE78E38A6AeCdf8C50CBbDE3063A9412dBc9F376f",
-                  matchStarted: false,
-                  join: {
-                    gameId: "mhSLAoHm2wFYDuRCAAAt",
-                    address: "0xE78E38A6AeCdf8C50CBbDE3063A9412dBc9F376f",
-                  },
-                },
-              ]}
-              columns={dcolumns}
-            />
+            <Table dataSource={data?.deathMatches} columns={dcolumns} />
           </Card>
           <HandleStartDMatch
             gun={gun}
