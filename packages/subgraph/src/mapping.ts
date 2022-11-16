@@ -40,10 +40,13 @@ export function handleMatchInitiated(event: MatchInitiated): void {
       p1.matches!.push(matchId.toString());
     }
   }
+  let p2 = new Player("0x0");
+  p2.address = "0x0";
   match.inProgress = false;
   match.player1 = player1;
+  match.player2 = "0x0";
   match.p1Amount = wager;
-
+  p2.save();
   p1.save();
   match.save();
 }

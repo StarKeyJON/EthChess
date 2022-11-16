@@ -25,11 +25,12 @@ const WageredTables = ({
   const [newDeathMatchModal, setNewDeathMatchModal] = useState(false);
   const [startMatchModal, setStartMatchModal] = useState(false);
   const [startDMatchModal, setStartDMatchModal] = useState(false);
-  const [confirmMatchModal, setConfirmMatchModal] = useState(false);
   const [gameId, setGameId] = useState();
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
+
+  console.log(matchData);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -263,7 +264,9 @@ const WageredTables = ({
                 <Button
                   style={{ margin: 10 }}
                   onClick={() => {
-                    loggedIn ? setNewMatchModal(true) : setLoginModal(true);
+                    // loggedIn ? 
+                    setNewMatchModal(true) 
+                    // : setLoginModal(true);
                   }}
                 >
                   Initiate
@@ -275,8 +278,6 @@ const WageredTables = ({
                   writeContracts={writeContracts}
                   readContracts={readContracts}
                   mainnetProvider={mainnetProvider}
-                  confirmMatchModal={confirmMatchModal}
-                  setConfirmMatchModal={setConfirmMatchModal}
                   newMatchModal={newMatchModal}
                   setNewMatchModal={setNewMatchModal}
                   address={address}
@@ -294,8 +295,6 @@ const WageredTables = ({
             tx={tx}
             writeContracts={writeContracts}
             readContracts={readContracts}
-            confirmMatchModal={confirmMatchModal}
-            setConfirmMatchModal={setConfirmMatchModal}
             startMatchModal={startMatchModal}
             setStartMatchModal={setStartMatchModal}
             address={address}
@@ -340,12 +339,9 @@ const WageredTables = ({
                 </Button>
                 <HandleNewDeathMatch
                   gun={gun}
-                  gunUser={gunUser}
                   tx={tx}
                   writeContracts={writeContracts}
                   readContracts={readContracts}
-                  confirmMatchModal={confirmMatchModal}
-                  setConfirmMatchModal={setConfirmMatchModal}
                   newDeathMatchModal={newDeathMatchModal}
                   setNewDeathMatchModal={setNewDeathMatchModal}
                   address={address}
@@ -377,8 +373,6 @@ const WageredTables = ({
             tx={tx}
             writeContracts={writeContracts}
             readContracts={readContracts}
-            confirmMatchModal={confirmMatchModal}
-            setConfirmMatchModal={setConfirmMatchModal}
             startDMatchModal={startDMatchModal}
             setStartDMatchModal={setStartDMatchModal}
             address={address}

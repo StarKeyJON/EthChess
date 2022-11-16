@@ -1,5 +1,5 @@
 import React from "react";
-import ProfilePage from "./ProfileInfo";
+import ProfileInfo from "./ProfileInfo";
 import ProfileModal from "./ProfileModal";
 
 const Profile = ({ gun, address, gunUser, loggedIn, createProfile, loginProfile }) => {
@@ -8,7 +8,7 @@ const Profile = ({ gun, address, gunUser, loggedIn, createProfile, loginProfile 
       {!loggedIn ? (
         <ProfileModal address={address} loginProfile={loginProfile} createProfile={createProfile} />
       ) : (
-        <ProfilePage gun={gun} address={address} gunUser={gunUser} />
+        <ProfileInfo gun={gun} address={address} gunUser={gunUser} />
       )}
     </>
   );

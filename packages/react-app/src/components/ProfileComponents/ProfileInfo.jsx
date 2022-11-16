@@ -6,7 +6,7 @@ import Highlighter from "react-highlight-words";
 import { Link } from "react-router-dom";
 import { GUNKEY } from "../../constants";
 
-const ProfilePage = ({ gun, address }) => {
+const ProfileInfo = ({ gun, address }) => {
   const [playerHistory, setPlayerHistory] = useState({});
 
   const [searchText, setSearchText] = useState("");
@@ -198,4 +198,4 @@ const ProfilePage = ({ gun, address }) => {
   );
 };
 
-export default ProfilePage;
+export default ProfileInfo;

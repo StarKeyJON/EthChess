@@ -158,24 +158,29 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     player2,
     // winningModalVisible,
     // losingModalVisible,
+    color,
     userQuitModal,
     gameOverModal,
     winner,
   } = gameplayState;
 
-  let opp = player1 === address ? player2 : player1;
-  let color = address === player1 ? "white" : "black";
+  let opp = matchData?.player1 === address ? matchData?.player2 : matchData?.player1;
 
   const prepRoom = () => {
-    gun
-      .get(GUNKEY)
-      .get("matches")
-      .get(gameId)
-      .once(ack => {
-        if (ack) {
-          dispatch({ type: "GUN", ack: ack });
-        }
-      });
+    if (address === matchData?.player1.id || address === matchData?.player2.id) {
+      gun
+        .get(GUNKEY)
+        .get("matches")
+        .get(gameId)
+        .once(ack => {
+          if (ack) {
+            dispatch({ type: "GUN", ack: ack });
+          }
+        });
+      dispatch({ type: "JOINED", socketId: socketId, gameId: gameId });
+    } else {
+      directoryHistory.push(`/match/view/${gameId}`);
+    }
   };
 
   // IPFS file processing and uploading
@@ -478,7 +483,6 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
   const handleJoined = useCallback(() => {
     if (!joined) {
       prepRoom();
-      dispatch({ type: "JOINED", socketId: socketId, gameId: gameId });
     }
   }, [socketId]);
 
@@ -524,7 +528,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
       .get(gameId)
       .get("move")
       .on(ack => {
-        if (ack && ack.fen !== fen) {
+        if (ack && ack.nonce === nonce + 1) {
           let file = {
             gameId: ack.gameId,
             nonce: ack.nonce,

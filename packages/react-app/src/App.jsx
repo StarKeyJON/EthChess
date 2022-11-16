@@ -27,7 +27,7 @@ import { Home, Subgraph, Info, Mint, Lobby, FourOFour } from "./views";
 import { useStaticJsonRPC } from "./hooks";
 
 import LinkFooter from "./components/LinkFooter";
-import { ProfilePage, Profile } from "./components/ProfileComponents";
+import { ProfileInfo, Profile } from "./components/ProfileComponents";
 import Disputes from "./components/NFTHolders/Disputes";
 import {
   ChessViewer,
@@ -510,7 +510,7 @@ function App(props) {
                 />
               </Route>
               <Route exact path="/profile/:account">
-                <ProfilePage address={address} gun={gun} />
+                <ProfileInfo address={address} gun={gun} />
               </Route>
               <Route exact path="/mint">
                 <Mint
