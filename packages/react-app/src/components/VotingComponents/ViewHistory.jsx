@@ -6,7 +6,7 @@ import { Chess } from "chess.js";
 import "./styles/chessGround.css";
 import "./styles/chessGround-theme.css";
 import MoveTable from "../MoveTable";
-import { Button, Modal } from "antd";
+import { Button } from "antd";
 
 const ViewHistory = ({ history }) => {
   const [moveId, setMoveId] = useState(0);
@@ -61,9 +61,9 @@ const ViewHistory = ({ history }) => {
       </div>
       <div>
         <>
-          <Button onClick={forwards}>Forwards</Button>
-          <Button onClick={backwards}>Backwards</Button>
-          <Button onClick={reset}>Reset</Button>
+          <Button onClick={() => forwards()}>Forwards</Button>
+          <Button onClick={() => backwards()}>Backwards</Button>
+          <Button onClick={() => reset()}>Reset</Button>
         </>
       </div>
       <div style={{ marginTop: 50 }}>{history && <MoveTable moves={JSON.parse(viewedHistory)} />}</div>
