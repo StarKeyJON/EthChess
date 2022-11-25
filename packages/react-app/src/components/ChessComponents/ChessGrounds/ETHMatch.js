@@ -193,7 +193,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
   // };
 
   const prepRoom = () => {
-    if (address === data?.player1.id || address === data?.player2.id) {
+    if ((data && address === data.player1.id) || address === data.player2.id) {
       gun
         .get(GUNKEY)
         .get("matches")
@@ -201,9 +201,13 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
         .get("meta")
         .once(ack => {
           if (ack) {
+            let playerColor = ack.p1Color;
+            if (address === data.player2.id) {
+              playerColor = ack.p1Color === "white" ? "black" : "white";
+            }
             let file = {
               gameId: ack.gameId,
-              color: ack.color,
+              color: playerColor,
               nonce: ack.nonce,
               fen: ack.fen,
               lastFen: ack.lastFen,
