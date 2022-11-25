@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useReducer, useRef } from "r
 import { useHistory, useParams } from "react-router-dom";
 import Chessground from "react-chessground";
 import "./styles/chessGround.css";
-import { Button, Card, Modal, notification, Space, Spin } from "antd";
+import { Button, Card, Modal, notification, Space } from "antd";
 import queen from "../../../assets/images/WhiteQueen.png";
 import rook from "../../../assets/images/WhiteRook.png";
 import bishop from "../../../assets/images/WhiteBishop.png";
@@ -20,6 +20,7 @@ import { gql, useQuery } from "@apollo/client";
 
 const initialState = {
   chess: new Chess(),
+  color: "",
   nonce: 0,
   gameState: {},
   gameId: 0,
@@ -69,9 +70,9 @@ function chessReducer(state, action) {
       let a = action.data;
       return {
         ...state,
+        history: a.history,
         lastFen: a.lastFen,
         fen: a.fen,
-        history: a.history,
         nonce: a.nonce,
         lastMove: a.lastMove,
         gunMoved: a.gunMoved,
@@ -82,12 +83,37 @@ function chessReducer(state, action) {
       };
     }
     case "GUN": {
-      let data = action.ack;
-      if (data.player2) {
-        return { ...state, player1: data.player1, player2: data.player2, gunState: data };
-      } else {
-        return { ...state, player1: data.player1, gunState: data };
-      }
+      let data = action.file;
+      return {
+        ...state,
+        history: data.history,
+        lastFen: data.lastFen,
+        fen: data.fen,
+        nonce: data.nonce,
+        lastMove: data.lastMove,
+        gunState: data,
+        gameState: data,
+        turn: data.turn,
+        player1: data.player1,
+        player2: data.player2,
+      };
+    }
+    case "PREPGUN": {
+      let data = action.file;
+      return {
+        ...state,
+        color: data.color,
+        history: data.history,
+        lastFen: data.lastFen,
+        fen: data.fen,
+        nonce: data.nonce,
+        lastMove: data.lastMove,
+        gunState: data,
+        gameState: data,
+        turn: data.turn,
+        player1: data.player1,
+        player2: data.player2,
+      };
     }
     case "UPDATEGUN": {
       return { ...state, gunState: action.ack };
@@ -154,10 +180,6 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     inCheck,
     selectVisible,
     joined,
-    player1,
-    player2,
-    // winningModalVisible,
-    // losingModalVisible,
     color,
     userQuitModal,
     gameOverModal,
@@ -166,9 +188,9 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
 
   let opp = data?.player1 === address ? data?.player2 : data?.player1;
 
-  const sendGunMove = file => {
-    gun.get(GUNKEY).get("matches").get(gameId).get("move").put(file);
-  };
+  // const sendGunMove = file => {
+  //   gun.get(GUNKEY).get("matches").get(gameId).get("move").put(file);
+  // };
 
   const prepRoom = () => {
     if (address === data?.player1.id || address === data?.player2.id) {
@@ -176,12 +198,24 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
         .get(GUNKEY)
         .get("matches")
         .get(gameId)
+        .get("meta")
         .once(ack => {
           if (ack) {
-            dispatch({ type: "GUN", ack: ack });
+            let file = {
+              gameId: ack.gameId,
+              color: ack.color,
+              nonce: ack.nonce,
+              fen: ack.fen,
+              lastFen: ack.lastFen,
+              from: ack.from,
+              turn: ack.turn,
+              move: JSON.parse(ack.move),
+              lastMove: JSON.parse(ack.lastMove),
+              history: JSON.parse(ack.history),
+            };
+            dispatch({ type: "PREPGUN", file: file });
           }
         });
-      dispatch({ type: "JOINED", socketId: socketId, gameId: gameId });
     } else {
       directoryHistory.push(`/match/view/${gameId}`);
     }
@@ -192,13 +226,13 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     try {
       let added = await AddToIPFS(e);
       dispatch({ type: "IPFSHISTORY", load: added.path });
+      return added;
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
   };
 
   const onMove = (from, to) => {
-    console.log("GamePlayState: ", gameplayState);
     if (turn === socketId) {
       const moves = chess.moves({ verbose: true });
       for (let i = 0, len = moves.length; i < len; i++) {
@@ -213,19 +247,20 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
         dispatch({ type: "ILLEGALMOVE" });
         return;
       } else {
+        let m = chess.history({ verbose: true });
+        m.reverse();
         let file = {
           gameId: gameId,
-          player: socketId,
           nonce: nonce + 1,
           fen: chess.fen(),
           lastFen: fen,
           turn: opp,
+          from: address,
           move: JSON.stringify([from, to]),
           lastMove: JSON.stringify(lastMove),
-          history: JSON.stringify(chess.history({ verbose: true })),
+          history: JSON.stringify(m),
         };
-        let m = chess.history({ verbose: true });
-        m.reverse();
+        let cid = handleIPFSInput(file);
         dispatch({
           type: "UPDATEBOARD",
           data: {
@@ -237,12 +272,11 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
             gunMoved: false,
             gameState: file,
             turn: opp,
+            from: address,
           },
         });
-        handleIPFSInput(file);
-        sendGunMove(file);
 
-        socket.emit("onMove", gameId, "match", socketId, file);
+        socket.emit("onMove", gameId, "match", socketId, file, cid);
 
         if (chess.inCheck()) {
           const movesleft = chess.moves({ verbose: true });
@@ -272,6 +306,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
       fen: chess.fen(),
       lastFen: fen,
       turn: opp,
+      from: address,
       move: JSON.stringify([from, to, e]),
       lastMove: JSON.stringify(lastMove),
       history: JSON.stringify(chess.history({ verbose: true })),
@@ -308,10 +343,8 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
 
   const moveGun = (from, to, prom, ack) => {
     let { gunMoved, chess } = gpState.current;
-    if (!gunMoved && address !== ack.player) {
-      console.log("Moving Opponent!");
+    if (!gunMoved && opp === ack.from) {
       if (prom !== undefined) {
-        console.log("Promotion!", prom);
         chess.move({ from, to, promotion: prom });
         if (chess.inCheck()) {
           const moves = chess.moves({ verbose: true });
@@ -468,7 +501,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
   const handleMove = ack => {
     // console.log("GamePlayState: ", gpState.current, ack, prof);
     let m = ack.move;
-    if (ack.nonce === gpState.current.nonce + 1) {
+    if (ack.nonce === gpState.current.nonce + 1 && ack.from === opp) {
       moveGun(m[0], m[1], m[2], ack);
     }
   };
@@ -478,7 +511,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
   };
 
   const handlePlayerLeftModal = useCallback(ack => {
-    if (ack === player1) {
+    if (ack === data.player1) {
       dispatch({ type: "PLAYERLEFT" });
     } else {
       dispatch({ type: "OPPONENTLEFT" });
@@ -486,10 +519,10 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
   }, []);
 
   const handleJoined = useCallback(() => {
-    if (!joined) {
+    if (!loading && !joined) {
       prepRoom();
     }
-  }, [socketId]);
+  }, [socketId, loading]);
 
   useEffect(() => {
     if (!loading) {
@@ -504,13 +537,6 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
     socket.on("playerJoined", ack => {
       notification.open({ message: `Player ${ack} joined the match!` });
       handleJoined(ack);
-    });
-
-    socket.on("playerMoved", ack => {
-      let { profile, move } = ack;
-      if (profile !== socketId) {
-        handleMove(profile, move);
-      }
     });
 
     socket.on("leftRoom", () => {
@@ -539,6 +565,7 @@ const ETHMatch = ({ gun, tx, writeContracts, address }) => {
             nonce: ack.nonce,
             fen: ack.fen,
             lastFen: ack.lastFen,
+            from: ack.from,
             turn: ack.turn,
             move: JSON.parse(ack.move),
             lastMove: JSON.parse(ack.lastMove),
