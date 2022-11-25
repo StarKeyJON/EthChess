@@ -1,8 +1,10 @@
-import { Card, Popover, Table } from "antd";
-import React from "react";
+import { Button, Card, Modal, Popover, Table } from "antd";
+import React, { useState } from "react";
 import { FaInfoCircle, FaVoteYea } from "react-icons/fa";
 import { gql, useQuery } from "@apollo/client";
 import { Link } from "react-router-dom";
+import { GetFromIPFS } from "../helpers/ipfs";
+import { ViewHistory } from "../components/VotingComponents";
 
 const Voting = ({ address, tx, writeContracts, readContracts, gun, gunUser }) => {
   const matchQ = `
@@ -25,6 +27,32 @@ const Voting = ({ address, tx, writeContracts, readContracts, gun, gunUser }) =>
 
   const MATCH_GQL = gql(matchQ);
   const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
+  const [claimMod, setClaimMod] = useState(false);
+  const [disputeMod, setDisputeMod] = useState(false);
+
+  const ClaimModal = hash => {
+    let data = GetFromIPFS(hash);
+    return (
+      <>
+        <Modal visible={claimMod}>
+          <h3>Claim History</h3>
+          <ViewHistory history={data} />
+        </Modal>
+      </>
+    );
+  };
+
+  const DisputeModal = hash => {
+    let data = GetFromIPFS(hash);
+    return (
+      <>
+        <Modal visible={disputeMod}>
+          <h3>Dispute History</h3>
+          <ViewHistory history={data} />
+        </Modal>
+      </>
+    );
+  };
 
   const columns = [
     {
@@ -34,16 +62,40 @@ const Voting = ({ address, tx, writeContracts, readContracts, gun, gunUser }) =>
       width: "20%",
     },
     {
-      title: "Claim",
+      title: "View Claim",
       dataIndex: "endHash",
       key: "endHash",
       width: "20%",
+      render: hash => {
+        <>
+          <Button
+            onClick={() => {
+              setClaimMod(true);
+            }}
+          >
+            Claim
+          </Button>
+          <ClaimModal hash={hash} />
+        </>;
+      },
     },
     {
-      title: "Dispute",
+      title: "View Dispute",
       dataIndex: "contestedHash",
       key: "contestedHash",
       width: "20%",
+      render: hash => {
+        <>
+          <Button
+            onClick={() => {
+              setDisputeMod(true);
+            }}
+          >
+            Dispute
+          </Button>
+          <DisputeModal hash={hash} />
+        </>;
+      },
     },
     {
       title: "Outcome",
