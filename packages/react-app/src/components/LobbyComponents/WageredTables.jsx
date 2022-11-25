@@ -339,6 +339,7 @@ const WageredTables = ({
                 </Button>
                 <HandleNewDeathMatch
                   gun={gun}
+                  gunUser={gunUser}
                   tx={tx}
                   writeContracts={writeContracts}
                   readContracts={readContracts}

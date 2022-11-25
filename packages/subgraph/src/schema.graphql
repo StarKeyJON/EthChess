@@ -10,6 +10,7 @@ type Player @entity {
 type Match @entity {
   id: ID!
   matchId: BigInt!
+  txnHash: String!
   inProgress: Boolean!
   player1: Player!
   player2: Player!
@@ -25,9 +26,10 @@ type Match @entity {
 type DeathMatch @entity {
   id: ID!
   matchId: BigInt!
+  txnHash: String!
   entranceFee: BigInt!
   pot: BigInt
-  reign: String!
+  reign: Player!
   winner: Player
   winnings: BigInt
   endHash: String

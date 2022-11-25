@@ -198,7 +198,7 @@ let lobbyObject = {
    * profile: socket.id of the player connecting
    * move: game move object
    */
-  socket.on("onMove", (gameId, type, profile, move) => {
+  socket.on("onMove", (gameId, type, profile, move, cid) => {
     if (move.lastFen) {
       game.load(move.lastFen);
     } else {
@@ -219,12 +219,20 @@ let lobbyObject = {
         gun.get(GUNKEY).get("skirmishHistory").get(gameId).set(move);
       }
       if(type === "match") {
-        gun.get(GUNKEY).get("match").get(gameId).get("move").put(move);
-        gun.get(GUNKEY).get("matchHistory").get(gameId).set(move);
+        let player1 = gun.get(GUNKEY).get("match").get(gameId).get("meta").get("player1");
+        let player2 = gun.get(GUNKEY).get("match").get(gameId).get("meta").get("player2");
+        if (move.from === player1 || move.from === player2) {
+          gun.get(GUNKEY).get("match").get(gameId).put({"move": move});
+          gun.get(GUNKEY).get("matchHistory").get(gameId).set({"move": move, "IPFS_CID": cid});
+        }
       }
       if(type === "deathMatch") {
-        gun.get(GUNKEY).get("deathMatch").get(gameId).get("move").put(move);
-        gun.get(GUNKEY).get("deathMatchHistory").get(gameId).set(move);
+        let player1 = gun.get(GUNKEY).get("match").get(gameId).get("meta").get("player1");
+        let player2 = gun.get(GUNKEY).get("match").get(gameId).get("meta").get("player2");
+        if (move.from === player1 || move.from === player2) {
+          gun.get(GUNKEY).get("deathMatch").get(gameId).put({"move": move});
+          gun.get(GUNKEY).get("deathMatchHistory").get(gameId).set({"move": move, "IPFS_CID": cid});
+        }
       }
       io.in(gameId).emit("playerMoved", { profile: profile, move: move });
     }

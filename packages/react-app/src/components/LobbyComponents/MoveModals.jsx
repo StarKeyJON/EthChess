@@ -11,9 +11,8 @@ import ethlogo from "../../assets/ethereumLogo.png";
 import { useContractReader } from "eth-hooks";
 import { gql, useQuery } from "@apollo/client";
 import { GetFromIPFS } from "../../helpers/ipfs";
-import { SEA } from "gun";
 
-const executeNewMatch = (tx, writeContracts, wageredAmount, fen, address, gun) => {
+const executeNewMatch = (tx, writeContracts, wageredAmount, fen, address, gun, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.initMatch(fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -34,16 +33,24 @@ const executeNewMatch = (tx, writeContracts, wageredAmount, fen, address, gun) =
           message: <Text>{"New Match Initiated!"}</Text>,
         });
         if (appStage === "production") {
+          let color = "white";
+          if (fen === beginningFEN) {
+            color = "black";
+          }
+          var pub = gunUser.is.pub;
           gun.get(GUNKEY).get(address).get("matches").set({
             txnHash: update.hash,
             wageredAmount: wageredAmount,
             fen: fen,
+            p1Color: color,
           });
-          gun.get(GUNKEY).get("pending_matches").set({
+          gun.get(GUNKEY).get("pending_matches").get(update.hash).set({
             txnHash: update.hash,
             wageredAmount: wageredAmount,
             fen: fen,
             player1: address,
+            player1Pub: pub,
+            p1Color: color,
           });
         }
         return true;
@@ -52,7 +59,7 @@ const executeNewMatch = (tx, writeContracts, wageredAmount, fen, address, gun) =
   );
 };
 
-const executeNewChallengeMatch = (tx, writeContracts, wageredAmount, challenger, fen, address, gun) => {
+const executeNewChallengeMatch = (tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.initChallengeMatch(challenger, fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -73,17 +80,25 @@ const executeNewChallengeMatch = (tx, writeContracts, wageredAmount, challenger,
           message: <Text>{"New Match Initiated with Challenger " + challenger + "!"}</Text>,
         });
         if (appStage === "production") {
+          let color = "white";
+          if (fen === beginningFEN) {
+            color = "black";
+          }
+          var pub = gunUser.is.pub;
           gun.get(GUNKEY).get(address).get("matches").set({
             txnHash: update.hash,
             wageredAmount: wageredAmount,
             challenger: challenger,
             fen: fen,
+            p1Color: color,
           });
-          gun.get(GUNKEY).get("pending_matches").set({
+          gun.get(GUNKEY).get("pending_matches").get(update.hash).set({
             txnHash: update.hash,
             wageredAmount: wageredAmount,
             fen: fen,
+            p1Color: color,
             player1: address,
+            player1Pub: pub,
             player2: challenger,
           });
         }
@@ -92,7 +107,7 @@ const executeNewChallengeMatch = (tx, writeContracts, wageredAmount, challenger,
   );
 };
 
-const executeNewDeathMatch = (tx, writeContracts, wageredAmount, address, gun) => {
+const executeNewDeathMatch = (tx, writeContracts, wageredAmount, address, gun, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.initDeathMatch({
       value: utils.parseEther(wageredAmount.toString()),
@@ -113,14 +128,18 @@ const executeNewDeathMatch = (tx, writeContracts, wageredAmount, address, gun) =
           message: <Text>{"DeathMatch Initiated!"}</Text>,
         });
         if (appStage === "production") {
-          gun.get(GUNKEY).get("matches").get(address).set({
+          let pub = gunUser.is.pub;
+          gun.get(GUNKEY).get("deathMatches").set({
             txnHash: update.hash,
             wageredAmount: wageredAmount,
+            initiator: address,
           });
-          gun.get(GUNKEY).get("pending_matches").set({
+          gun.get(GUNKEY).get("pending_matches").get(update.hash).set({
             txnHash: update.hash,
             wageredAmount: wageredAmount,
             player1: address,
+            player1Pub: pub,
+            p1Color: "black",
           });
         }
       }
@@ -128,7 +147,7 @@ const executeNewDeathMatch = (tx, writeContracts, wageredAmount, address, gun) =
   );
 };
 
-const executeStartMatch = (tx, writeContracts, wageredAmount, fen, gameId, gun, address, player1) => {
+const executeStartMatch = (tx, txnHash, writeContracts, wageredAmount, fen, gameId, gun, address, player1, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.startMatch(gameId, fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -148,35 +167,44 @@ const executeStartMatch = (tx, writeContracts, wageredAmount, fen, gameId, gun, 
         notification.open({
           message: <Text>{"Match Started!"}</Text>,
         });
-        var pair = SEA.pair();
         if (appStage === "production") {
+          var pub = gunUser.is.pub;
           gun.get(GUNKEY).get(address).get("matches").set({
             txnHash: update.hash,
             wageredAmount: wageredAmount,
             fen: fen,
             gameId: gameId,
           });
-          gun.get(GUNKEY).get("matches").get(gameId).get("meta").put({
-            txnHash: update.hash,
-            wageredAmount: wageredAmount,
-            fen: fen,
-            player1: player1,
-            player2: address,
-            player2PubKey: pair.pub,
-          });
+          gun
+            .get(GUNKEY)
+            .get("pending_matches")
+            .get(txnHash)
+            .once(ack => {
+              gun.get(GUNKEY).get("matches").get(gameId).get("meta").put({
+                txnHash: update.hash,
+                wageredAmount: wageredAmount,
+                fen: fen,
+                p1Color: ack.p1Color,
+                player1: player1,
+                player1PubKey: ack.player1Pub,
+                player2: address,
+                player2PubKey: pub,
+              });
+            });
+          gun.get(GUNKEY).get("pending_matches").get(txnHash).put(null);
         }
       }
     },
   );
 };
 
-const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen, address, gun) => {
+const handleChallenge = (tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser) => {
   if (!challenger) {
-    return executeNewMatch(tx, writeContracts, wageredAmount, fen, address, gun);
+    return executeNewMatch(tx, writeContracts, wageredAmount, fen, address, gun, gunUser);
   } else if (challenger && challenger.length === 42 && challenger.slice(0, 2) === "0x") {
-    return executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger, fen, address, gun);
+    return executeNewChallengeMatch(tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser);
   } else {
-    notification.open({ message: "Fill out match info..." });
+    notification.open({ message: "Please fill out match info..." });
     return false;
   }
 };
@@ -550,6 +578,7 @@ export const HandleStartMatch = ({
         }
         startTime
         startHash
+        txnHash
         endHash
         p1Amount
         p2Amount
@@ -688,8 +717,17 @@ export const HandleStartMatch = ({
         onCancel={() => setConfirmMatchModal(false)}
         onOk={() => {
           setConfirmMatchModal(false);
-          executeStartMatch(tx, writeContracts, data.wageredAmount, startFen, gun, address, data.player1.id) &&
-            setStartMatchModal(false);
+          executeStartMatch(
+            tx,
+            data.txnHash,
+            writeContracts,
+            data.wageredAmount,
+            startFen,
+            gun,
+            address,
+            data.player1.id,
+            gunUser,
+          ) && setStartMatchModal(false);
         }}
       >
         <h3>You are about to execute a transaction to initiate a new Match.</h3>
@@ -726,6 +764,7 @@ export const HandleStartDMatch = ({
       }
       startTime
       startHash
+      txnHash
       endHash
       p1Amount
       p2Amount
@@ -734,7 +773,7 @@ export const HandleStartDMatch = ({
   }`;
   const minWager = useContractReader(readContracts, "ETHChessMatches", "minWager")?.toString() / 1e18;
   const MATCH_GQL = gql(matchQ);
-  const { loading, matchData } = useQuery(MATCH_GQL, { pollInterval: 2500 });
+  const { loading, data } = useQuery(MATCH_GQL, { pollInterval: 2500 });
   const [confirmMatchModal, setConfirmMatchModal] = useState(false);
   const [moveBoardVisible, setMoveBoardVisible] = useState(false);
   const [wageredAmount, setWageredAmount] = useState(0);
@@ -787,8 +826,8 @@ export const HandleStartDMatch = ({
     };
 
     useEffect(() => {
-      if (!loading && matchData) {
-        let startIpfs = GetFromIPFS(matchData.startIpfs);
+      if (!loading && data) {
+        let startIpfs = GetFromIPFS(data.startIpfs);
         setFen(startIpfs.fen);
       }
     }, [loading]);
@@ -831,7 +870,7 @@ export const HandleStartDMatch = ({
         <div>
           Entrance Fee Needed
           <br />
-          {matchData?.entranceFee}
+          {data?.entranceFee}
           <Avatar src={<Image preview={false} style={{ width: 10 }} src={ethlogo} />} />
           ETH
         </div>
@@ -856,9 +895,9 @@ export const HandleStartDMatch = ({
       <Divider />
       <p style={{ marginTop: 30 }}>
         *Total funds needed will be <TbCurrencyEthereum />
-        {matchData?.entranceFee} + <TbCurrencyEthereum /> {matchData?.entranceFee} security deposit for a winning match
-        claim, or, <TbCurrencyEthereum />
-        {matchData?.entranceFee} + <TbCurrencyEthereum /> {matchData?.entranceFee * 2} to dispute the match outcome.
+        {data?.entranceFee} + <TbCurrencyEthereum /> {data?.entranceFee} security deposit for a winning match claim, or,{" "}
+        <TbCurrencyEthereum />
+        {data?.entranceFee} + <TbCurrencyEthereum /> {data?.entranceFee * 2} to dispute the match outcome.
       </p>
       (*security deposit returned after dispute resolution process)
       <br />
@@ -869,8 +908,18 @@ export const HandleStartDMatch = ({
         onCancel={() => setConfirmMatchModal(false)}
         onOk={() => {
           setConfirmMatchModal(false);
-          executeStartMatch(tx, writeContracts, wageredAmount, challenger, fen, gun, address, player1) &&
-            setStartDMatchModal(false);
+          executeStartMatch(
+            tx,
+            data.txnHash,
+            writeContracts,
+            wageredAmount,
+            challenger,
+            fen,
+            gun,
+            address,
+            player1,
+            gunUser,
+          ) && setStartDMatchModal(false);
         }}
       >
         <h3>You are about to execute a transaction to initiate a new Match.</h3>

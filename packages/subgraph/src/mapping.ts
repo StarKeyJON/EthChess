@@ -19,6 +19,7 @@ export function handleMatchInitiated(event: MatchInitiated): void {
   let player1 = event.params.player1.toHexString();
   let matchId = event.params.matchId;
   let wager = event.params.amount;
+  let hash = event.transaction.hash.toString();
 
   let match = Match.load(matchId.toString());
   if(!match) {
@@ -46,6 +47,7 @@ export function handleMatchInitiated(event: MatchInitiated): void {
   match.player1 = player1;
   match.player2 = "0x0";
   match.p1Amount = wager;
+  match.txnHash = hash;
   p2.save();
   p1.save();
   match.save();
@@ -103,6 +105,7 @@ export function handleMatchSet(event: MatchSet): void {
 export function handleDeathMatchStarted(event: DeathMatchStarted): void {
   let player1 = event.params.reign.toHexString();
   let matchId = event.params.id;
+  let hash = event.transaction.hash.toString();
   
   let match = Match.load(matchId.toString());
   if(!match) {
@@ -135,6 +138,7 @@ export function handleDeathMatchStarted(event: DeathMatchStarted): void {
   deathmatch.pot = event.params.entranceFee;
   deathmatch.reign = player1;
   deathmatch.inProgress = true;
+  deathmatch.txnHash = hash;
   if(deathmatch.matches) {
     deathmatch.matches!.push(matchId.toString());
   } else {
