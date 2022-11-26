@@ -169,10 +169,10 @@ const HandleNewMatch = ({
           Match Initiation <TbCurrencyEthereum /> {wageredAmount} (paid now)
         </div>
         <div>
-          Security Deposit for Winning Claim <TbCurrencyEthereum /> {wageredAmount} (paid later)
+          Security Deposit for Winning Claim <TbCurrencyEthereum /> {wageredAmount}
         </div>
         <div>
-          Security Deposit for Claim Dispute <TbCurrencyEthereum /> {wageredAmount * 2} (paid later)
+          Security Deposit for Claim Dispute <TbCurrencyEthereum /> {wageredAmount * 2}
         </div>
       </p>
       (*security deposit returned after dispute resolution process settled in your favor)
