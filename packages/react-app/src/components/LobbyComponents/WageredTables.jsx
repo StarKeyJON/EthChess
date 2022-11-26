@@ -4,8 +4,9 @@ import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
 import { Card, Table, Button, Input, Space, Row, Col, Popover } from "antd";
 import { FaInfoCircle } from "react-icons/fa";
-import { HandleNewDeathMatch, HandleNewMatch, HandleStartDMatch, HandleStartMatch } from "./MoveModals";
+
 import { matchQ } from "./matchGraphQ";
+import { HandleNewDeathMatch, HandleNewMatch, HandleStartDMatch, HandleStartMatch } from "./moveModals/Modals";
 
 const WageredTables = ({
   gun,
