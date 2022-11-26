@@ -529,14 +529,8 @@ function App(props) {
                 <Info />
               </Route>
               <Route exact path="/developer">
-                {/*
-          🎛 this scaffolding is full of commonly used components
-          this <Contract/> component will automatically parse your ABI
-          and give you a form to interact with it locally
-      */}
-
                 <Contract
-                  name="ETHChess"
+                  name="ETHChessMatches"
                   price={price}
                   signer={userSigner}
                   provider={localProvider}
@@ -553,7 +547,7 @@ function App(props) {
                   mainnetProvider={mainnetProvider}
                 />
               </Route>
-              <Route path="/*" component={() => <FourOFour gun={gun} />} />
+              <Route path="/*" component={() => <FourOFour />} />
             </Switch>
             <NotifyMatch
               showNotifyMatch={showNotifyMatch}

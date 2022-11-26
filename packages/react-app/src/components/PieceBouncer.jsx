@@ -19,7 +19,9 @@ const usePieceBouncer = () => {
   }, []);
   return (
     <>
-      <h1 style={{ margin: 50 }}>Loading...</h1>
+      <h1 style={{ margin: 50 }}>
+        Enabling Decentralized Database and Cryptographic Keypair for ETH-Chess Gameplay...
+      </h1>
       <Avatar ref={pawn} size="small" src={<Image preview={false} src={pawnImg} />} />
       <Avatar ref={knight} size="small" src={<Image preview={false} src={knightImg} />} />
       <Avatar ref={rook} size="small" src={<Image preview={false} src={rookImg} />} />
