@@ -1,4 +1,4 @@
-import { Avatar, Button, Divider, Image, Modal, notification } from "antd";
+import { Avatar, Button, Divider, Image, Modal, notification, Space } from "antd";
 import { Chess } from "chess.js";
 import { useEffect, useState } from "react";
 import Chessground from "react-chessground/chessground";
@@ -163,10 +163,16 @@ const HandleStartMatch = ({
       </div>
       <Divider />
       <p style={{ marginTop: 30 }}>
-        *Total funds needed will be <TbCurrencyEthereum />
-        {data?.wager} + <TbCurrencyEthereum /> {data?.wager} security deposit for a winning match claim, or,{" "}
-        <TbCurrencyEthereum />
-        {data?.wager} + <TbCurrencyEthereum /> {data?.wager * 2} to dispute the match outcome.
+        *Total funds needed for:{" "}
+        <div>
+          Match Initiation <TbCurrencyEthereum /> {data?.wager} (paid now)
+        </div>
+        <div>
+          Security Deposit for Winning Claim <TbCurrencyEthereum /> {data?.wager} (paid later)
+        </div>
+        <div>
+          Security Deposit for Claim Dispute <TbCurrencyEthereum /> {data?.wager * 2} (paid later)
+        </div>
       </p>
       (*security deposit returned after dispute resolution process)
       <br />

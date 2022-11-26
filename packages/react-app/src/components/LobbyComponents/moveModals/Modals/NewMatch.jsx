@@ -1,4 +1,4 @@
-import { Avatar, Button, Divider, Image, InputNumber, Modal, notification } from "antd";
+import { Avatar, Button, Divider, Image, InputNumber, Modal, notification, Space } from "antd";
 import { Chess } from "chess.js";
 import { useState } from "react";
 import Chessground from "react-chessground/chessground";
@@ -160,15 +160,22 @@ const HandleNewMatch = ({
           <MoveBoardModal />
         </div>
         <p>Current gameplay FEN: {fen === beginningFEN ? "Unmoved board" : fen}</p>
+        <p>You are playing as the {fen === beginningFEN ? "Black" : "White"} pieces.</p>
       </div>
       <Divider />
       <p style={{ marginTop: 30 }}>
-        *Total funds needed will be <TbCurrencyEthereum />
-        {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount} security deposit for a winning match claim, or,{" "}
-        <TbCurrencyEthereum />
-        {wageredAmount} + <TbCurrencyEthereum /> {wageredAmount * 2} to dispute the match outcome.
+        *Total funds needed for:{" "}
+        <div>
+          Match Initiation <TbCurrencyEthereum /> {wageredAmount} (paid now)
+        </div>
+        <div>
+          Security Deposit for Winning Claim <TbCurrencyEthereum /> {wageredAmount} (paid later)
+        </div>
+        <div>
+          Security Deposit for Claim Dispute <TbCurrencyEthereum /> {wageredAmount * 2} (paid later)
+        </div>
       </p>
-      (*security deposit returned after dispute resolution process)
+      (*security deposit returned after dispute resolution process settled in your favor)
       <br />
       (**minimum wager amount is <TbCurrencyEthereum /> {minWager})
       <Modal
