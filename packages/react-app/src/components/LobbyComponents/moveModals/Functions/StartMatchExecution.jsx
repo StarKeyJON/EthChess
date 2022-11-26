@@ -3,18 +3,7 @@ import Text from "antd/lib/typography/Text";
 import { utils } from "ethers";
 import { appStage, GUNKEY } from "../../../../constants";
 
-const executeStartMatch = (
-  tx,
-  txnHash,
-  writeContracts,
-  wageredAmount,
-  fen,
-  gameId,
-  gun,
-  address,
-  player1,
-  gunUser,
-) => {
+const executeStartMatch = (tx, txnHash, writeContracts, wageredAmount, fen, gameId, gun, address, player1, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.startMatch(gameId, fen, {
       value: utils.parseEther(wageredAmount.toString()),

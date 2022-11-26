@@ -380,7 +380,6 @@ export function handleDeathMatchAdvanced(event: DeathMatchAdvanced): void {
   if(!match) {
     match = new Match(matchId.toString());
   }
-  match.inProgress = false;
   match.matchId = matchId;
 
   let player = event.params.winner.toHexString();

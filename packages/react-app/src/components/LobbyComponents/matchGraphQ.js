@@ -16,7 +16,7 @@ export const matchQ = `
       p2Amount
       inProgress
     }
-    deathMatches(inProgress: false){
+    deathMatches(inProgress: true){
       id
       matchId
       player1 {
