@@ -3,10 +3,11 @@
 import React, { useCallback, useState } from "react";
 import Chessground from "react-chessground";
 import { Chess } from "chess.js";
-import "./styles/chessGround.css";
-import "./styles/chessGround-theme.css";
-import MoveTable from "../MoveTable";
+import "../ChessComponents/ChessGrounds/styles/chessGround.css";
+import "../ChessComponents/ChessGrounds/styles/chessGround-theme.css";
+
 import { Button } from "antd";
+import MoveTable from "../ChessComponents/MoveTable";
 
 const ViewHistory = ({ history }) => {
   const [moveId, setMoveId] = useState(0);

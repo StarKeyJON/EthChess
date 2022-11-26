@@ -3,14 +3,16 @@ import { Chess } from "chess.js";
 import { useEffect, useState } from "react";
 import Chessground from "react-chessground/chessground";
 import { TbCurrencyEthereum } from "react-icons/tb";
-import { beginningFEN } from "../../constants";
-import ethlogo from "../../assets/ethereumLogo.png";
+
+import ethlogo from "../../../../assets/ethereumLogo.png";
 import { useContractReader } from "eth-hooks";
 import { gql, useQuery } from "@apollo/client";
-import { GetFromIPFS } from "../../helpers/ipfs";
-import { executeStartMatch } from "./moveModals/Functions";
 
-export const HandleStartDMatch = ({
+import { executeStartMatch } from "../Functions";
+import { beginningFEN } from "../../../../constants";
+import { GetFromIPFS } from "../../../../helpers/ipfs";
+
+const HandleStartDMatch = ({
   gun,
   gunUser,
   tx,
@@ -201,3 +203,5 @@ export const HandleStartDMatch = ({
     </Modal>
   );
 };
+
+export default HandleStartDMatch

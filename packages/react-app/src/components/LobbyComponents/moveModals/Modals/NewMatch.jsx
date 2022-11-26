@@ -3,13 +3,14 @@ import { Chess } from "chess.js";
 import { useState } from "react";
 import Chessground from "react-chessground/chessground";
 import { TbCurrencyEthereum } from "react-icons/tb";
-import { beginningFEN } from "../../constants";
-import AddressInput from "../AddressInput";
-import ethlogo from "../../assets/ethereumLogo.png";
-import { useContractReader } from "eth-hooks";
-import { handleChallenge } from "./moveModals/Functions";
 
-export const HandleNewMatch = ({
+import ethlogo from "../../../../assets/ethereumLogo.png";
+import { useContractReader } from "eth-hooks";
+import { handleChallenge } from "../Functions";
+import { beginningFEN } from "../../../../constants";
+import AddressInput from "../../../AddressInput";
+
+const HandleNewMatch = ({
   tx,
   writeContracts,
   readContracts,
@@ -187,3 +188,5 @@ export const HandleNewMatch = ({
     </Modal>
   );
 };
+
+export default HandleNewMatch;

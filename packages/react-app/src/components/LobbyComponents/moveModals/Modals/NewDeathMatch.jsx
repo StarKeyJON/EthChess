@@ -3,13 +3,12 @@ import { Chess } from "chess.js";
 import { useCallback, useState } from "react";
 import Chessground from "react-chessground/chessground";
 import { TbCurrencyEthereum } from "react-icons/tb";
-import { beginningFEN } from "../../constants";
-import ethlogo from "../../assets/ethereumLogo.png";
+import ethlogo from "../../../../assets/ethereumLogo.png";
 import { useContractReader } from "eth-hooks";
 import { executeNewDeathMatch } from "../Functions";
-import { appStage } from "../../../../constants";
+import { appStage, beginningFEN } from "../../../../constants";
 
-export const HandleNewDeathMatch = ({
+const HandleNewDeathMatch = ({
   gun,
   tx,
   writeContracts,
@@ -171,3 +170,5 @@ export const HandleNewDeathMatch = ({
     </Modal>
   );
 };
+
+export default HandleNewDeathMatch;

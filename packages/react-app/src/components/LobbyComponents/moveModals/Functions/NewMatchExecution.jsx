@@ -1,9 +1,9 @@
 import { message, notification } from "antd";
 import Text from "antd/lib/typography/Text";
 import { utils } from "ethers";
-import { appStage, beginningFEN, GUNKEY } from "../../../constants";
+import { appStage, beginningFEN, GUNKEY } from "../../../../constants";
 
-export const executeNewMatch = (tx, writeContracts, wageredAmount, fen, address, gun, gunUser) => {
+const executeNewMatch = (tx, writeContracts, wageredAmount, fen, address, gun, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.initMatch(fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -50,7 +50,7 @@ export const executeNewMatch = (tx, writeContracts, wageredAmount, fen, address,
   );
 };
 
-export const executeNewChallengeMatch = (tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser) => {
+const executeNewChallengeMatch = (tx, writeContracts, wageredAmount, challenger, fen, address, gun, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.initChallengeMatch(challenger, fen, {
       value: utils.parseEther(wageredAmount.toString()),
@@ -108,3 +108,5 @@ export const handleChallenge = (tx, writeContracts, wageredAmount, challenger, f
     return false;
   }
 };
+
+export default handleChallenge;

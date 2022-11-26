@@ -1,9 +1,9 @@
 import { message, notification } from "antd";
 import Text from "antd/lib/typography/Text";
 import { utils } from "ethers";
-import { appStage, GUNKEY } from "../../../constants";
+import { appStage, GUNKEY } from "../../../../constants";
 
-export const executeStartMatch = (
+const executeStartMatch = (
   tx,
   txnHash,
   writeContracts,
@@ -64,3 +64,5 @@ export const executeStartMatch = (
     },
   );
 };
+
+export default executeStartMatch;

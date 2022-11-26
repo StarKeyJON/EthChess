@@ -1,9 +1,9 @@
 import { message, notification } from "antd";
 import Text from "antd/lib/typography/Text";
 import { utils } from "ethers";
-import { appStage, GUNKEY } from "../../../constants";
+import { GUNKEY, appStage } from "../../../../constants";
 
-export const executeNewDeathMatch = (tx, writeContracts, wageredAmount, address, gun, gunUser) => {
+const executeNewDeathMatch = (tx, writeContracts, wageredAmount, address, gun, gunUser) => {
   tx(
     writeContracts.ETHChessMatches.initDeathMatch({
       value: utils.parseEther(wageredAmount.toString()),
@@ -42,3 +42,5 @@ export const executeNewDeathMatch = (tx, writeContracts, wageredAmount, address,
     },
   );
 };
+
+export default executeNewDeathMatch;
