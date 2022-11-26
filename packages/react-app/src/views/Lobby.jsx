@@ -28,7 +28,7 @@ const Lobby = ({
     gun,
     player,
   });
-  const { fetchLobby, joinLobby, leaveLobby, joinedLobby, profile } = useLobby({
+  const { joinLobby, leaveLobby, joinedLobby, profile } = useLobby({
     gun,
     address,
     startTime,
@@ -204,7 +204,6 @@ const Lobby = ({
                     </Popover>
                   </h1>
                   <WageredTables
-                    players={fetchLobby()}
                     tx={tx}
                     gun={gun}
                     gunUser={gunUser}

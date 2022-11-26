@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Highlighter from "react-highlight-words";
 import { SearchOutlined } from "@ant-design/icons";
-import { Card, Table, Button, Input, Space, Row, Col, Popover } from "antd";
+import { Card, Table, Button, Input, Space, Row, Col, Popover, Spin } from "antd";
 import { FaInfoCircle } from "react-icons/fa";
 
 import { matchQ } from "./matchGraphQ";
@@ -11,7 +11,6 @@ import { HandleNewDeathMatch, HandleNewMatch, HandleStartDMatch, HandleStartMatc
 const WageredTables = ({
   gun,
   gunUser,
-  players,
   tx,
   writeContracts,
   readContracts,
@@ -152,6 +151,7 @@ const WageredTables = ({
       title: "Game ID",
       dataIndex: "gameId",
       key: "key",
+      ...getColumnSearchProps("gameId"),
     },
     {
       title: "Player1",
@@ -172,12 +172,14 @@ const WageredTables = ({
       dataIndex: "inProgress",
       key: "inProgress",
       width: "10%",
+      ...getColumnSearchProps("inProgress"),
     },
     {
       title: "Wager Amount",
       dataIndex: "wager",
       key: "wager",
       width: "10%",
+      ...getColumnSearchProps("wager"),
     },
   ];
 
@@ -265,8 +267,8 @@ const WageredTables = ({
                 <Button
                   style={{ margin: 10 }}
                   onClick={() => {
-                    // loggedIn ? 
-                    setNewMatchModal(true) 
+                    // loggedIn ?
+                    setNewMatchModal(true);
                     // : setLoginModal(true);
                   }}
                 >
@@ -287,9 +289,7 @@ const WageredTables = ({
             </Card>
           </div>
           <h3>Enter a Wagered Match Below!</h3>
-          <Card>
-            <Table dataSource={data?.matches} columns={columns} />
-          </Card>
+          <Card>{!loading ? <Table dataSource={data?.matches} columns={columns} /> : <Spin />}</Card>
           <HandleStartMatch
             gun={gun}
             gunUser={gunUser}
@@ -352,9 +352,7 @@ const WageredTables = ({
             </Card>
           </div>
           <h3>Enter a DeathMatch Below!</h3>
-          <Card>
-            <Table dataSource={data?.deathMatches} columns={dcolumns} />
-          </Card>
+          <Card>{!loading ? <Table dataSource={data?.deathMatches} columns={dcolumns} /> : <Spin />}</Card>
           <HandleStartDMatch
             gun={gun}
             gunUser={gunUser}
