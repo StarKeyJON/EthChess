@@ -30,7 +30,7 @@
 
 <a name="about-the-project"></a>
 > Decentralized Chess app allowing p2p wagered matches and deathmatch competitions
-<br/><a href="https://ethchess.com/">Link to test site: </a>
+<br/><a href="https://eth-chess.surge.sh/">Link to test site</a>
 <p>ETH-Chess enables decentralized 1v1 chess matches between random or specific opponents,
 <br/> as well as competitive DeathMatch tournaments where the player that wins 3 consecutive match rounds, wins the Rewards Pot!
 </p>
